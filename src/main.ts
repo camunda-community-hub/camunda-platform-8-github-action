@@ -29,7 +29,7 @@ async function run(): Promise<void> {
 
     switch (operation) {
       case 'publishMessage': {
-        const name = core.getInput('messageName', {required: true})
+        const name = core.getInput('message_name', {required: true})
         const variables = JSON.parse(core.getInput('variables') || '{}')
         const correlationKey = core.getInput('correlationKey')
         const timeToLive = parseInt(
@@ -49,7 +49,7 @@ async function run(): Promise<void> {
         break
       }
       case 'createWorkflowInstance': {
-        const bpmnProcessId = core.getInput('name', {required: true})
+        const bpmnProcessId = core.getInput('bpmn_process_id', {required: true})
         const variables = JSON.parse(core.getInput('variables') || '{}')
         const zbc = new ZBClient()
         const res = JSON.stringify(
@@ -62,7 +62,7 @@ async function run(): Promise<void> {
         break
       }
       case 'createWorkflowInstanceWithResult': {
-        const bpmnProcessId = core.getInput('bpmnProcessId', {required: true})
+        const bpmnProcessId = core.getInput('bpmn_process_id', {required: true})
         const variables = JSON.parse(core.getInput('variables') || '{}')
         const requestTimeout = (val =>
           val === '' ? undefined : parseInt(val, 10))(
