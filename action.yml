@@ -33,9 +33,6 @@ inputs:
   zeebe_client_id: 
     required: true
     description: "The ZEEBE_CLIENT_ID from your Camunda Cloud client credentials"
-  zeebe_address: 
-    required: true
-    description: "The ZEEBE_AUTHORIZATION_SERVER_URL from your Camunda Cloud client credentials"
   zeebe_client_secret: 
     required: true
     description: "The ZEEBE_CLIENT_SECRET from your Camunda Cloud client credentials"
