@@ -1,0 +1,10 @@
+version: "2"
+
+services:
+  builder:
+    build: .
+    command: npm run rebuild
+    volumes:
+      - .:/build
+
+
