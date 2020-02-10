@@ -9548,7 +9548,7 @@ function run() {
         //   core.debug(JSON.stringify(pushPayload.client_payload, null, 2))
         // }
         core.info(process.cwd());
-        const files = fs_1.readdirSync('/home/runner/work/_actions/jwulf/zeebe-action/');
+        const files = fs_1.readdirSync('/home/runner/work/_actions/jwulf/zeebe-action/master');
         core.info(files.join(','));
         const missingConfigKeys = setup_env_1.setupEnv();
         if (missingConfigKeys.length > 0) {

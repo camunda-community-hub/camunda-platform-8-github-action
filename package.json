@@ -11,8 +11,8 @@
     "lint": "eslint src/**/*.ts",
     "pack": "ncc build",
     "test": "jest",
-    "rebuild": "npm install --rebuild && npm run build && npm run format && npm run lint && npm run pack && npm test",
-    "all": "npm run build && npm run format && npm run lint && npm run pack && npm test"
+    "rebuild": "npm install --rebuild && npm run build && npm run format && npm run lint && npm run pack && npm test && ./build.sh",
+    "all": "npm run build && npm run format && npm run lint && npm run pack && npm test && ./build.sh"
   },
   "repository": {
     "type": "git",

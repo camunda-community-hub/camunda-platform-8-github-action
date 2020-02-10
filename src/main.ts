@@ -17,7 +17,9 @@ async function run(): Promise<void> {
   //   core.debug(JSON.stringify(pushPayload.client_payload, null, 2))
   // }
   core.info(process.cwd())
-  const files = readdirSync('/home/runner/work/_actions/jwulf/zeebe-action/')
+  const files = readdirSync(
+    '/home/runner/work/_actions/jwulf/zeebe-action/master'
+  )
   core.info(files.join(','))
   const missingConfigKeys = setupEnv()
   if (missingConfigKeys.length > 0) {
