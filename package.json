@@ -1,8 +1,8 @@
 {
-  "name": "typescript-action",
-  "version": "0.0.0",
+  "name": "zeebe-action",
+  "version": "0.1.0",
   "private": true,
-  "description": "TypeScript template action",
+  "description": "Interact with Camunda Cloud in a GitHub Action",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -15,17 +15,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/jwulf/zeebe-action.git"
   },
   "keywords": [
     "actions",
     "node",
     "setup"
   ],
-  "author": "YourNameOrOrganization",
+  "author": "Josh Wulf <josh@magikcraft.io>",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.0"
+    "@actions/core": "^1.2.0",
+    "@actions/github": "^2.1.0",
+    "@octokit/webhooks": "^7.0.0",
+    "zeebe-node": "^0.22.1"
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
