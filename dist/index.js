@@ -9539,6 +9539,7 @@ const core = __importStar(__webpack_require__(470));
 // import github from '@actions/github'
 const zeebe_node_1 = __webpack_require__(94);
 const setup_env_1 = __webpack_require__(51);
+const fs_1 = __webpack_require__(747);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         // if (github.context.eventName === 'repository_dispatch') {
@@ -9546,6 +9547,9 @@ function run() {
         //     .payload as Webhooks.WebhookPayloadRepositoryDispatch
         //   core.debug(JSON.stringify(pushPayload.client_payload, null, 2))
         // }
+        core.info(process.cwd());
+        const files = fs_1.readdirSync(process.cwd());
+        core.info(files.join(','));
         const missingConfigKeys = setup_env_1.setupEnv();
         if (missingConfigKeys.length > 0) {
             core.setFailed(`Required configuration not found ${JSON.stringify(missingConfigKeys)}`);

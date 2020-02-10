@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 // import github from '@actions/github'
 import {ZBClient} from 'zeebe-node'
 import {setupEnv} from './setup-env'
+import {readdirSync} from 'fs'
 // import * as Webhooks from '@octokit/webhooks'
 
 type Operation =
@@ -15,6 +16,9 @@ async function run(): Promise<void> {
   //     .payload as Webhooks.WebhookPayloadRepositoryDispatch
   //   core.debug(JSON.stringify(pushPayload.client_payload, null, 2))
   // }
+  core.info(process.cwd())
+  const files = readdirSync(process.cwd())
+  core.info(files.join(','))
   const missingConfigKeys = setupEnv()
   if (missingConfigKeys.length > 0) {
     core.setFailed(
