@@ -9556,7 +9556,7 @@ function run() {
             });
             switch (operation) {
                 case 'publishMessage': {
-                    const name = core.getInput('messageName', { required: true });
+                    const name = core.getInput('message_name', { required: true });
                     const variables = JSON.parse(core.getInput('variables') || '{}');
                     const correlationKey = core.getInput('correlationKey');
                     const timeToLive = parseInt((val => (val === '' ? '0' : val))(core.getInput('ttl')), 10);
@@ -9572,7 +9572,7 @@ function run() {
                     break;
                 }
                 case 'createWorkflowInstance': {
-                    const bpmnProcessId = core.getInput('name', { required: true });
+                    const bpmnProcessId = core.getInput('bpmn_process_id', { required: true });
                     const variables = JSON.parse(core.getInput('variables') || '{}');
                     const zbc = new zeebe_node_1.ZBClient();
                     const res = JSON.stringify(yield zbc.createWorkflowInstance(bpmnProcessId, variables), null, 2);
@@ -9581,7 +9581,7 @@ function run() {
                     break;
                 }
                 case 'createWorkflowInstanceWithResult': {
-                    const bpmnProcessId = core.getInput('bpmnProcessId', { required: true });
+                    const bpmnProcessId = core.getInput('bpmn_process_id', { required: true });
                     const variables = JSON.parse(core.getInput('variables') || '{}');
                     const requestTimeout = (val => val === '' ? undefined : parseInt(val, 10))(core.getInput('requestTimeout'));
                     const zbc = new zeebe_node_1.ZBClient();
