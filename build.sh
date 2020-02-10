@@ -1,8 +1,7 @@
 #!/bin/sh
-mkdir -p dist/proto
 
 # add proto file for packaged action
-cp node_modules/zeebe-node/proto/zeebe.proto dist/proto
+cp node_modules/zeebe-node/proto/zeebe.proto proto/
 
 # https://stackoverflow.com/a/38595160/1758461
 darwin=false;
