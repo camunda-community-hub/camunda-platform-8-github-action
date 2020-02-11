@@ -35,5 +35,5 @@ jobs:
           zeebe_client_secret: ${{ secrets.ZEEBE_CLIENT_SECRET }}
           operation: createWorkflowInstance
           bpmn_process_id: throw-test
-          variables: "{event: ${{ github.event.action }} }"
+          variables: '{"event": "${{ github.event.action }}" }'
 ```

@@ -3,17 +3,8 @@
 # add proto file for packaged action
 cp node_modules/zeebe-node/proto/zeebe.proto proto/
 
-# https://stackoverflow.com/a/38595160/1758461
-darwin=false;
-case "`uname`" in
-  Darwin*) darwin=true ;;
-esac
-
-if $darwin; then
-  sedi="/usr/bin/sed -i ''"
-else
-  sedi="sed -i"
-fi
-
 # Change path to proto file for packaged action
-$sedi 's/..\/..\/proto/..\/proto/' dist/index.js
+sed 's/..\/..\/proto/..\/proto/' dist/index.js > dist/index-patched.js
+
+rm dist/index.js
+mv dist/index-patched.js dist/index.js

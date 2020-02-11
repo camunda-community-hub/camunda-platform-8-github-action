@@ -45,7 +45,7 @@ async function run(): Promise<void> {
           variables,
           timeToLive
         })
-        core.info('Published message ${name} to Zeebe.')
+        core.info(`Published message ${name} to Zeebe.`)
         await zbc.close()
         break
       }

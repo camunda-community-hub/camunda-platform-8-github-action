@@ -9567,7 +9567,7 @@ function run() {
                         variables,
                         timeToLive
                     });
-                    core.info('Published message ${name} to Zeebe.');
+                    core.info(`Published message ${name} to Zeebe.`);
                     yield zbc.close();
                     break;
                 }
@@ -16233,10 +16233,10 @@ exports.Server = Server;
 var binary = __webpack_require__(774);
 var path = __webpack_require__(622);
 var binding_path =
-    __webpack_require__.ab + "/src/node/extension_binary/node-v72-linux-x64-glibc/grpc_node.node";
+    binary.find(path.resolve(path.join(__dirname, '../package.json')));
 var binding;
 try {
-  binding = __webpack_require__(707);
+  binding = __webpack_require__(995);
 } catch (e) {
   let fs = __webpack_require__(747);
   let searchPath = __webpack_require__.ab + "extension_binary";
@@ -38993,12 +38993,7 @@ module.exports = cloneResponse;
 /* 704 */,
 /* 705 */,
 /* 706 */,
-/* 707 */
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-module.exports = require(__webpack_require__.ab + "src/node/extension_binary/node-v72-linux-x64-glibc/grpc_node.node")
-
-/***/ }),
+/* 707 */,
 /* 708 */,
 /* 709 */,
 /* 710 */,
@@ -50796,7 +50791,13 @@ Duplex.prototype._destroy = function (err, cb) {
 };
 
 /***/ }),
-/* 995 */,
+/* 995 */
+/***/ (function() {
+
+eval("require")("/Users/sitapati/workspace/Camunda/zeebe-action/node_modules/grpc/src/node/extension_binary/node-v72-darwin-x64-unknown/grpc_node.node");
+
+
+/***/ }),
 /* 996 */,
 /* 997 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
