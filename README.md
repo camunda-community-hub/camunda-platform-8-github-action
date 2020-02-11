@@ -2,7 +2,7 @@
 
 This GitHub Action allows you to integrate GitHub Actions into workflows orchestrated by Zeebe on Camunda Cloud.
 
-You can create a workflow instance from a GitHub Action, run an entire workflow and act on the outcome in a GitHub Action, or publish an outcome from a GitHub Action to a workflow instance running in Camunda Cloud.
+You can create a workflow instance from a GitHub Action, run an entire workflow and act on the outcome in a GitHub Action, or publish an outcome from a GitHub Action to a workflow instance running in Camunda Cloud via a message.
 
 See this article for some ideas on orchestrating multi-repo build workflows using Camunda Cloud.
 
