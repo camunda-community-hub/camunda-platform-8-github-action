@@ -9539,6 +9539,7 @@ const core = __importStar(__webpack_require__(470));
 // import github from '@actions/github'
 const zeebe_node_1 = __webpack_require__(94);
 const setup_env_1 = __webpack_require__(51);
+const fs_1 = __webpack_require__(747);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         // if (github.context.eventName === 'repository_dispatch') {
@@ -9599,9 +9600,18 @@ function run() {
                     break;
                 }
                 case 'deployWorkflow': {
-                    const filename = core.getInput('bpmn_filename', { required: true });
+                    const filename = core.getInput('bpmn_filename');
+                    const dir = core.getInput('bpmn_directory');
+                    if ((!filename && !dir) || (filename && dir)) {
+                        return core.setFailed('deployWorkflow requires exactly one of bpmn_filename or bpmn_directory');
+                    }
                     const zbc = new zeebe_node_1.ZBClient();
-                    const res = yield zbc.deployWorkflow(`./${filename}`);
+                    const toDeploy = filename
+                        ? `./${filename}`
+                        : fs_1.readdirSync(dir)
+                            .filter(f => f.endsWith('.bpmn'))
+                            .map(f => `${dir}/${f}`);
+                    const res = yield zbc.deployWorkflow(toDeploy);
                     core.info(JSON.stringify(res, null, 2));
                     core.setOutput('result', JSON.stringify(res));
                     yield zbc.close();
