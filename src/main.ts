@@ -18,7 +18,7 @@ async function run(): Promise<void> {
 
   const missingConfigKeys = setupEnv()
   if (missingConfigKeys.length > 0) {
-    core.setFailed(
+    return core.setFailed(
       `Required configuration not found ${JSON.stringify(missingConfigKeys)}`
     )
   }

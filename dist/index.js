@@ -9548,7 +9548,7 @@ function run() {
         // }
         const missingConfigKeys = setup_env_1.setupEnv();
         if (missingConfigKeys.length > 0) {
-            core.setFailed(`Required configuration not found ${JSON.stringify(missingConfigKeys)}`);
+            return core.setFailed(`Required configuration not found ${JSON.stringify(missingConfigKeys)}`);
         }
         try {
             const operation = core.getInput('operation', {
