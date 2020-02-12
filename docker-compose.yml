@@ -3,6 +3,6 @@ version: "2"
 services:
   builder:
     build: .
-    command: npm run rebuild
+    command: npm run _rebuild
     volumes:
       - .:/build

@@ -1,5 +1,6 @@
 #!/bin/sh
 
+echo "Patching dist/index.js for relative path to zeebe.proto in GitHub Action"
 # add proto file for packaged action
 cp node_modules/zeebe-node/proto/zeebe.proto proto/
 
