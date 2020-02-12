@@ -41,3 +41,5 @@ jobs:
 ## Development
 
 Run the `npm run rebuild` task before checking the code in.
+
+The action is rebuilt on GitHub by the [/.github/workflows/build.yml], to ensure that it has the correct binaries for gRPC.
