@@ -9599,7 +9599,7 @@ function run() {
                     break;
                 }
                 case 'deployWorkflow': {
-                    const filename = core.getInput('bpmnFilename', { required: true });
+                    const filename = core.getInput('bpmn_filename', { required: true });
                     const zbc = new zeebe_node_1.ZBClient();
                     const res = yield zbc.deployWorkflow(`./${filename}`);
                     core.info(JSON.stringify(res, null, 2));
