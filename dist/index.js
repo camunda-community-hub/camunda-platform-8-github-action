@@ -9561,13 +9561,15 @@ function run() {
                     const correlationKey = core.getInput('correlationKey');
                     const timeToLive = parseInt((val => (val === '' ? '0' : val))(core.getInput('ttl')), 10);
                     const zbc = new zeebe_node_1.ZBClient();
-                    yield zbc.publishMessage({
+                    const messagePayload = {
                         name,
                         correlationKey,
                         variables,
                         timeToLive
-                    });
-                    core.info(`Published message ${name} to Zeebe.`);
+                    };
+                    yield zbc.publishMessage(messagePayload);
+                    core.info(`Published message to Zeebe.`);
+                    core.info(JSON.stringify(messagePayload, null, 2));
                     yield zbc.close();
                     break;
                 }

@@ -19,11 +19,6 @@
     "type": "git",
     "url": "git+https://github.com/jwulf/zeebe-action.git"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run rebuild"
-    }
-  },
   "keywords": [
     "actions",
     "node",
