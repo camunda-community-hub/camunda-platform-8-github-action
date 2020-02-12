@@ -1,12 +1,12 @@
 # Integrate GitHub Actions with Zeebe on Camunda Cloud
 
-This GitHub Action allows you to integrate GitHub Actions into workflows orchestrated by Zeebe on Camunda Cloud.
+This GitHub Action allows you to integrate GitHub Actions into workflows orchestrated by [Zeebe](https://zeebe.io) on [Camunda Cloud](https://camunda.io).
 
-You can create a workflow instance from a GitHub Action, run an entire workflow and act on the outcome in a GitHub Action, or publish an outcome from a GitHub Action to a workflow instance running in Camunda Cloud via a message.
+You can create a Camunda Cloud workflow instance from a GitHub Action, start and run an entire workflow on Camunda Cloud and act on the outcome in a GitHub Action, or publish a message from a GitHub Action to a workflow instance running in Camunda Cloud.
 
-Note that at the moment it only works in the Ubuntu runner.
+See this article: "[Complex multi-repo builds with GitHub Actions and Camunda Cloud](https://zeebe.io/blog/2020/02/camunda-cloud-github-actions/)" for some ideas on orchestrating multi-repo build workflows using Camunda Cloud.
 
-See this article for some ideas on orchestrating multi-repo build workflows using Camunda Cloud.
+_Note that at the moment it only works in the Ubuntu runner._
 
 ## Configure secrets
 
