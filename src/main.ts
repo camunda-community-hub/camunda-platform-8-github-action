@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 // import github from '@actions/github'
 import {ZBClient} from 'zeebe-node'
 import {setupEnv} from './setup-env'
+import {readdirSync} from 'fs'
 // import * as Webhooks from '@octokit/webhooks'
 
 type Operation =
@@ -85,9 +86,21 @@ async function run(): Promise<void> {
         break
       }
       case 'deployWorkflow': {
-        const filename = core.getInput('bpmn_filename', {required: true})
+        const filename = core.getInput('bpmn_filename')
+        const dir = core.getInput('bpmn_directory')
+        if ((!filename && !dir) || (filename && dir)) {
+          return core.setFailed(
+            'deployWorkflow requires exactly one of bpmn_filename or bpmn_directory'
+          )
+        }
+
         const zbc = new ZBClient()
-        const res = await zbc.deployWorkflow(`./${filename}`)
+        const toDeploy = filename
+          ? `./${filename}`
+          : readdirSync(dir)
+              .filter(f => f.endsWith('.bpmn'))
+              .map(f => `${dir}/f`)
+        const res = await zbc.deployWorkflow(toDeploy)
         core.info(JSON.stringify(res, null, 2))
         core.setOutput('result', JSON.stringify(res))
         await zbc.close()

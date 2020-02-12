@@ -24,6 +24,9 @@ inputs:
   bpmn_filename:
     required: false
     description: "The bpmn file to deploy"
+  bpmn_directory:
+    required: false
+    description: "A directory from which to deploy bpmn files"
   bpmnProcessId:
     required: false
     description: "The id of the process definition for a createWorkflowInstance operation"
