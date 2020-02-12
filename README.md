@@ -37,3 +37,7 @@ jobs:
           bpmn_process_id: throw-test
           variables: '{"event": "${{ github.event.action }}" }'
 ```
+
+## Development
+
+Run the `npm run rebuild` task before checking the code in.
