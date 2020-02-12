@@ -8,6 +8,7 @@ type Operation =
   | 'publishMessage'
   | 'createWorkflowInstance'
   | 'createWorkflowInstanceWithResult'
+  | 'deployWorkflow'
 
 async function run(): Promise<void> {
   // if (github.context.eventName === 'repository_dispatch') {
@@ -62,6 +63,7 @@ async function run(): Promise<void> {
         )
         core.info(res)
         core.setOutput('result', res)
+        await zbc.close()
         break
       }
       case 'createWorkflowInstanceWithResult': {
@@ -79,11 +81,21 @@ async function run(): Promise<void> {
         })
         core.info(JSON.stringify(res, null, 2))
         core.setOutput('result', JSON.stringify(res))
+        await zbc.close()
+        break
+      }
+      case 'deployWorkflow': {
+        const filename = core.getInput('bpmnFilename', {required: true})
+        const zbc = new ZBClient()
+        const res = await zbc.deployWorkflow(`./${filename}`)
+        core.info(JSON.stringify(res, null, 2))
+        core.setOutput('result', JSON.stringify(res))
+        await zbc.close()
         break
       }
       default: {
         core.setFailed(
-          `Unknown operation ${operation}. Valid operations are: publishMessage, createWorkflowInstance, createWorkflowInstanceWithResult.`
+          `Unknown operation ${operation}. Valid operations are: publishMessage, createWorkflowInstance, createWorkflowInstanceWithResult, deployWorkflow.`
         )
       }
     }

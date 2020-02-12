@@ -7,7 +7,7 @@ branding:
 inputs:
   operation: # change this
     required: true
-    description: 'The operation to perform. One of publishMessage | createWorkflowInstance | createWorkflowInstanceWithResult'
+    description: 'The operation to perform. One of publishMessage | createWorkflowInstance | createWorkflowInstanceWithResult | deployWorkflow'
   message_name: 
     required: false
     description: "The name of the message for a publishMessage operation"
@@ -21,6 +21,9 @@ inputs:
   timeToLive: 
     required: false
     description: "The timeToLive for the message sent by a publishMessage operation"
+  bpmnFilename:
+    required: false
+    description: "The bpmn file to deploy"
   bpmnProcessId:
     required: false
     description: "The id of the process definition for a createWorkflowInstance operation"
