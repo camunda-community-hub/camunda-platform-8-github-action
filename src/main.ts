@@ -39,13 +39,15 @@ async function run(): Promise<void> {
         )
 
         const zbc = new ZBClient()
-        await zbc.publishMessage({
+        const messagePayload = {
           name,
           correlationKey,
           variables,
           timeToLive
-        })
-        core.info(`Published message ${name} to Zeebe.`)
+        }
+        await zbc.publishMessage(messagePayload)
+        core.info(`Published message to Zeebe.`)
+        core.info(JSON.stringify(messagePayload, null, 2))
         await zbc.close()
         break
       }
