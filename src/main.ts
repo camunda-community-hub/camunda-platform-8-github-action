@@ -99,7 +99,7 @@ async function run(): Promise<void> {
           ? `./${filename}`
           : readdirSync(dir)
               .filter(f => f.endsWith('.bpmn'))
-              .map(f => `${dir}/f`)
+              .map(f => `${dir}/${f}`)
         const res = await zbc.deployWorkflow(toDeploy)
         core.info(JSON.stringify(res, null, 2))
         core.setOutput('result', JSON.stringify(res))
