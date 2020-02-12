@@ -85,7 +85,7 @@ async function run(): Promise<void> {
         break
       }
       case 'deployWorkflow': {
-        const filename = core.getInput('bpmnFilename', {required: true})
+        const filename = core.getInput('bpmn_filename', {required: true})
         const zbc = new ZBClient()
         const res = await zbc.deployWorkflow(`./${filename}`)
         core.info(JSON.stringify(res, null, 2))

@@ -21,13 +21,13 @@ inputs:
   timeToLive: 
     required: false
     description: "The timeToLive for the message sent by a publishMessage operation"
-  bpmnFilename:
+  bpmn_filename:
     required: false
     description: "The bpmn file to deploy"
   bpmnProcessId:
     required: false
     description: "The id of the process definition for a createWorkflowInstance operation"
-  requestTimeout:
+  request_timeout:
     required: false
     description: "The requestTimeout for a createWorkflowInstanceWithResult operation"
   zeebe_address: 
