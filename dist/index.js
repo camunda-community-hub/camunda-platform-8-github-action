@@ -9580,6 +9580,7 @@ function run() {
                     const res = JSON.stringify(yield zbc.createWorkflowInstance(bpmnProcessId, variables), null, 2);
                     core.info(res);
                     core.setOutput('result', res);
+                    yield zbc.close();
                     break;
                 }
                 case 'createWorkflowInstanceWithResult': {
@@ -9594,10 +9595,20 @@ function run() {
                     });
                     core.info(JSON.stringify(res, null, 2));
                     core.setOutput('result', JSON.stringify(res));
+                    yield zbc.close();
+                    break;
+                }
+                case 'deployWorkflow': {
+                    const filename = core.getInput('bpmnFilename', { required: true });
+                    const zbc = new zeebe_node_1.ZBClient();
+                    const res = yield zbc.deployWorkflow(`./${filename}`);
+                    core.info(JSON.stringify(res, null, 2));
+                    core.setOutput('result', JSON.stringify(res));
+                    yield zbc.close();
                     break;
                 }
                 default: {
-                    core.setFailed(`Unknown operation ${operation}. Valid operations are: publishMessage, createWorkflowInstance, createWorkflowInstanceWithResult.`);
+                    core.setFailed(`Unknown operation ${operation}. Valid operations are: publishMessage, createWorkflowInstance, createWorkflowInstanceWithResult, deployWorkflow.`);
                 }
             }
         }
