@@ -12,7 +12,7 @@ _Note that at the moment it only works in the Ubuntu runner._
 
 In a repository where you have a GitHub workflow that uses this action, you need to configure your Camunda Cloud client credentials.
 
-1. In the [Camunda Cloud console](https://console.cloud.camunda.io/), lick the button to copy your client connection info.
+1. In the [Camunda Cloud console](https://console.cloud.camunda.io/), click the button to copy your client connection info.
 2. Set a secret in your repo (Repo Settings > Secrets) `ZEEBE_CLIENT_CONFIG`, and paste in the entire block from Camunda Cloud.
 
 ![](img/secret.png)
