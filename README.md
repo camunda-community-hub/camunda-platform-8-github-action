@@ -8,12 +8,16 @@ See this article: "[Complex multi-repo builds with GitHub Actions and Camunda Cl
 
 _Note that at the moment it only works in the Ubuntu runner._
 
-## Configure secrets
+## Configure Camunda Cloud credentials
 
 In a repository where you have a GitHub workflow that uses this action, you need to configure your Camunda Cloud client credentials.
 
 1. Grab your client connection info from the Camunda Cloud console.
-2. Set the various values as secrets in your repo (Repo Settings > Secrets) - i.e: ZEEBE_ADDRESS, etc...
+2. Set a secret in your repo (Repo Settings > Secrets) `ZEEBE_CLIENT_CONFIG`, and paste in the entire block from Camunda Cloud.
+
+![](img/secret.png)
+
+See the note at the end of this document if this doesn't work for you.
 
 ## Deploy a Workflow
 
@@ -34,10 +38,7 @@ steps:
   - name: Deploy Demo Workflow "Get Time"
     uses: jwulf/zeebe-action@master
     with:
-      zeebe_address: ${{ secrets.ZEEBE_ADDRESS }}
-      zeebe_client_id: ${{ secrets.ZEEBE_CLIENT_ID }}
-      zeebe_authorization_server_url: ${{ secrets.ZEEBE_AUTHORIZATION_SERVER_URL }}
-      zeebe_client_secret: ${{ secrets.ZEEBE_CLIENT_SECRET }}
+      client_config: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
       operation: deployWorkflow
       bpmn_filename: bpmn/demo-get-time.bpmn
 ```
@@ -65,10 +66,7 @@ jobs:
       - name: Create Zeebe Workflow
         uses: jwulf/zeebe-action@master
         with:
-          zeebe_address: ${{ secrets.ZEEBE_ADDRESS }}
-          zeebe_client_id: ${{ secrets.ZEEBE_CLIENT_ID }}
-          zeebe_authorization_server_url: ${{ secrets.ZEEBE_AUTHORIZATION_SERVER_URL }}
-          zeebe_client_secret: ${{ secrets.ZEEBE_CLIENT_SECRET }}
+          client_config: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
           operation: createWorkflowInstance
           bpmn_process_id: throw-test
           variables: '{"event": "${{ github.event.action }}" }'
@@ -93,10 +91,7 @@ steps:
   - name: Deploy Demo Workflow "Get Time"
     uses: jwulf/zeebe-action@master
     with:
-      zeebe_address: ${{ secrets.ZEEBE_ADDRESS }}
-      zeebe_client_id: ${{ secrets.ZEEBE_CLIENT_ID }}
-      zeebe_authorization_server_url: ${{ secrets.ZEEBE_AUTHORIZATION_SERVER_URL }}
-      zeebe_client_secret: ${{ secrets.ZEEBE_CLIENT_SECRET }}
+      client_config: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
       operation: deployWorkflow
       bpmn_filename: bpmn/demo-get-time.bpmn
   - name: Execute Demo Workflow "Get Time"
@@ -126,10 +121,7 @@ triggerDependentFlow:
     - name: Tell Camunda Cloud What's up!
       uses: jwulf/zeebe-action@master
       with:
-        zeebe_address: ${{ secrets.ZEEBE_ADDRESS }}
-        zeebe_client_id: ${{ secrets.ZEEBE_CLIENT_ID }}
-        zeebe_authorization_server_url: ${{ secrets.ZEEBE_AUTHORIZATION_SERVER_URL }}
-        zeebe_client_secret: ${{ secrets.ZEEBE_CLIENT_SECRET }}
+        client_config: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
         operation: publishMessage
         message_name: BASE_IMAGE_REBUILT
         correlationKey: ${{ github.event.client_payload.buildid }}
@@ -142,3 +134,36 @@ Variables can be provided in a `publishMessage` operation. They should be string
 Run the `npm run rebuild` task before checking the code in.
 
 The action is rebuilt on GitHub by the build.yaml workflow, to ensure that it has the correct binaries for gRPC in the GitHub runner environment.
+
+## A note on configuration
+
+Previously, you had to create individual secrets for each of the client credential fields: `ZEEBE_ADDRESS`, `ZEEBE_CLIENT_ID`, etc...
+
+However, this is clunky. Ain't nobody got time fo' that!
+
+We are waiting on the [single JSON-parseable connection string](https://github.com/zeebe-io/zeebe/issues/3544) to land. In the meantime, the Zeebe Action parses the text of the credentials block from the Cloud console to extract the credential values. Text parsing is brittle, and a change in the formatting of that block could break it.
+
+As a backup, the previous method still works. To use it that way, create a secret for each one, and paste in the _unquoted_ value of the variable.
+
+Then in your workflows, you need to do:
+
+```
+jobs:
+  startWorkflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get current time
+        uses: gerred/actions/current-time@master
+        id: current-time
+      - name: Create Zeebe Workflow
+        uses: jwulf/zeebe-action@master
+        with:
+          zeebe_address: ${{ secrets.ZEEBE_ADDRESS }}
+          zeebe_client_id: ${{ secrets.ZEEBE_CLIENT_ID }}
+          zeebe_authorization_server_url: ${{ secrets.ZEEBE_AUTHORIZATION_SERVER_URL }}
+          zeebe_client_secret: ${{ secrets.ZEEBE_CLIENT_SECRET }}
+          operation: createWorkflowInstance
+          bpmn_process_id: magikcraft-github-build
+          variables: '{"buildid": "${{ github.sha }}-${{ steps.current-time.outputs.time }}"}'
+```
+

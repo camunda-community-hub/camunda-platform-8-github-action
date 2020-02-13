@@ -1,15 +1,23 @@
 import * as core from '@actions/core'
 
 export function setupEnv(): string[] {
+  const clientConfig = parseClientConfig(core.getInput('client_config'))
   const ZEEBE_ADDRESS =
-    process.env.ZEEBE_ADDRESS || core.getInput('zeebe_address')
+    process.env.ZEEBE_ADDRESS ||
+    clientConfig.ZEEBE_ADDRESS ||
+    core.getInput('zeebe_address')
   const ZEEBE_CLIENT_ID =
-    process.env.ZEEBE_CLIENT_ID || core.getInput('zeebe_client_id')
+    process.env.ZEEBE_CLIENT_ID ||
+    clientConfig.ZEEBE_CLIENT_ID ||
+    core.getInput('zeebe_client_id')
   const ZEEBE_AUTHORIZATION_SERVER_URL =
     process.env.ZEEBE_AUTHORIZATION_SERVER_URL ||
+    clientConfig.ZEEBE_AUTHORIZATION_SERVER_URL ||
     core.getInput('zeebe_authorization_server_url')
   const ZEEBE_CLIENT_SECRET =
-    process.env.ZEEBE_CLIENT_SECRET || core.getInput('zeebe_client_secret')
+    process.env.ZEEBE_CLIENT_SECRET ||
+    clientConfig.ZEEBE_CLIENT_SECRET ||
+    core.getInput('zeebe_client_secret')
 
   const missingConfigValues = []
 
@@ -37,4 +45,35 @@ export function setupEnv(): string[] {
   )
   core.exportVariable('ZEEBE_CLIENT_SECRET', ZEEBE_CLIENT_SECRET)
   return []
+}
+
+export function parseClientConfig(clientConfig: string) {
+  if (!clientConfig) {
+    return {}
+  }
+  try {
+    // Let's see if it is the new JSON config from https://github.com/zeebe-io/zeebe/issues/3544
+    return JSON.parse(clientConfig)
+  } catch (e) {
+    try {
+      // Nope, let's parse it as the exported variable block from the console
+      return JSON.parse(
+        `{"${clientConfig
+          .trim()
+          .substring(7)
+          .split("'")
+          .join('')
+          .split('export ')
+          .join('')
+          .split('\n')
+          .map(s => s.trimLeft())
+          .join('","')
+          .split('=')
+          .join('":"')}"}`
+      )
+    } catch (e) {
+      // Couldn't parse it
+      return {}
+    }
+  }
 }

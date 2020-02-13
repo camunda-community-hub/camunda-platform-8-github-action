@@ -34,14 +34,17 @@ inputs:
     required: false
     description: "The requestTimeout for a createWorkflowInstanceWithResult operation"
   zeebe_address: 
-    required: true
+    required: false
     description: "The ZEEBE_ADDRESS from your Camunda Cloud client credentials"
   zeebe_client_id: 
-    required: true
+    required: false
     description: "The ZEEBE_CLIENT_ID from your Camunda Cloud client credentials"
   zeebe_client_secret: 
-    required: true
+    required: false
     description: "The ZEEBE_CLIENT_SECRET from your Camunda Cloud client credentials"
+  client_config:
+    required: false
+    description: "The client credentials for Camunda Cloud"
 outputs:
   result: # id of the output
     description: 'The JSON stringified response from the operation, if a createWorkflow operation'
