@@ -1,5 +1,19 @@
 import * as core from '@actions/core'
 
+interface ZeebeClientConfig {
+  ZEEBE_ADDRESS: string | undefined
+  ZEEBE_CLIENT_ID: string | undefined
+  ZEEBE_AUTHORIZATION_SERVER_URL: string | undefined
+  ZEEBE_CLIENT_SECRET: string | undefined
+}
+
+const noConfig = {
+  ZEEBE_ADDRESS: undefined,
+  ZEEBE_CLIENT_ID: undefined,
+  ZEEBE_AUTHORIZATION_SERVER_URL: undefined,
+  ZEEBE_CLIENT_SECRET: undefined
+}
+
 export function setupEnv(): string[] {
   const clientConfig = parseClientConfig(core.getInput('client_config'))
   const ZEEBE_ADDRESS =
@@ -47,12 +61,13 @@ export function setupEnv(): string[] {
   return []
 }
 
-export function parseClientConfig(clientConfig: string) {
+export function parseClientConfig(clientConfig: string): ZeebeClientConfig {
   if (!clientConfig) {
-    return {}
+    return noConfig
   }
   try {
     // Let's see if it is the new JSON config from https://github.com/zeebe-io/zeebe/issues/3544
+    // When it lands we will need to normalise it here
     return JSON.parse(clientConfig)
   } catch (e) {
     try {
@@ -71,9 +86,9 @@ export function parseClientConfig(clientConfig: string) {
           .split('=')
           .join('":"')}"}`
       )
-    } catch (e) {
+    } catch (err) {
       // Couldn't parse it
-      return {}
+      return noConfig
     }
   }
 }

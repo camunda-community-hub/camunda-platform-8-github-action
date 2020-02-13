@@ -19,10 +19,10 @@ test('correctly parses config', async () => {
 })
 
 test('It returns a JSON-parsable object directly', () =>
-  expect(parseClientConfig('{"a": 4}').a).toBe(4))
+  expect(parseClientConfig('{"ZEEBE_ADDRESS": 4}').ZEEBE_ADDRESS).toBe(4))
 
 test('It returns an object for a non-parseable string', () =>
-  expect(Object.keys(parseClientConfig('{a: 4}')).length).toBe(0))
+  expect(parseClientConfig('{a: 4}').ZEEBE_ADDRESS).toBe(undefined))
 
 test('handles leading spaces', async () => {
   const clientConfig = `    export ZEEBE_ADDRESS='2fbb7f8f-1f4c-4f6d-bb7c-3bec17819f0a.zeebe.camunda.io:443'
