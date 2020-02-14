@@ -46,6 +46,34 @@ steps:
       bpmn_filename: bpmn/demo-get-time.bpmn
 ```
 
+## Automate Deployment of BPMN Models on Push to master
+
+Here is a workflow that redeploys changed models in the `bpmn` directory of your repo on a push to the master branch:
+
+```
+name: Deploy Workflows
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'bpmn/*'
+
+jobs:
+  deploy-workflows:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy Updated Workflows
+        uses: jwulf/zeebe-action@master
+        with:
+          client_config: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
+          operation: deployWorkflow
+          bpmn_directory: bpmn
+```
+
 ## Start a Workflow
 
 Here is an example of starting a workflow from within a GitHub Action:
