@@ -1,15 +1,16 @@
 import * as core from '@actions/core'
-// import github from '@actions/github'
 import {ZBClient} from 'zeebe-node'
 import {setupEnv} from './setup-env'
-import {readdirSync} from 'fs'
-// import * as Webhooks from '@octokit/webhooks'
+import {readdirSync, existsSync, readFileSync} from 'fs'
+import {resolve} from 'path'
+import {bootstrapWorkers} from './workers'
 
 type Operation =
   | 'publishMessage'
   | 'createWorkflowInstance'
   | 'createWorkflowInstanceWithResult'
   | 'deployWorkflow'
+  | 'startWorkers'
 
 async function run(): Promise<void> {
   // if (github.context.eventName === 'repository_dispatch') {
@@ -106,9 +107,26 @@ async function run(): Promise<void> {
         await zbc.close()
         break
       }
+      case 'startWorkers': {
+        const configFile = core.getInput('worker_handler_file')
+        if (!configFile) {
+          return core.setFailed('Missing worker_handler_file parameter')
+        }
+        const lifetime = parseInt(core.getInput('worker_lifetime_mins'), 10)
+        if (!existsSync(`./${configFile}`)) {
+          return core.setFailed(
+            `Could not find worker handler file ${resolve('./' + configFile)}`
+          )
+        }
+        const workerCode = readFileSync(`./${configFile}`, 'utf8')
+        core.info(
+          `Loading workers with config from ${resolve('./' + configFile)}`
+        )
+        await bootstrapWorkers(workerCode, lifetime)
+      }
       default: {
         core.setFailed(
-          `Unknown operation ${operation}. Valid operations are: publishMessage, createWorkflowInstance, createWorkflowInstanceWithResult, deployWorkflow.`
+          `Unknown operation ${operation}. Valid operations are: publishMessage, createWorkflowInstance, createWorkflowInstanceWithResult, deployWorkflow, startWorkers.`
         )
       }
     }

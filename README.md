@@ -160,6 +160,57 @@ triggerDependentFlow:
 
 Variables can be provided in a `publishMessage` operation. They should be stringified JSON, just like the `createWorkflowInstance` operation.
 
+## Create Workers 
+
+You can start Zeebe task workers in a GitHub Workflow, using handler code loaded from your repo.
+
+For example, to start workers based on a `workers.js` file in the root of your repo, and shut them down after 10 minutes:
+
+```
+name: Start Workers
+
+on: repository_dispatch
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Start Zeebe Workers
+        uses: jwulf/zeebe-action@master
+        with:
+          client_config: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
+          operation: startWorkers
+          worker_handler_file: workers.js
+          worker_lifetime: 10
+```
+
+The `workers.js` file should look like this: 
+
+```
+module.exports = {
+  let stockLevel = 100
+  'get-stock-level: (job, complete) => {
+    // you have @actions/core in scope
+    core.info(JSON.stringify(job, null, 2))
+    complete.success({
+      stockLevel
+    })
+  },
+  'decrement-stock': (job, complete) => {
+    stock --
+    complete.success({
+      stockLevel
+    })
+  }
+}
+```
+
 ## Development
 
 Run the `npm run rebuild` task before checking the code in.

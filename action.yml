@@ -7,7 +7,7 @@ branding:
 inputs:
   operation: # change this
     required: true
-    description: 'The operation to perform. One of publishMessage | createWorkflowInstance | createWorkflowInstanceWithResult | deployWorkflow'
+    description: 'The operation to perform. One of publishMessage | createWorkflowInstance | createWorkflowInstanceWithResult | deployWorkflow | startWorker'
   message_name: 
     required: false
     description: "The name of the message for a publishMessage operation"
@@ -45,6 +45,13 @@ inputs:
   client_config:
     required: false
     description: "The client credentials for Camunda Cloud"
+  worker_handler_file: 
+    required: false
+    description: "The file in your repo to load the worker handlers from"
+  worker_lifetime_mins:
+    required: false
+    description: "The number of minutes that the workers stay active"
+    default: "10"
 outputs:
   result: # id of the output
     description: 'The JSON stringified response from the operation, if a createWorkflow operation'
