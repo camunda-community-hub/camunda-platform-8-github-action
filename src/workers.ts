@@ -19,6 +19,7 @@ export async function bootstrapWorkers(
       }
 
       setTimeout(async () => {
+        core.info('Shutting down workers...')
         await zbc.close()
         resolve()
       }, lifetime * 60 * 1000)
