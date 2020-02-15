@@ -3491,6 +3491,7 @@ function bootstrapWorkers(workerCode, lifetime) {
                     zbc.createWorker(null, tasktype, tasks[tasktype]);
                 }
                 setTimeout(() => __awaiter(this, void 0, void 0, function* () {
+                    core.info('Shutting down workers...');
                     yield zbc.close();
                     resolve();
                 }), lifetime * 60 * 1000);
