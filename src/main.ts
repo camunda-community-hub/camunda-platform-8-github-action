@@ -115,14 +115,15 @@ async function run(): Promise<void> {
         const lifetime = parseInt(core.getInput('worker_lifetime_mins'), 10)
         if (!existsSync(`./${configFile}`)) {
           return core.setFailed(
-            `Could not find worker handler file ${resolve('./' + configFile)}`
+            `Could not find worker handler file ${resolve('./', configFile)}`
           )
         }
         const workerCode = readFileSync(`./${configFile}`, 'utf8')
         core.info(
-          `Loading workers with config from ${resolve('./' + configFile)}`
+          `Loading workers with config from ${resolve('./', configFile)}`
         )
         await bootstrapWorkers(workerCode, lifetime)
+        break
       }
       default: {
         core.setFailed(
