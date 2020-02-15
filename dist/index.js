@@ -3479,13 +3479,13 @@ const zeebe_node_1 = __webpack_require__(94);
 const core = __importStar(__webpack_require__(470));
 function bootstrapWorkers(workerCode, lifetime) {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             var _a;
             const __module = {};
+            const zbc = new zeebe_node_1.ZBClient();
             eval(`(function(module){${workerCode}})(__module)`);
             const tasks = (_a = __module.exports) === null || _a === void 0 ? void 0 : _a.tasks;
             if (tasks) {
-                const zbc = new zeebe_node_1.ZBClient();
                 for (const tasktype of Object.keys(tasks)) {
                     core.info(`Starting worker for task type ${tasktype}...`);
                     zbc.createWorker(null, tasktype, tasks[tasktype]);
@@ -3497,9 +3497,10 @@ function bootstrapWorkers(workerCode, lifetime) {
                 }), lifetime * 60 * 1000);
             }
             else {
+                yield zbc.close();
                 reject(new Error(`No export 'tasks' found in handler file`));
             }
-        });
+        }));
     });
 }
 exports.bootstrapWorkers = bootstrapWorkers;
