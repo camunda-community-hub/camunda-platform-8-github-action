@@ -3453,7 +3453,58 @@ function rmkidsSync (p, options) {
 /* 75 */,
 /* 76 */,
 /* 77 */,
-/* 78 */,
+/* 78 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const zeebe_node_1 = __webpack_require__(94);
+const core = __importStar(__webpack_require__(470));
+function bootstrapWorkers(workerCode, lifetime) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve, reject) => {
+            var _a;
+            const __module = {};
+            eval(`(function(module){${workerCode}})(__module)`);
+            const tasks = (_a = __module.exports) === null || _a === void 0 ? void 0 : _a.tasks;
+            if (tasks) {
+                const zbc = new zeebe_node_1.ZBClient();
+                for (const tasktype of Object.keys(tasks)) {
+                    core.info(`Starting worker for task type ${tasktype}...`);
+                    zbc.createWorker(null, tasktype, tasks[tasktype]);
+                }
+                setTimeout(() => __awaiter(this, void 0, void 0, function* () {
+                    yield zbc.close();
+                    resolve();
+                }), lifetime * 60 * 1000);
+            }
+            else {
+                reject(new Error(`No export 'tasks' found in handler file`));
+            }
+        });
+    });
+}
+exports.bootstrapWorkers = bootstrapWorkers;
+
+
+/***/ }),
 /* 79 */,
 /* 80 */,
 /* 81 */,
@@ -9582,10 +9633,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
-// import github from '@actions/github'
 const zeebe_node_1 = __webpack_require__(94);
 const setup_env_1 = __webpack_require__(51);
 const fs_1 = __webpack_require__(747);
+const path_1 = __webpack_require__(622);
+const workers_1 = __webpack_require__(78);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         // if (github.context.eventName === 'repository_dispatch') {
@@ -9663,8 +9715,22 @@ function run() {
                     yield zbc.close();
                     break;
                 }
+                case 'startWorkers': {
+                    const configFile = core.getInput('worker_handler_file');
+                    if (!configFile) {
+                        return core.setFailed('Missing worker_handler_file parameter');
+                    }
+                    const lifetime = parseInt(core.getInput('worker_lifetime_mins'), 10);
+                    if (!fs_1.existsSync(`./${configFile}`)) {
+                        return core.setFailed(`Could not find worker handler file ${path_1.resolve('./', configFile)}`);
+                    }
+                    const workerCode = fs_1.readFileSync(`./${configFile}`, 'utf8');
+                    core.info(`Loading workers with config from ${path_1.resolve('./', configFile)}`);
+                    yield workers_1.bootstrapWorkers(workerCode, lifetime);
+                    break;
+                }
                 default: {
-                    core.setFailed(`Unknown operation ${operation}. Valid operations are: publishMessage, createWorkflowInstance, createWorkflowInstanceWithResult, deployWorkflow.`);
+                    core.setFailed(`Unknown operation ${operation}. Valid operations are: publishMessage, createWorkflowInstance, createWorkflowInstanceWithResult, deployWorkflow, startWorkers.`);
                 }
             }
         }
