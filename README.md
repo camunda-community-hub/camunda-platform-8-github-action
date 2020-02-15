@@ -195,18 +195,20 @@ The `workers.js` file should look like this:
 ```
 module.exports = {
   let stockLevel = 100
-  'get-stock-level: (job, complete) => {
-    // you have @actions/core in scope
-    core.info(JSON.stringify(job, null, 2))
-    complete.success({
-      stockLevel
-    })
-  },
-  'decrement-stock': (job, complete) => {
-    stock --
-    complete.success({
-      stockLevel
-    })
+  tasks: {
+    'get-stock-level: (job, complete) => {
+      // you have @actions/core in scope
+      core.info(JSON.stringify(job, null, 2))
+      complete.success({
+        stockLevel
+      })
+    },
+    'decrement-stock': (job, complete) => {
+      stock --
+      complete.success({
+        stockLevel
+      })
+    }
   }
 }
 ```
