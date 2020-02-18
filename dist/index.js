@@ -9658,8 +9658,13 @@ function run() {
             switch (operation) {
                 case 'publishMessage': {
                     const name = core.getInput('message_name', { required: true });
-                    core.info(core.getInput('variables')); // @debug
-                    const variables = JSON.parse(core.getInput('variables') || '{}');
+                    let variables;
+                    try {
+                        variables = JSON.parse(core.getInput('variables') || '{}');
+                    }
+                    catch (e) {
+                        return core.setFailed(`Could not parse supplied variables to JSON: ${core.getInput('variables')}`);
+                    }
                     const correlationKey = core.getInput('correlationKey');
                     const timeToLive = parseInt((val => (val === '' ? '0' : val))(core.getInput('ttl')), 10);
                     const zbc = new zeebe_node_1.ZBClient();
