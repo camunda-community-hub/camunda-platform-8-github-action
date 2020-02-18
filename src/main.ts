@@ -74,7 +74,7 @@ async function run(): Promise<void> {
         const messagePayload = {
           name,
           correlationKey,
-          variables: variables,
+          variables,
           timeToLive
         }
         await zbc.publishMessage(messagePayload)
