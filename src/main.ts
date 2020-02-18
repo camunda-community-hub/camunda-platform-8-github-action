@@ -12,13 +12,33 @@ type Operation =
   | 'deployWorkflow'
   | 'startWorkers'
 
-async function run(): Promise<void> {
-  // if (github.context.eventName === 'repository_dispatch') {
-  //   const pushPayload = github.context
-  //     .payload as Webhooks.WebhookPayloadRepositoryDispatch
-  //   core.debug(JSON.stringify(pushPayload.client_payload, null, 2))
-  // }
+interface JSONDoc {
+  [key: string]: string | number | boolean | JSONDoc | JSONDoc[]
+}
 
+type Variables = JSONDoc | JSONDoc[]
+
+function getVariables():
+  | {err: false; variables: Variables}
+  | {err: true; message: string; variables: undefined} {
+  let variables
+  const vars = core.getInput('variables')
+  try {
+    variables = JSON.parse(vars || '{}')
+  } catch (e) {
+    return {
+      err: true,
+      message: `Could not parse supplied variables to JSON: ${vars}`,
+      variables: undefined
+    }
+  }
+  return {
+    err: false,
+    variables
+  }
+}
+
+async function run(): Promise<void> {
   const missingConfigKeys = setupEnv()
   if (missingConfigKeys.length > 0) {
     return core.setFailed(
@@ -34,16 +54,16 @@ async function run(): Promise<void> {
     switch (operation) {
       case 'publishMessage': {
         const name = core.getInput('message_name', {required: true})
-        let variables
-        try {
-          variables = JSON.parse(core.getInput('variables') || '{}')
-        } catch (e) {
+
+        const {variables, err} = getVariables()
+        if (err) {
           return core.setFailed(
             `Could not parse supplied variables to JSON: ${core.getInput(
               'variables'
             )}`
           )
         }
+
         const correlationKey = core.getInput('correlationKey')
         const timeToLive = parseInt(
           (val => (val === '' ? '0' : val))(core.getInput('ttl')),
@@ -54,7 +74,7 @@ async function run(): Promise<void> {
         const messagePayload = {
           name,
           correlationKey,
-          variables,
+          variables: variables,
           timeToLive
         }
         await zbc.publishMessage(messagePayload)
@@ -65,7 +85,14 @@ async function run(): Promise<void> {
       }
       case 'createWorkflowInstance': {
         const bpmnProcessId = core.getInput('bpmn_process_id', {required: true})
-        const variables = JSON.parse(core.getInput('variables') || '{}')
+        const {variables, err} = getVariables()
+        if (err) {
+          return core.setFailed(
+            `Could not parse supplied variables to JSON: ${core.getInput(
+              'variables'
+            )}`
+          )
+        }
         const zbc = new ZBClient()
         const res = JSON.stringify(
           await zbc.createWorkflowInstance(bpmnProcessId, variables),
@@ -79,7 +106,14 @@ async function run(): Promise<void> {
       }
       case 'createWorkflowInstanceWithResult': {
         const bpmnProcessId = core.getInput('bpmn_process_id', {required: true})
-        const variables = JSON.parse(core.getInput('variables') || '{}')
+        const {variables, err} = getVariables()
+        if (err) {
+          return core.setFailed(
+            `Could not parse supplied variables to JSON: ${core.getInput(
+              'variables'
+            )}`
+          )
+        }
         const requestTimeout = (val =>
           val === '' ? undefined : parseInt(val, 10))(
           core.getInput('requestTimeout')
