@@ -34,6 +34,7 @@ async function run(): Promise<void> {
     switch (operation) {
       case 'publishMessage': {
         const name = core.getInput('message_name', {required: true})
+        core.info(core.getInput('variables')) // @debug
         const variables = JSON.parse(core.getInput('variables') || '{}')
         const correlationKey = core.getInput('correlationKey')
         const timeToLive = parseInt(
