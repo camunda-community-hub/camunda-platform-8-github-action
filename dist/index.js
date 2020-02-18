@@ -9658,6 +9658,7 @@ function run() {
             switch (operation) {
                 case 'publishMessage': {
                     const name = core.getInput('message_name', { required: true });
+                    core.info(core.getInput('variables')); // @debug
                     const variables = JSON.parse(core.getInput('variables') || '{}');
                     const correlationKey = core.getInput('correlationKey');
                     const timeToLive = parseInt((val => (val === '' ? '0' : val))(core.getInput('ttl')), 10);
