@@ -13,7 +13,7 @@ jobs:
         npm install
         npm run all
       env: 
-        INPUT_clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
+        ZEEBE_CLIENT_CONFIG: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
     # Test should go here
     - name: Commit files
       run: |

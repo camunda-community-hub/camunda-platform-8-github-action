@@ -2,8 +2,22 @@ import {run} from '../src/run'
 import {pipe} from 'fp-ts/lib/pipeable'
 import {Config} from '../src/parameters/getEnvironment'
 import * as TE from 'fp-ts/lib/TaskEither'
+import {parseClientConfig} from '../src/parameters/getCamundaCloudCredentials'
 
 jest.setTimeout(30000)
+
+// The GitHub secrets for the repo have a ZEEBE_CLIENT_CONFIG in them
+// For local testing, you can either comment out these tests,
+// or copy a client connection block from Camunda Cloud and put that in
+// the env where you run the tests
+if (process.env.ZEEBE_CLIENT_CONFIG) {
+  const creds = parseClientConfig(process.env.ZEEBE_CLIENT_CONFIG)
+  process.env.ZEEBE_ADDRESS = creds.ZEEBE_ADDRESS
+  process.env.ZEEBE_AUTHORIZATION_SERVER_URL =
+    creds.ZEEBE_AUTHORIZATION_SERVER_URL
+  process.env.ZEEBE_CLIENT_ID = creds.ZEEBE_CLIENT_ID
+  process.env.ZEEBE_CLIENT_SECRET = creds.ZEEBE_CLIENT_SECRET
+}
 
 test('Deploy Workflow', done => {
   let called = false
