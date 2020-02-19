@@ -53246,19 +53246,19 @@ const noConfig = {
     ZEEBE_CLIENT_SECRET: undefined
 };
 function getCamundaCloudCredentials() {
-    const clientConfig = parseClientConfig(core.getInput('client_config'));
+    const clientConfig = parseClientConfig(core.getInput('clientConfig'));
     const ZEEBE_ADDRESS = process.env.ZEEBE_ADDRESS ||
         clientConfig.ZEEBE_ADDRESS ||
-        core.getInput('zeebe_address');
+        core.getInput('zeebeAddress');
     const ZEEBE_CLIENT_ID = process.env.ZEEBE_CLIENT_ID ||
         clientConfig.ZEEBE_CLIENT_ID ||
-        core.getInput('zeebe_client_id');
+        core.getInput('zeebeClientId');
     const ZEEBE_AUTHORIZATION_SERVER_URL = process.env.ZEEBE_AUTHORIZATION_SERVER_URL ||
         clientConfig.ZEEBE_AUTHORIZATION_SERVER_URL ||
-        core.getInput('zeebe_authorization_server_url');
+        core.getInput('zeebeAuthorizationServerUrl');
     const ZEEBE_CLIENT_SECRET = process.env.ZEEBE_CLIENT_SECRET ||
         clientConfig.ZEEBE_CLIENT_SECRET ||
-        core.getInput('zeebe_client_secret');
+        core.getInput('zeebeClientSecret');
     const missingConfigValues = [];
     if (ZEEBE_ADDRESS === '') {
         missingConfigValues.push('ZEEBE_ADDRESS');
