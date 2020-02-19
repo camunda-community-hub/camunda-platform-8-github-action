@@ -131,6 +131,7 @@ steps:
     with:
       operation: createWorkflowInstanceWithResult
       bpmn_process_id: demo-get-time
+      request_timeout: 30 # seconds
   - name: Print Workflow Outcome
     run: echo The outcome is ${{ toJSON(steps.get-time.outputs.result }}
   - name: Print time

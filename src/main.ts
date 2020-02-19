@@ -1,182 +1,133 @@
 import * as core from '@actions/core'
-import {ZBClient} from 'zeebe-node'
-import {setupEnv} from './setup-env'
-import {readdirSync, existsSync, readFileSync} from 'fs'
-import {resolve} from 'path'
-import {bootstrapWorkers} from './workers'
+import {setupEnv} from './parameters/setup-env'
+import {Config} from './operation-config-validation'
+import * as t from 'io-ts'
+import {pipe} from 'fp-ts/lib/pipeable'
+import {fold, left, Either} from 'fp-ts/lib/Either'
+import {TaskEither} from 'fp-ts/lib/TaskEither'
 
-type Operation =
+import * as Operations from './operations'
+import {getConfigurationFromEnvironment} from './parameters/getEnvironment'
+import {PathReporter} from 'io-ts/lib/PathReporter'
+
+export type OperationSuccess = {error: false; info: string[]; output: string}
+export type OperationFailure = {error: true; message: string[]}
+export type OperationOutcome = TaskEither<OperationFailure, OperationSuccess>
+
+type OperationName =
   | 'publishMessage'
   | 'createWorkflowInstance'
   | 'createWorkflowInstanceWithResult'
   | 'deployWorkflow'
   | 'startWorkers'
 
-interface JSONDoc {
-  [key: string]: string | number | boolean | JSONDoc | JSONDoc[]
-}
-
-type Variables = JSONDoc | JSONDoc[]
-
-function getVariables():
-  | {err: false; variables: Variables}
-  | {err: true; message: string; variables: undefined} {
-  let variables
-  const vars = core.getInput('variables')
-  try {
-    variables = JSON.parse(vars || '{}')
-  } catch (e) {
-    return {
-      err: true,
-      message: `Could not parse supplied variables to JSON: ${vars}`,
-      variables: undefined
-    }
-  }
-  return {
-    err: false,
-    variables
-  }
-}
-
 async function run(): Promise<void> {
-  const missingConfigKeys = setupEnv()
-  if (missingConfigKeys.length > 0) {
+  const missingCamundaCloudCredentialsConfig = setupEnv()
+  if (missingCamundaCloudCredentialsConfig.length > 0) {
     return core.setFailed(
-      `Required configuration not found ${JSON.stringify(missingConfigKeys)}`
+      `Required configuration not found ${JSON.stringify(
+        missingCamundaCloudCredentialsConfig
+      )}`
     )
   }
 
-  try {
-    const operation: Operation = core.getInput('operation', {
-      required: true
-    }) as Operation
+  const operationName: OperationName = core.getInput('operation', {
+    required: true
+  }) as OperationName
 
-    switch (operation) {
-      case 'publishMessage': {
-        const name = core.getInput('message_name', {required: true})
+  const config = getConfigurationFromEnvironment()
 
-        const {variables, err} = getVariables()
-        if (err) {
-          return core.setFailed(
-            `Could not parse supplied variables to JSON: ${core.getInput(
-              'variables'
-            )}`
-          )
-        }
-
-        const correlationKey = core.getInput('correlationKey')
-        const timeToLive = parseInt(
-          (val => (val === '' ? '0' : val))(core.getInput('ttl')),
-          10
-        )
-
-        const zbc = new ZBClient()
-        const messagePayload = {
-          name,
-          correlationKey,
-          variables,
-          timeToLive
-        }
-        await zbc.publishMessage(messagePayload)
-        core.info(`Published message to Zeebe.`)
-        core.info(JSON.stringify(messagePayload, null, 2))
-        await zbc.close()
-        break
-      }
-      case 'createWorkflowInstance': {
-        const bpmnProcessId = core.getInput('bpmn_process_id', {required: true})
-        const {variables, err} = getVariables()
-        if (err) {
-          return core.setFailed(
-            `Could not parse supplied variables to JSON: ${core.getInput(
-              'variables'
-            )}`
-          )
-        }
-        const zbc = new ZBClient()
-        const res = JSON.stringify(
-          await zbc.createWorkflowInstance(bpmnProcessId, variables),
-          null,
-          2
-        )
-        core.info(res)
-        core.setOutput('result', res)
-        await zbc.close()
-        break
-      }
-      case 'createWorkflowInstanceWithResult': {
-        const bpmnProcessId = core.getInput('bpmn_process_id', {required: true})
-        const {variables, err} = getVariables()
-        if (err) {
-          return core.setFailed(
-            `Could not parse supplied variables to JSON: ${core.getInput(
-              'variables'
-            )}`
-          )
-        }
-        const requestTimeout = (val =>
-          !val || val === '' ? 30000 : parseInt(val, 10))(
-          core.getInput('requestTimeout')
-        )
-        const zbc = new ZBClient()
-        const res = await zbc.createWorkflowInstanceWithResult({
-          bpmnProcessId,
-          variables,
-          requestTimeout
-        })
-        core.info(JSON.stringify(res, null, 2))
-        core.setOutput('result', JSON.stringify(res))
-        await zbc.close()
-        break
-      }
-      case 'deployWorkflow': {
-        const filename = core.getInput('bpmn_filename')
-        const dir = core.getInput('bpmn_directory')
-        if ((!filename && !dir) || (filename && dir)) {
-          return core.setFailed(
-            'deployWorkflow requires exactly one of bpmn_filename or bpmn_directory'
-          )
-        }
-
-        const zbc = new ZBClient()
-        const toDeploy = filename
-          ? `./${filename}`
-          : readdirSync(dir)
-              .filter(f => f.endsWith('.bpmn'))
-              .map(f => `${dir}/${f}`)
-        const res = await zbc.deployWorkflow(toDeploy)
-        core.info(JSON.stringify(res, null, 2))
-        core.setOutput('result', JSON.stringify(res))
-        await zbc.close()
-        break
-      }
-      case 'startWorkers': {
-        const configFile = core.getInput('worker_handler_file')
-        if (!configFile) {
-          return core.setFailed('Missing worker_handler_file parameter')
-        }
-        const lifetime = parseInt(core.getInput('worker_lifetime_mins'), 10)
-        if (!existsSync(`./${configFile}`)) {
-          return core.setFailed(
-            `Could not find worker handler file ${resolve('./', configFile)}`
-          )
-        }
-        const workerCode = readFileSync(`./${configFile}`, 'utf8')
-        core.info(
-          `Loading workers with config from ${resolve('./', configFile)}`
-        )
-        await bootstrapWorkers(workerCode, lifetime)
-        break
-      }
-      default: {
-        core.setFailed(
-          `Unknown operation ${operation}. Valid operations are: publishMessage, createWorkflowInstance, createWorkflowInstanceWithResult, deployWorkflow, startWorkers.`
-        )
-      }
-    }
-  } catch (error) {
-    core.setFailed(error.message)
+  if (config.variableParsingError) {
+    return core.setFailed(
+      `Could not parse supplied variables to JSON: ${core.getInput(
+        'variables'
+      )}`
+    )
   }
+
+  const onLeft = async (
+    errors: t.Errors
+  ): Promise<Either<OperationFailure, OperationSuccess>> =>
+    Promise.resolve(
+      left({
+        error: true,
+        message: [
+          `Missing required configuration keys for operation ${operationName}:`,
+          JSON.stringify(PathReporter.report(left(errors)))
+        ]
+      })
+    )
+
+  const operationExecution: {
+    [key in OperationName]: () => Promise<OperationOutcome>
+  } = {
+    publishMessage: () =>
+      pipe(
+        Config.PublishMessage.decode(config),
+        fold(onLeft, Operations.publishMessage)
+      ),
+    createWorkflowInstance: () =>
+      pipe(
+        Config.CreateWorkflowInstance.decode(config),
+        fold(onLeft, Operations.createWorkflowInstance)
+      ),
+    createWorkflowInstanceWithResult: () =>
+      pipe(
+        Config.CreateWorkflowInstanceWithResult.decode(config),
+        fold(onLeft, Operations.createWorkflowInstanceWithResult)
+      ),
+    deployWorkflow: () =>
+      pipe(
+        Config.DeployWorkflow.decode(config),
+        fold(onLeft, Operations.deployWorkflow)
+      ),
+    startWorkers: () =>
+      pipe(
+        Config.StartWorkers.decode(config),
+        fold(onLeft, Operations.startWorkers)
+      )
+  }
+
+  if (!operationExecution[operationName]) {
+    return core.setFailed(
+      `Unknown operation ${operationName}. Valid operations are: ${Object.keys(
+        operationExecution
+      ).join(',')}.`
+    )
+  }
+
+  const operationFailed = (outcome: OperationFailure) => {
+    for (const message in outcome.message) {
+      core.info(message)
+    }
+    core.info('Run with configuration:')
+    core.info(JSON.stringify(config))
+    return core.setFailed(
+      'An error occurred. See the previous messages for details.'
+    )
+  }
+  const operationSucceeded = (outcome: OperationSuccess) => {
+    for (const info in outcome.info) {
+      core.info(info)
+    }
+    core.setOutput('result', outcome.output)
+  }
+
+  const outcome = await operationExecution[operationName]()
+  if (outcome.error) {
+    for (const message in outcome.message) {
+      core.info(message)
+    }
+    core.info('Run with configuration:')
+    core.info(JSON.stringify(config))
+    return core.setFailed(
+      'An error occurred. See the previous messages for details.'
+    )
+  }
+  for (const info in outcome.info) {
+    core.info(info)
+  }
+  core.setOutput('result', outcome.output)
 }
 
 run()

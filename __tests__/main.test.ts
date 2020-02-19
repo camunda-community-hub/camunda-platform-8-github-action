@@ -1,6 +1,11 @@
 import * as process from 'process'
 import * as cp from 'child_process'
 import * as path from 'path'
+import {Config, PublishMessage} from '../src/operation-config-validation'
+import {fold, either, left} from 'fp-ts/lib/Either'
+import {pipe} from 'fp-ts/lib/pipeable'
+import * as t from 'io-ts'
+import {PathReporter} from 'io-ts/lib/PathReporter'
 
 // test('throws invalid number', async () => {
 //   const input = parseInt('foo', 10)
@@ -24,4 +29,21 @@ test('test runs', () => {
     env: process.env
   }
   // console.log(cp.execSync(`node ${ip}`, options).toString())
+})
+
+test('Bail on missing required parameters', () => {
+  // failure handler
+  const onLeft = (errors: t.Errors): any => PathReporter.report(left(errors))
+
+  // success handler
+  const onRight = (s: t.TypeOf<typeof PublishMessage>): any => `No errors: ${s}`
+  const res = pipe(
+    Config.PublishMessage.decode({
+      message_name: 'Hello',
+      // variables: 'shnt', // missing required value
+      timeToLive: 10000
+    }),
+    fold(onLeft, onRight)
+  )
+  expect(typeof res).toBe('object')
 })
