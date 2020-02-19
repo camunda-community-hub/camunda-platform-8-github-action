@@ -5254,7 +5254,7 @@ exports.DeployWorkflowFile = t.type({
     bpmnFilename: t.string
 });
 exports.DeployWorkflowDir = t.type({
-    bpmnDir: t.string
+    bpmnDirectory: t.string
 });
 exports.DeployWorkflow = t.intersection([
     GlobalOptional,
@@ -42386,7 +42386,7 @@ function getConfigurationFromEnvironment() {
     const requestTimeoutSeconds = (val => !val || val === '' ? 30 : parseInt(val, 10))(core.getInput('requestTimeoutSeconds'));
     const workerHandlerFile = core.getInput('workerHandlerFile');
     const bpmnFilename = core.getInput('bpmnFilename');
-    const bpmnDir = core.getInput('bpmnDirectory');
+    const bpmnDirectory = core.getInput('bpmnDirectory');
     const workerLifetimeMins = parseInt(core.getInput('workerLifetimeMins'), 10);
     const config = {
         bpmnProcessId,
@@ -42399,7 +42399,7 @@ function getConfigurationFromEnvironment() {
         verbose,
         workerHandlerFile,
         bpmnFilename,
-        bpmnDir,
+        bpmnDirectory,
         workerLifetimeMins,
         operation
     };
@@ -42583,9 +42583,9 @@ function deployWorkflow(config) {
         });
         const toDeploy = isDeployFile(config)
             ? `./${config.bpmnFilename}`
-            : fs_1.readdirSync(config.bpmnDir)
+            : fs_1.readdirSync(config.bpmnDirectory)
                 .filter(f => f.endsWith('.bpmn'))
-                .map(f => `${config.bpmnDir}/${f}`);
+                .map(f => `${config.bpmnDirectory}/${f}`);
         const res = yield zbc.deployWorkflow(toDeploy);
         yield zbc.close();
         return {
