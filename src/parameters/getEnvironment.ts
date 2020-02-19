@@ -15,14 +15,13 @@ export interface Config {
   timeToLive: number
   correlationKey?: string
   variables?: JSONDoc | JSONDoc[]
-  variableParsingError: boolean
   messageName?: string
   quiet: boolean
   verbose: boolean
   workerHandlerFile?: string
   bpmnFilename?: string
   bpmnDir?: string
-  workerLifetime: number
+  workerLifetimeMins: number
 }
 
 export function getConfigurationFromEnvironment(): E.Either<
@@ -59,7 +58,7 @@ export function getConfigurationFromEnvironment(): E.Either<
   const workerHandlerFile = core.getInput('workerHandlerFile')
   const bpmnFilename = core.getInput('bpmnFilename')
   const bpmnDir = core.getInput('bpmnDirectory')
-  const workerLifetime = parseInt(core.getInput('workerLifetimeMins'), 10)
+  const workerLifetimeMins = parseInt(core.getInput('workerLifetimeMins'), 10)
 
   const config = {
     bpmnProcessId,
@@ -67,14 +66,13 @@ export function getConfigurationFromEnvironment(): E.Either<
     timeToLive,
     correlationKey,
     variables,
-    variableParsingError,
     messageName,
     quiet,
     verbose,
     workerHandlerFile,
     bpmnFilename,
     bpmnDir,
-    workerLifetime,
+    workerLifetimeMins,
     operation
   }
   if (verbose) {

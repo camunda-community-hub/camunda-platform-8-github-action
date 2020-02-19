@@ -9,21 +9,18 @@ export function createWorkflowInstance(
 ): OperationOutcome {
   return TE.tryCatch(
     async () => {
-      const zbc = new ZBClient()
+      const zbc = new ZBClient({
+        loglevel: config.quiet ? 'ERROR' : 'INFO'
+      })
 
-      const res = JSON.stringify(
-        await zbc.createWorkflowInstance(
-          config.bpmnProcessId,
-          config.variables
-        ),
-        null,
-        2
+      const res = await zbc.createWorkflowInstance(
+        config.bpmnProcessId,
+        config.variables
       )
-
       await zbc.close()
       return {
-        info: [res],
-        output: res
+        info: [JSON.stringify(res, null, 2)],
+        output: JSON.stringify(res)
       }
     },
     (failure: unknown) => ({message: (failure as Error).message})

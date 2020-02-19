@@ -4,7 +4,7 @@ import {Config} from '../src/parameters/getEnvironment'
 import * as TE from 'fp-ts/lib/TaskEither'
 import {parseClientConfig} from '../src/parameters/getCamundaCloudCredentials'
 
-jest.setTimeout(30000)
+jest.setTimeout(60000)
 
 // The GitHub secrets for the repo have a ZEEBE_CLIENT_CONFIG in them
 // For local testing, you can either comment out these tests,
@@ -17,6 +17,7 @@ if (process.env.ZEEBE_CLIENT_CONFIG) {
     creds.ZEEBE_AUTHORIZATION_SERVER_URL
   process.env.ZEEBE_CLIENT_ID = creds.ZEEBE_CLIENT_ID
   process.env.ZEEBE_CLIENT_SECRET = creds.ZEEBE_CLIENT_SECRET
+  console.log(creds)
 }
 
 test('Deploy Workflow', done => {
@@ -24,7 +25,8 @@ test('Deploy Workflow', done => {
   pipe(
     run(({
       bpmnFilename: '__tests__/demo-get-time.bpmn',
-      operation: 'deployWorkflow'
+      operation: 'deployWorkflow',
+      quiet: true
     } as unknown) as Config),
     TE.mapLeft(failure => {
       called = true
@@ -42,7 +44,8 @@ test('Create Workflow Instance', done => {
   pipe(
     run(({
       bpmnProcessId: 'demo-get-time-int-test',
-      operation: 'createWorkflowInstance'
+      operation: 'createWorkflowInstance',
+      quiet: true
     } as unknown) as Config),
     TE.mapLeft(failure => {
       called = true
@@ -69,9 +72,11 @@ test('Create Workflow Instance with variables', done => {
     run(({
       bpmnProcessId: 'demo-get-time-int-test',
       operation: 'createWorkflowInstance',
-      variables: '{"name": "Noddy"}'
+      variables: {name: 'Noddy'}, // these get parsed from a string in hydration
+      quiet: true
     } as unknown) as Config),
     TE.mapLeft(failure => {
+      console.log(failure)
       called = true
     }),
     TE.map(success => {
@@ -95,9 +100,12 @@ test('Create Workflow Instance and Await with variables', done => {
     run(({
       bpmnProcessId: 'demo-get-time-int-test',
       operation: 'createWorkflowInstanceWithResult',
-      variables: '{"name": "Noddy"}'
+      variables: {name: 'Noddy'}, // these get parsed from a string in hydration
+      requestTimeoutSeconds: 10,
+      quiet: true
     } as unknown) as Config),
     TE.mapLeft(failure => {
+      console.log(failure)
       called = true
     }),
     TE.map(success => {
@@ -112,6 +120,66 @@ test('Create Workflow Instance and Await with variables', done => {
       } finally {
         done()
       }
+    })
+  )()
+})
+
+test('Publish Message', done => {
+  let called = false
+  pipe(
+    run(({
+      messageName: 'demo-get-time-int-test',
+      operation: 'publishMessage',
+      quiet: true
+    } as unknown) as Config),
+    TE.mapLeft(failure => {
+      console.log(failure)
+      called = true
+    }),
+    TE.map(success => {
+      expect(called).toBe(false)
+      done()
+    })
+  )()
+})
+
+test('Publish Message', done => {
+  let called = false
+  pipe(
+    run(({
+      messageName: 'demo-get-time-int-test',
+      operation: 'publishMessage',
+      quiet: true
+    } as unknown) as Config),
+    TE.mapLeft(failure => {
+      console.log(failure)
+      called = true
+    }),
+    TE.map(success => {
+      expect(called).toBe(false)
+      expect(success.info[0]).toBe('Published message to Zeebe')
+      done()
+    })
+  )()
+})
+
+test('Start Worker', done => {
+  let called = false
+  pipe(
+    run(({
+      workerHandlerFile: '__tests__/worker.js',
+      workerLifetimeMins: 0.5,
+      operation: 'startWorkers',
+      quiet: true
+    } as unknown) as Config),
+    TE.mapLeft(failure => {
+      console.log(failure)
+      called = true
+    }),
+    TE.map(success => {
+      expect(called).toBe(false)
+      expect(success.info[0]).toBe('Published message to Zeebe')
+      done()
     })
   )()
 })

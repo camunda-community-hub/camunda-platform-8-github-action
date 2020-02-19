@@ -10,7 +10,9 @@ export function publishMessage(
   return TE.tryCatch(
     async () => {
       const result: string[] = []
-      const zbc = new ZBClient()
+      const zbc = new ZBClient({
+        loglevel: config.quiet ? 'ERROR' : 'INFO'
+      })
       const messagePayload = {
         name: config.messageName,
         variables: config.variables,

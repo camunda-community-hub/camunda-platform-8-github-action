@@ -1,5 +1,10 @@
 import * as t from 'io-ts'
 
+const GlobalOptional = t.partial({
+  quiet: t.boolean,
+  verbose: t.boolean
+})
+
 const PublishMessageRequired = t.type({
   messageName: t.string
 })
@@ -12,7 +17,8 @@ const PublishMessageOptional = t.partial({
 
 export const PublishMessage = t.intersection([
   PublishMessageRequired,
-  PublishMessageOptional
+  PublishMessageOptional,
+  GlobalOptional
 ])
 
 export const CreateWorkflowInstanceRequired = t.type({
@@ -25,7 +31,8 @@ export const CreateWorkflowInstanceOptional = t.partial({
 
 export const CreateWorkflowInstance = t.intersection([
   CreateWorkflowInstanceRequired,
-  CreateWorkflowInstanceOptional
+  CreateWorkflowInstanceOptional,
+  GlobalOptional
 ])
 
 export const CreateWorkflowInstanceWithResultRequired = t.type({
@@ -35,7 +42,8 @@ export const CreateWorkflowInstanceWithResultRequired = t.type({
 
 export const CreateWorkflowInstanceWithResult = t.intersection([
   CreateWorkflowInstanceWithResultRequired,
-  CreateWorkflowInstanceOptional
+  CreateWorkflowInstanceOptional,
+  GlobalOptional
 ])
 
 export const DeployWorkflowFile = t.type({
@@ -46,12 +54,20 @@ export const DeployWorkflowDir = t.type({
   bpmnDir: t.string
 })
 
-export const DeployWorkflow = t.union([DeployWorkflowFile, DeployWorkflowDir])
+export const DeployWorkflow = t.intersection([
+  GlobalOptional,
+  t.union([DeployWorkflowFile, DeployWorkflowDir])
+])
 
-export const StartWorkers = t.type({
+export const StartWorkersRequired = t.type({
   workerHandlerFile: t.string,
-  workerLifetime: t.number
+  workerLifetimeMins: t.number
 })
+
+export const StartWorkers = t.intersection([
+  StartWorkersRequired,
+  GlobalOptional
+])
 
 export const ConfigValidator = {
   PublishMessage,

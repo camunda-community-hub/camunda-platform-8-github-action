@@ -22,7 +22,9 @@ export function deployWorkflow(
 ): OperationOutcome {
   return TE.tryCatch(
     async () => {
-      const zbc = new ZBClient()
+      const zbc = new ZBClient({
+        loglevel: config.quiet ? 'ERROR' : 'INFO'
+      })
       const toDeploy = isDeployFile(config)
         ? `./${config.bpmnFilename}`
         : readdirSync(config.bpmnDir)

@@ -13,7 +13,7 @@ export function startWorkers(
 ): OperationOutcome {
   return TE.tryCatch(
     async () => {
-      const {workerHandlerFile, workerLifetime} = config
+      const {workerHandlerFile, workerLifetimeMins} = config
       if (!existsSync(`./${workerHandlerFile}`)) {
         return Promise.reject(
           new Error(
@@ -24,17 +24,14 @@ export function startWorkers(
           )
         )
       }
-      const workerCode = readFileSync(
-        `${__dirname}/${workerHandlerFile}`,
-        'utf8'
-      )
+      const workerCode = readFileSync(`./${workerHandlerFile}`, 'utf8')
       // This is here, otherwise the user won't see it until the workers exit
       core.info(
         `Loading workers with config from ${resolve('./', workerHandlerFile)}`
       )
       const output: JSONDoc[] = []
 
-      await bootstrapWorkers(workerCode, workerLifetime)
+      await bootstrapWorkers(workerCode, workerLifetimeMins)
 
       return {
         info: [JSON.stringify(output, null, 2)],

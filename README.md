@@ -6,7 +6,15 @@ You can deploy a workflow definition to Camunda Cloud, create a Camunda Cloud wo
 
 See this article: "[Complex multi-repo builds with GitHub Actions and Camunda Cloud](https://zeebe.io/blog/2020/02/camunda-cloud-github-actions/)" for some ideas on orchestrating multi-repo build workflows using Camunda Cloud.
 
-_Note that at the moment it only works in the Ubuntu runner._
+## Operations
+
+| Operation | Required Parameters | Optional Parameters |
+| --- | --- | --- |
+| `deployWorkflow` | **One of**: `bpmnFilename` _or_ `bpmnDir` | `verbose`, `quiet` |
+| `createWorkflowInstance` | `bpmnProcessId` |  `variables`, `verbose`, `quiet` |
+|`createWorkflowInstanceWithResult` | `bpmnProcessId`, `requestTimeoutSeconds` | `variables`, `verbose`, `quiet` |
+| `publishMessage` | `messageName` | `timetoLive`, `variables`, `correlationKey`, `verbose`, `quiet` |
+| `startWorkers` | `workerHandlerFile`, `workerLifetimeMins` | `verbose`, `quiet` |
 
 ## Configure Camunda Cloud credentials
 
@@ -22,15 +30,6 @@ In a repository where you have a GitHub workflow that uses this action, you need
 
 See the note at the end of this document if you get errors about missing required configuration keys.
 
-## Operations
-
-| Operation | Required Parameters | Optional Parameters |
-| --- | --- | --- |
-| `deployWorkflow` | **One of**: `bpmnFilename` _or_ `bpmnDir` | |
-| `createWorkflowInstance` | `bpmnProcessId` |  `variables` |
-|`createWorkflowInstanceWithResult` | `bpmnProcessId`, `requestTimeoutSeconds` | `variables` |
-| `publishMessage` | `messageName` | `timetoLive`, `variables`, `correlationKey` |
-| `startWorkers` | `workerHandlerFile`, `workerLifetime` | |
 ## Deploy a Workflow
 
 Here is an example of deploying a workflow from GitHub. This will deploy the process in the file `bpmn/demo-get-time.bpmn` in the repo:
