@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import {OperationName, OperationFailure} from '../run'
 import * as E from 'fp-ts/lib/Either'
+import {getCamundaCloudCredentials} from './getCamundaCloudCredentials'
 
 export interface JSONDoc {
   [key: string]: string | number | boolean | JSONDoc | JSONDoc[]
@@ -31,6 +32,11 @@ export function getConfigurationFromEnvironment(): E.Either<
   const operation: OperationName = core.getInput('operation', {
     required: true
   }) as OperationName
+
+  const camundaCreds = getCamundaCloudCredentials()
+  if (E.isLeft(camundaCreds)) {
+    return camundaCreds
+  }
 
   const verbose = core.getInput('verbose') === 'true'
   const quiet = core.getInput('quiet') === 'true'

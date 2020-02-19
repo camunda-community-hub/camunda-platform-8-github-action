@@ -5254,7 +5254,7 @@ exports.DeployWorkflowFile = t.type({
     bpmnFilename: t.string
 });
 exports.DeployWorkflowDir = t.type({
-    bpmnDir: t.string
+    bpmnDirectory: t.string
 });
 exports.DeployWorkflow = t.intersection([
     GlobalOptional,
@@ -11494,10 +11494,8 @@ const core = __importStar(__webpack_require__(470));
 const pipeable_1 = __webpack_require__(194);
 const TE = __importStar(__webpack_require__(579));
 const T = __importStar(__webpack_require__(969));
-const E = __importStar(__webpack_require__(311));
 const run_1 = __webpack_require__(861);
 const getEnvironment_1 = __webpack_require__(683);
-const getCamundaCloudCredentials_1 = __webpack_require__(954);
 const failure = (outcome) => {
     const messages = typeof outcome.message === 'string' ? [outcome.message] : outcome.message;
     for (const message in messages) {
@@ -11514,10 +11512,9 @@ const success = (outcome) => {
     core.setOutput('result', outcome.output);
     return T.never;
 };
-const f = getCamundaCloudCredentials_1.getCamundaCloudCredentials;
 const g = getEnvironment_1.getConfigurationFromEnvironment;
 const h = run_1.run;
-pipeable_1.pipe(f(), E.chain(g), TE.fromEither, TE.chain(h), TE.fold(failure, success))();
+pipeable_1.pipe(g(), TE.fromEither, TE.chain(h), TE.fold(failure, success))();
 
 
 /***/ }),
@@ -18334,10 +18331,10 @@ exports.Server = Server;
 var binary = __webpack_require__(774);
 var path = __webpack_require__(622);
 var binding_path =
-    __webpack_require__.ab + "/src/node/extension_binary/node-v72-linux-x64-glibc/grpc_node.node";
+    __webpack_require__.ab + "/src/node/extension_binary/node-v72-darwin-x64-unknown/grpc_node.node";
 var binding;
 try {
-  binding = __webpack_require__(707);
+  binding = __webpack_require__(591);
 } catch (e) {
   let fs = __webpack_require__(747);
   let searchPath = __webpack_require__.ab + "extension_binary";
@@ -32526,7 +32523,7 @@ class ZBClient extends events_1.EventEmitter {
             onReady,
             options: { longPoll: this.options.longPoll },
             packageName: 'gateway_protocol',
-            protoPath: path.join(__dirname, '../proto/zeebe.proto'),
+            protoPath: path.join(__dirname, '../../proto/zeebe.proto'),
             service: 'Gateway',
             stdout: this.stdout,
             tasktype,
@@ -40276,7 +40273,12 @@ module.exports = (options, input) => {
 /* 588 */,
 /* 589 */,
 /* 590 */,
-/* 591 */,
+/* 591 */
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+module.exports = require(__webpack_require__.ab + "src/node/extension_binary/node-v72-darwin-x64-unknown/grpc_node.node")
+
+/***/ }),
 /* 592 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -42367,10 +42369,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const E = __importStar(__webpack_require__(311));
+const getCamundaCloudCredentials_1 = __webpack_require__(954);
 function getConfigurationFromEnvironment() {
     const operation = core.getInput('operation', {
         required: true
     });
+    const camundaCreds = getCamundaCloudCredentials_1.getCamundaCloudCredentials();
+    if (E.isLeft(camundaCreds)) {
+        return camundaCreds;
+    }
     const verbose = core.getInput('verbose') === 'true';
     const quiet = core.getInput('quiet') === 'true';
     const messageName = core.getInput('messageName');
@@ -42386,7 +42393,7 @@ function getConfigurationFromEnvironment() {
     const requestTimeoutSeconds = (val => !val || val === '' ? 30 : parseInt(val, 10))(core.getInput('requestTimeoutSeconds'));
     const workerHandlerFile = core.getInput('workerHandlerFile');
     const bpmnFilename = core.getInput('bpmnFilename');
-    const bpmnDir = core.getInput('bpmnDirectory');
+    const bpmnDirectory = core.getInput('bpmnDirectory');
     const workerLifetimeMins = parseInt(core.getInput('workerLifetimeMins'), 10);
     const config = {
         bpmnProcessId,
@@ -42399,7 +42406,7 @@ function getConfigurationFromEnvironment() {
         verbose,
         workerHandlerFile,
         bpmnFilename,
-        bpmnDir,
+        bpmnDirectory,
         workerLifetimeMins,
         operation
     };
@@ -42583,9 +42590,9 @@ function deployWorkflow(config) {
         });
         const toDeploy = isDeployFile(config)
             ? `./${config.bpmnFilename}`
-            : fs_1.readdirSync(config.bpmnDir)
+            : fs_1.readdirSync(config.bpmnDirectory)
                 .filter(f => f.endsWith('.bpmn'))
-                .map(f => `${config.bpmnDir}/${f}`);
+                .map(f => `${config.bpmnDirectory}/${f}`);
         const res = yield zbc.deployWorkflow(toDeploy);
         yield zbc.close();
         return {
@@ -42600,12 +42607,7 @@ exports.deployWorkflow = deployWorkflow;
 /***/ }),
 /* 705 */,
 /* 706 */,
-/* 707 */
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-module.exports = require(__webpack_require__.ab + "src/node/extension_binary/node-v72-linux-x64-glibc/grpc_node.node")
-
-/***/ }),
+/* 707 */,
 /* 708 */,
 /* 709 */,
 /* 710 */,
@@ -44863,7 +44865,7 @@ module.exports = require("fs");
 /* 750 */
 /***/ (function(module) {
 
-module.exports = {"_args":[["grpc@1.24.2","/home/runner/work/zeebe-action/zeebe-action"]],"_from":"grpc@1.24.2","_id":"grpc@1.24.2","_inBundle":false,"_integrity":"sha512-EG3WH6AWMVvAiV15d+lr+K77HJ/KV/3FvMpjKjulXHbTwgDZkhkcWbwhxFAoTdxTkQvy0WFcO3Nog50QBbHZWw==","_location":"/grpc","_phantomChildren":{"ascli":"1.0.1","bytebuffer":"5.0.1","decamelize":"1.2.0","os-locale":"1.4.0","window-size":"0.1.4"},"_requested":{"type":"version","registry":true,"raw":"grpc@1.24.2","name":"grpc","escapedName":"grpc","rawSpec":"1.24.2","saveSpec":null,"fetchSpec":"1.24.2"},"_requiredBy":["/zeebe-node"],"_resolved":"https://registry.npmjs.org/grpc/-/grpc-1.24.2.tgz","_spec":"1.24.2","_where":"/home/runner/work/zeebe-action/zeebe-action","author":{"name":"Google Inc."},"binary":{"module_name":"grpc_node","module_path":"src/node/extension_binary/{node_abi}-{platform}-{arch}-{libc}","host":"https://node-precompiled-binaries.grpc.io/","remote_path":"{name}/v{version}","package_name":"{node_abi}-{platform}-{arch}-{libc}.tar.gz"},"bugs":{"url":"https://github.com/grpc/grpc-node/issues"},"bundleDependencies":["node-pre-gyp"],"contributors":[{"name":"Michael Lumish","email":"mlumish@google.com"}],"dependencies":{"@types/bytebuffer":"^5.0.40","lodash.camelcase":"^4.3.0","lodash.clone":"^4.5.0","nan":"^2.13.2","node-pre-gyp":"^0.14.0","protobufjs":"^5.0.3"},"description":"gRPC Library for Node","devDependencies":{"body-parser":"^1.15.2","electron-mocha":"^3.1.1","express":"^4.14.0","google-protobuf":"^3.0.0","istanbul":"^0.4.4","lodash":"^4.17.4","minimist":"^1.1.0","node-forge":"^0.7.5","poisson-process":"^0.2.1"},"directories":{"lib":"src"},"engines":{"node":">=4"},"files":["LICENSE","README.md","deps/grpc/etc/","index.js","index.d.ts","src/*.js","ext/*.{cc,h}","deps/grpc/include/grpc/**/*.h","deps/grpc/src/core/**/*.{c,cc,h}","deps/grpc/src/boringssl/err_data.c","deps/grpc/third_party/abseil-cpp/absl/**/*.{h,hh,inc}","deps/grpc/third_party/boringssl/crypto/**/*.{c,cc,h}","deps/grpc/third_party/boringssl/include/**/*.{c,cc,h}","deps/grpc/third_party/boringssl/ssl/**/*.{c,cc,h}","deps/grpc/third_party/boringssl/third_party/**/*.{c,h}","deps/grpc/third_party/nanopb/*.{c,cc,h}","deps/grpc/third_party/upb/**/*.{c,h,inc}","deps/grpc/third_party/zlib/**/*.{c,cc,h}","deps/grpc/third_party/address_sorting/**/*.{c,h}","deps/grpc/third_party/cares/**/*.{c,h}","binding.gyp"],"homepage":"https://grpc.io/","jshintConfig":{"bitwise":true,"curly":true,"eqeqeq":true,"esnext":true,"freeze":true,"immed":true,"indent":2,"latedef":"nofunc","maxlen":80,"mocha":true,"newcap":true,"node":true,"noarg":true,"quotmark":"single","strict":true,"trailing":true,"undef":true,"unused":"vars"},"license":"Apache-2.0","main":"index.js","name":"grpc","repository":{"type":"git","url":"git+https://github.com/grpc/grpc-node.git"},"scripts":{"build":"node-pre-gyp build","coverage":"istanbul cover ./node_modules/.bin/_mocha test","electron-build":"node-pre-gyp configure build --runtime=electron --disturl=https://atom.io/download/atom-shell","install":"node-pre-gyp install --fallback-to-build --library=static_library","prepack":"git submodule update --init --recursive && npm install"},"typings":"index.d.ts","version":"1.24.2"};
+module.exports = {"_args":[["grpc@1.24.2","/build"]],"_from":"grpc@1.24.2","_id":"grpc@1.24.2","_inBundle":false,"_integrity":"sha512-EG3WH6AWMVvAiV15d+lr+K77HJ/KV/3FvMpjKjulXHbTwgDZkhkcWbwhxFAoTdxTkQvy0WFcO3Nog50QBbHZWw==","_location":"/grpc","_phantomChildren":{"ascli":"1.0.1","bytebuffer":"5.0.1","decamelize":"1.2.0","os-locale":"1.4.0","window-size":"0.1.4"},"_requested":{"type":"version","registry":true,"raw":"grpc@1.24.2","name":"grpc","escapedName":"grpc","rawSpec":"1.24.2","saveSpec":null,"fetchSpec":"1.24.2"},"_requiredBy":["/zeebe-node"],"_resolved":"https://registry.npmjs.org/grpc/-/grpc-1.24.2.tgz","_spec":"1.24.2","_where":"/build","author":{"name":"Google Inc."},"binary":{"module_name":"grpc_node","module_path":"src/node/extension_binary/{node_abi}-{platform}-{arch}-{libc}","host":"https://node-precompiled-binaries.grpc.io/","remote_path":"{name}/v{version}","package_name":"{node_abi}-{platform}-{arch}-{libc}.tar.gz"},"bugs":{"url":"https://github.com/grpc/grpc-node/issues"},"bundleDependencies":["node-pre-gyp"],"contributors":[{"name":"Michael Lumish","email":"mlumish@google.com"}],"dependencies":{"@types/bytebuffer":"^5.0.40","lodash.camelcase":"^4.3.0","lodash.clone":"^4.5.0","nan":"^2.13.2","node-pre-gyp":"^0.14.0","protobufjs":"^5.0.3"},"description":"gRPC Library for Node","devDependencies":{"body-parser":"^1.15.2","electron-mocha":"^3.1.1","express":"^4.14.0","google-protobuf":"^3.0.0","istanbul":"^0.4.4","lodash":"^4.17.4","minimist":"^1.1.0","node-forge":"^0.7.5","poisson-process":"^0.2.1"},"directories":{"lib":"src"},"engines":{"node":">=4"},"files":["LICENSE","README.md","deps/grpc/etc/","index.js","index.d.ts","src/*.js","ext/*.{cc,h}","deps/grpc/include/grpc/**/*.h","deps/grpc/src/core/**/*.{c,cc,h}","deps/grpc/src/boringssl/err_data.c","deps/grpc/third_party/abseil-cpp/absl/**/*.{h,hh,inc}","deps/grpc/third_party/boringssl/crypto/**/*.{c,cc,h}","deps/grpc/third_party/boringssl/include/**/*.{c,cc,h}","deps/grpc/third_party/boringssl/ssl/**/*.{c,cc,h}","deps/grpc/third_party/boringssl/third_party/**/*.{c,h}","deps/grpc/third_party/nanopb/*.{c,cc,h}","deps/grpc/third_party/upb/**/*.{c,h,inc}","deps/grpc/third_party/zlib/**/*.{c,cc,h}","deps/grpc/third_party/address_sorting/**/*.{c,h}","deps/grpc/third_party/cares/**/*.{c,h}","binding.gyp"],"homepage":"https://grpc.io/","jshintConfig":{"bitwise":true,"curly":true,"eqeqeq":true,"esnext":true,"freeze":true,"immed":true,"indent":2,"latedef":"nofunc","maxlen":80,"mocha":true,"newcap":true,"node":true,"noarg":true,"quotmark":"single","strict":true,"trailing":true,"undef":true,"unused":"vars"},"license":"Apache-2.0","main":"index.js","name":"grpc","repository":{"type":"git","url":"git+https://github.com/grpc/grpc-node.git"},"scripts":{"build":"node-pre-gyp build","coverage":"istanbul cover ./node_modules/.bin/_mocha test","electron-build":"node-pre-gyp configure build --runtime=electron --disturl=https://atom.io/download/atom-shell","install":"node-pre-gyp install --fallback-to-build --library=static_library","prepack":"git submodule update --init --recursive && npm install"},"typings":"index.d.ts","version":"1.24.2"};
 
 /***/ }),
 /* 751 */,
@@ -47513,7 +47515,7 @@ module.exports.reNormalize = reNormalize;
 /* 848 */
 /***/ (function(module) {
 
-module.exports = {"_args":[["got@9.6.0","/home/runner/work/zeebe-action/zeebe-action"]],"_from":"got@9.6.0","_id":"got@9.6.0","_inBundle":false,"_integrity":"sha512-R7eWptXuGYxwijs0eV+v3o6+XH1IqVK8dJOEecQfTmkncw9AV4dcw/Dhxi8MdlqPthxxpZyizMzyg8RTmEsG+Q==","_location":"/got","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"got@9.6.0","name":"got","escapedName":"got","rawSpec":"9.6.0","saveSpec":null,"fetchSpec":"9.6.0"},"_requiredBy":["/zeebe-node"],"_resolved":"https://registry.npmjs.org/got/-/got-9.6.0.tgz","_spec":"9.6.0","_where":"/home/runner/work/zeebe-action/zeebe-action","ava":{"concurrency":4},"browser":{"decompress-response":false,"electron":false},"bugs":{"url":"https://github.com/sindresorhus/got/issues"},"dependencies":{"@sindresorhus/is":"^0.14.0","@szmarczak/http-timer":"^1.1.2","cacheable-request":"^6.0.0","decompress-response":"^3.3.0","duplexer3":"^0.1.4","get-stream":"^4.1.0","lowercase-keys":"^1.0.1","mimic-response":"^1.0.1","p-cancelable":"^1.0.0","to-readable-stream":"^1.0.0","url-parse-lax":"^3.0.0"},"description":"Simplified HTTP requests","devDependencies":{"ava":"^1.1.0","coveralls":"^3.0.0","delay":"^4.1.0","form-data":"^2.3.3","get-port":"^4.0.0","np":"^3.1.0","nyc":"^13.1.0","p-event":"^2.1.0","pem":"^1.13.2","proxyquire":"^2.0.1","sinon":"^7.2.2","slow-stream":"0.0.4","tempfile":"^2.0.0","tempy":"^0.2.1","tough-cookie":"^3.0.0","xo":"^0.24.0"},"engines":{"node":">=8.6"},"files":["source"],"homepage":"https://github.com/sindresorhus/got#readme","keywords":["http","https","get","got","url","uri","request","util","utility","simple","curl","wget","fetch","net","network","electron"],"license":"MIT","main":"source","name":"got","repository":{"type":"git","url":"git+https://github.com/sindresorhus/got.git"},"scripts":{"release":"np","test":"xo && nyc ava"},"version":"9.6.0"};
+module.exports = {"_args":[["got@9.6.0","/build"]],"_from":"got@9.6.0","_id":"got@9.6.0","_inBundle":false,"_integrity":"sha512-R7eWptXuGYxwijs0eV+v3o6+XH1IqVK8dJOEecQfTmkncw9AV4dcw/Dhxi8MdlqPthxxpZyizMzyg8RTmEsG+Q==","_location":"/got","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"got@9.6.0","name":"got","escapedName":"got","rawSpec":"9.6.0","saveSpec":null,"fetchSpec":"9.6.0"},"_requiredBy":["/zeebe-node"],"_resolved":"https://registry.npmjs.org/got/-/got-9.6.0.tgz","_spec":"9.6.0","_where":"/build","ava":{"concurrency":4},"browser":{"decompress-response":false,"electron":false},"bugs":{"url":"https://github.com/sindresorhus/got/issues"},"dependencies":{"@sindresorhus/is":"^0.14.0","@szmarczak/http-timer":"^1.1.2","cacheable-request":"^6.0.0","decompress-response":"^3.3.0","duplexer3":"^0.1.4","get-stream":"^4.1.0","lowercase-keys":"^1.0.1","mimic-response":"^1.0.1","p-cancelable":"^1.0.0","to-readable-stream":"^1.0.0","url-parse-lax":"^3.0.0"},"description":"Simplified HTTP requests","devDependencies":{"ava":"^1.1.0","coveralls":"^3.0.0","delay":"^4.1.0","form-data":"^2.3.3","get-port":"^4.0.0","np":"^3.1.0","nyc":"^13.1.0","p-event":"^2.1.0","pem":"^1.13.2","proxyquire":"^2.0.1","sinon":"^7.2.2","slow-stream":"0.0.4","tempfile":"^2.0.0","tempy":"^0.2.1","tough-cookie":"^3.0.0","xo":"^0.24.0"},"engines":{"node":">=8.6"},"files":["source"],"homepage":"https://github.com/sindresorhus/got#readme","keywords":["http","https","get","got","url","uri","request","util","utility","simple","curl","wget","fetch","net","network","electron"],"license":"MIT","main":"source","name":"got","repository":{"type":"git","url":"git+https://github.com/sindresorhus/got.git"},"scripts":{"release":"np","test":"xo && nyc ava"},"version":"9.6.0"};
 
 /***/ }),
 /* 849 */,
