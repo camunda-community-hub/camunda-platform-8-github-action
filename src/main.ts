@@ -115,7 +115,7 @@ async function run(): Promise<void> {
           )
         }
         const requestTimeout = (val =>
-          val === '' ? undefined : parseInt(val, 10))(
+          !val || val === '' ? 30000 : parseInt(val, 10))(
           core.getInput('requestTimeout')
         )
         const zbc = new ZBClient()
