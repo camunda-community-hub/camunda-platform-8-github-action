@@ -6,40 +6,40 @@ import {resolve} from 'path'
 import {bootstrapWorkers} from '../workers'
 import * as core from '@actions/core'
 import {JSONDoc} from '../parameters/getEnvironment'
+import * as TE from 'fp-ts/lib/TaskEither'
 
-export async function startWorkers(
+export function startWorkers(
   config: t.TypeOf<typeof StartWorkers>
-): Promise<OperationOutcome> {
-  try {
-    const {workerHandlerFile, workerLifetime} = config
-    if (!existsSync(`./${workerHandlerFile}`)) {
-      return {
-        error: true,
-        message: [
-          `Could not find worker handler file ${resolve(
-            './',
-            workerHandlerFile
-          )}`
-        ]
+): OperationOutcome {
+  return TE.tryCatch(
+    async () => {
+      const {workerHandlerFile, workerLifetime} = config
+      if (!existsSync(`./${workerHandlerFile}`)) {
+        return Promise.reject(
+          new Error(
+            `Could not find worker handler file ${resolve(
+              './',
+              workerHandlerFile
+            )}`
+          )
+        )
       }
-    }
-    const workerCode = readFileSync(`${__dirname}/${workerHandlerFile}`, 'utf8')
-    core.info(
-      `Loading workers with config from ${resolve('./', workerHandlerFile)}`
-    )
-    const output: JSONDoc[] = []
+      const workerCode = readFileSync(
+        `${__dirname}/${workerHandlerFile}`,
+        'utf8'
+      )
+      core.info(
+        `Loading workers with config from ${resolve('./', workerHandlerFile)}`
+      )
+      const output: JSONDoc[] = []
 
-    await bootstrapWorkers(workerCode, workerLifetime)
+      await bootstrapWorkers(workerCode, workerLifetime)
 
-    return {
-      error: false,
-      info: [JSON.stringify(output, null, 2)],
-      output: JSON.stringify(output)
-    }
-  } catch (e) {
-    return {
-      error: true,
-      message: e.message
-    }
-  }
+      return {
+        info: [JSON.stringify(output, null, 2)],
+        output: JSON.stringify(output)
+      }
+    },
+    (failure: unknown) => ({message: (failure as Error).message})
+  )
 }
