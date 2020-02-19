@@ -51,7 +51,7 @@ export const DeployWorkflowFile = t.type({
 })
 
 export const DeployWorkflowDir = t.type({
-  bpmnDir: t.string
+  bpmnDirectory: t.string
 })
 
 export const DeployWorkflow = t.intersection([

@@ -27,9 +27,9 @@ export function deployWorkflow(
       })
       const toDeploy = isDeployFile(config)
         ? `./${config.bpmnFilename}`
-        : readdirSync(config.bpmnDir)
+        : readdirSync(config.bpmnDirectory)
             .filter(f => f.endsWith('.bpmn'))
-            .map(f => `${config.bpmnDir}/${f}`)
+            .map(f => `${config.bpmnDirectory}/${f}`)
       const res = await zbc.deployWorkflow(toDeploy)
       await zbc.close()
       return {

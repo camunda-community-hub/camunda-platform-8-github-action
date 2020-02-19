@@ -20,7 +20,7 @@ export interface Config {
   verbose: boolean
   workerHandlerFile?: string
   bpmnFilename?: string
-  bpmnDir?: string
+  bpmnDirectory?: string
   workerLifetimeMins: number
 }
 
@@ -57,7 +57,7 @@ export function getConfigurationFromEnvironment(): E.Either<
   )
   const workerHandlerFile = core.getInput('workerHandlerFile')
   const bpmnFilename = core.getInput('bpmnFilename')
-  const bpmnDir = core.getInput('bpmnDirectory')
+  const bpmnDirectory = core.getInput('bpmnDirectory')
   const workerLifetimeMins = parseInt(core.getInput('workerLifetimeMins'), 10)
 
   const config = {
@@ -71,7 +71,7 @@ export function getConfigurationFromEnvironment(): E.Either<
     verbose,
     workerHandlerFile,
     bpmnFilename,
-    bpmnDir,
+    bpmnDirectory,
     workerLifetimeMins,
     operation
   }

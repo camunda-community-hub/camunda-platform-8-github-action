@@ -20,11 +20,30 @@ if (process.env.ZEEBE_CLIENT_CONFIG) {
   console.log(creds)
 }
 
-test('Deploy Workflow', done => {
+test('Deploy Workflow using Filename', done => {
   let called = false
   pipe(
     run(({
       bpmnFilename: '__tests__/demo-get-time.bpmn',
+      operation: 'deployWorkflow',
+      quiet: true
+    } as unknown) as Config),
+    TE.mapLeft(failure => {
+      called = true
+    }),
+    TE.map(success => {
+      expect(called).toBe(false)
+      expect(JSON.parse(success.info[0]).workflows.length).toBe(1)
+      done()
+    })
+  )()
+})
+
+test('Deploy Workflow using directory', done => {
+  let called = false
+  pipe(
+    run(({
+      bpmnDirectory: '__tests__',
       operation: 'deployWorkflow',
       quiet: true
     } as unknown) as Config),
