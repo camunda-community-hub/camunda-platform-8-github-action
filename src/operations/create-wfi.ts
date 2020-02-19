@@ -10,6 +10,7 @@ export function createWorkflowInstance(
   return TE.tryCatch(
     async () => {
       const zbc = new ZBClient()
+
       const res = JSON.stringify(
         await zbc.createWorkflowInstance(
           config.bpmnProcessId,
@@ -21,7 +22,6 @@ export function createWorkflowInstance(
 
       await zbc.close()
       return {
-        error: false,
         info: [res],
         output: res
       }

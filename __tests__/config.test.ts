@@ -82,7 +82,6 @@ test('Parameter validation - missing required parameters for operation', done =>
       operation: 'publishMessage'
     } as unknown) as Config),
     TE.mapLeft(failure => {
-      console.log(failure)
       expect(failure?.message).toBeTruthy()
       expect(called).toBe(false)
       expect(

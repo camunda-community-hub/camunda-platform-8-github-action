@@ -31,7 +31,6 @@ export function deployWorkflow(
       const res = await zbc.deployWorkflow(toDeploy)
       await zbc.close()
       return {
-        error: false,
         info: [JSON.stringify(res, null, 2)],
         output: JSON.stringify(res)
       }
