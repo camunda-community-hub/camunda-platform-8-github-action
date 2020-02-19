@@ -22,6 +22,15 @@ In a repository where you have a GitHub workflow that uses this action, you need
 
 See the note at the end of this document if you get errors about missing required configuration keys.
 
+## Operations
+
+| Operation | Required Parameters | Optional Parameters |
+| --- | --- | --- |
+| `deployWorkflow` | **One of**: `bpmnFilename` _or_ `bpmnDir` | |
+| `createWorkflowInstance` | `bpmnProcessId` |  `variables` |
+|`createWorkflowInstanceWithResult` | `bpmnProcessId`, `requestTimeoutSeconds` | `variables` |
+| `publishMessage` | `messageName` | `timetoLive`, `variables`, `correlationKey` |
+| `startWorkers` | `workerHandlerFile`, `workerLifetime` | |
 ## Deploy a Workflow
 
 Here is an example of deploying a workflow from GitHub. This will deploy the process in the file `bpmn/demo-get-time.bpmn` in the repo:
@@ -41,9 +50,9 @@ steps:
   - name: Deploy Demo Workflow "Get Time"
     uses: jwulf/zeebe-action@master
     with:
-      client_config: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
+      clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
       operation: deployWorkflow
-      bpmn_filename: bpmn/demo-get-time.bpmn
+      bpmnFilename: bpmn/demo-get-time.bpmn
 ```
 
 ## Automate Deployment of BPMN Models on Push to master
@@ -69,9 +78,9 @@ jobs:
       - name: Deploy Updated Workflows
         uses: jwulf/zeebe-action@master
         with:
-          client_config: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
+          clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
           operation: deployWorkflow
-          bpmn_directory: bpmn
+          bpmnDirectory: bpmn
 ```
 
 ## Start a Workflow
@@ -97,9 +106,9 @@ jobs:
       - name: Create Zeebe Workflow
         uses: jwulf/zeebe-action@master
         with:
-          client_config: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
+          clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
           operation: createWorkflowInstance
-          bpmn_process_id: throw-test
+          bpmnProcessId: throw-test
           variables: '{"event": "${{ github.event.action }}" }'
 ```
 
@@ -122,16 +131,16 @@ steps:
   - name: Deploy Demo Workflow "Get Time"
     uses: jwulf/zeebe-action@master
     with:
-      client_config: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
+      clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
       operation: deployWorkflow
-      bpmn_filename: bpmn/demo-get-time.bpmn
+      bpmnFilename: bpmn/demo-get-time.bpmn
   - name: Execute Demo Workflow "Get Time"
     uses: jwulf/zeebe-action@master
     id: get-time
     with:
       operation: createWorkflowInstanceWithResult
-      bpmn_process_id: demo-get-time
-      request_timeout: 30 # seconds
+      bpmnProcessId: demo-get-time
+      requestTimeout: 30 # seconds
   - name: Print Workflow Outcome
     run: echo The outcome is ${{ toJSON(steps.get-time.outputs.result }}
   - name: Print time
@@ -153,9 +162,9 @@ triggerDependentFlow:
     - name: Tell Camunda Cloud What's up!
       uses: jwulf/zeebe-action@master
       with:
-        client_config: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
+        clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
         operation: publishMessage
-        message_name: BASE_IMAGE_REBUILT
+        messageName: BASE_IMAGE_REBUILT
         correlationKey: ${{ github.event.client_payload.buildid }}
 ```
 
@@ -185,10 +194,10 @@ jobs:
       - name: Start Zeebe Workers
         uses: jwulf/zeebe-action@master
         with:
-          client_config: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
+          clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
           operation: startWorkers
-          worker_handler_file: workers.js
-          worker_lifetime: 10
+          workerHandlerFile: workers.js
+          workerLifetime: 10
 ```
 
 The `workers.js` file should look like this: 
@@ -243,12 +252,12 @@ jobs:
       - name: Create Zeebe Workflow
         uses: jwulf/zeebe-action@master
         with:
-          zeebe_address: ${{ secrets.ZEEBE_ADDRESS }}
-          zeebe_client_id: ${{ secrets.ZEEBE_CLIENT_ID }}
-          zeebe_authorization_server_url: ${{ secrets.ZEEBE_AUTHORIZATION_SERVER_URL }}
-          zeebe_client_secret: ${{ secrets.ZEEBE_CLIENT_SECRET }}
+          zeebeAddress: ${{ secrets.ZEEBE_ADDRESS }}
+          zeebeClientId: ${{ secrets.ZEEBE_CLIENT_ID }}
+          zeebeAuthorizationServerUrl: ${{ secrets.ZEEBE_AUTHORIZATION_SERVER_URL }}
+          zeebeClientSecret: ${{ secrets.ZEEBE_CLIENT_SECRET }}
           operation: createWorkflowInstance
-          bpmn_process_id: magikcraft-github-build
+          bpmnProcessId: magikcraft-github-build
           variables: '{"buildid": "${{ github.sha }}-${{ steps.current-time.outputs.time }}"}'
 ```
 

@@ -1,8 +1,8 @@
 import {ZBClient} from 'zeebe-node'
-import {OperationOutcome} from '../main'
 import {CreateWorkflowInstance} from '../operation-config-validation'
 import * as t from 'io-ts'
 import * as TE from 'fp-ts/lib/TaskEither'
+import {OperationOutcome} from '../run'
 
 export function createWorkflowInstance(
   config: t.TypeOf<typeof CreateWorkflowInstance>

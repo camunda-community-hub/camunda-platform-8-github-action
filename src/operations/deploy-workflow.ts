@@ -1,5 +1,4 @@
 import {ZBClient} from 'zeebe-node'
-import {OperationOutcome} from '../main'
 import {
   DeployWorkflow,
   DeployWorkflowFile
@@ -8,6 +7,7 @@ import * as t from 'io-ts'
 import * as TE from 'fp-ts/lib/TaskEither'
 
 import {readdirSync} from 'fs'
+import {OperationOutcome} from '../run'
 
 type DeployFile = t.TypeOf<typeof DeployWorkflowFile>
 

@@ -1,4 +1,6 @@
 import * as core from '@actions/core'
+import {OperationName, OperationFailure} from '../run'
+import * as E from 'fp-ts/lib/Either'
 
 export interface JSONDoc {
   [key: string]: string | number | boolean | JSONDoc | JSONDoc[]
@@ -7,8 +9,9 @@ export interface JSONDoc {
 export type Variables = JSONDoc | JSONDoc[]
 
 export interface Config {
+  operation: OperationName
   bpmnProcessId?: string
-  requestTimeout: number
+  requestTimeoutSeconds: number
   timeToLive: number
   correlationKey?: string
   variables?: JSONDoc | JSONDoc[]
@@ -22,29 +25,45 @@ export interface Config {
   workerLifetime: number
 }
 
-export function getConfigurationFromEnvironment(): Config {
+export function getConfigurationFromEnvironment(): E.Either<
+  OperationFailure,
+  Config
+> {
+  const operation: OperationName = core.getInput('operation', {
+    required: true
+  }) as OperationName
+
   const verbose = core.getInput('verbose') === 'true'
   const quiet = core.getInput('quiet') === 'true'
-  const messageName = core.getInput('message_name', {required: true})
+  const messageName = core.getInput('messageName')
   const {variables, variableParsingError} = parseVariables(
     core.getInput('variables')
   )
+  if (variableParsingError) {
+    return E.left({
+      message: `Could not parse supplied variables to JSON: ${core.getInput(
+        'variables'
+      )}`
+    })
+  }
   const correlationKey = core.getInput('correlationKey')
   const timeToLive = parseInt(
-    (val => (val === '' ? '0' : val))(core.getInput('ttl')),
+    (val => (val === '' ? '0' : val))(core.getInput('timeToLive')),
     10
   )
-  const bpmnProcessId = core.getInput('bpmn_process_id', {required: true})
-  const requestTimeout = (val => (!val || val === '' ? 30 : parseInt(val, 10)))(
-    core.getInput('requestTimeout')
+  const bpmnProcessId = core.getInput('bpmnProcessId')
+  const requestTimeoutSeconds = (val =>
+    !val || val === '' ? 30 : parseInt(val, 10))(
+    core.getInput('requestTimeoutSeconds')
   )
-  const workerHandlerFile = core.getInput('worker_handler_file')
-  const bpmnFilename = core.getInput('bpmn_filename')
-  const bpmnDir = core.getInput('bpmn_directory')
-  const workerLifetime = parseInt(core.getInput('worker_lifetime_mins'), 10)
-  return {
+  const workerHandlerFile = core.getInput('workerHandlerFile')
+  const bpmnFilename = core.getInput('bpmnFilename')
+  const bpmnDir = core.getInput('bpmnDirectory')
+  const workerLifetime = parseInt(core.getInput('workerLifetimeMins'), 10)
+
+  const config = {
     bpmnProcessId,
-    requestTimeout,
+    requestTimeoutSeconds,
     timeToLive,
     correlationKey,
     variables,
@@ -55,8 +74,14 @@ export function getConfigurationFromEnvironment(): Config {
     workerHandlerFile,
     bpmnFilename,
     bpmnDir,
-    workerLifetime
+    workerLifetime,
+    operation
   }
+  if (verbose) {
+    core.info(`Run with configuration:`)
+    core.info(JSON.stringify(config))
+  }
+  return E.right(config)
 }
 
 export function parseVariables(

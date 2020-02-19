@@ -5215,25 +5215,34 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const t = __importStar(__webpack_require__(88));
 const PublishMessageRequired = t.type({
     messageName: t.string,
-    variables: t.object,
     timeToLive: t.number
 });
 const PublishMessageOptional = t.partial({
-    correlationKey: t.string
+    correlationKey: t.string,
+    variables: t.object
 });
 exports.PublishMessage = t.intersection([
     PublishMessageRequired,
     PublishMessageOptional
 ]);
-exports.CreateWorkflowInstance = t.type({
-    bpmnProcessId: t.string,
+exports.CreateWorkflowInstanceRequired = t.type({
+    bpmnProcessId: t.string
+});
+exports.CreateWorkflowInstanceOptional = t.partial({
     variables: t.object
 });
-exports.CreateWorkflowInstanceWithResult = t.type({
+exports.CreateWorkflowInstance = t.intersection([
+    exports.CreateWorkflowInstanceRequired,
+    exports.CreateWorkflowInstanceOptional
+]);
+exports.CreateWorkflowInstanceWithResultRequired = t.type({
     bpmnProcessId: t.string,
-    variables: t.object,
-    requestTimeout: t.number
+    requestTimeoutSeconds: t.number
 });
+exports.CreateWorkflowInstanceWithResult = t.intersection([
+    exports.CreateWorkflowInstanceWithResultRequired,
+    exports.CreateWorkflowInstanceOptional
+]);
 exports.DeployWorkflowFile = t.type({
     bpmnFilename: t.string
 });
@@ -11470,33 +11479,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const pipeable_1 = __webpack_require__(194);
 const TE = __importStar(__webpack_require__(579));
+const T = __importStar(__webpack_require__(969));
+const E = __importStar(__webpack_require__(311));
 const run_1 = __webpack_require__(861);
 const getEnvironment_1 = __webpack_require__(683);
-exports.OperationNames = [
-    'createWorkflowInstance',
-    'createWorkflowInstanceWithResult',
-    'deployWorkflow',
-    'publishMessage',
-    'startWorkers'
-];
-const failureHandler = (outcome) => {
+const getCamundaCloudCredentials_1 = __webpack_require__(954);
+const failure = (outcome) => {
     const messages = typeof outcome.message === 'string' ? [outcome.message] : outcome.message;
     for (const message in messages) {
         core.info(message);
     }
     core.setFailed('An error occurred. See the previous messages for details.');
-    return outcome;
+    return T.never;
 };
-const successHandler = (outcome) => {
+const success = (outcome) => {
     const infos = typeof outcome.info === 'string' ? [outcome.info] : outcome.info;
     for (const info in infos) {
         core.info(info);
     }
     core.setOutput('result', outcome.output);
-    return outcome;
+    return T.never;
 };
-const config = getEnvironment_1.getConfigurationFromEnvironment();
-pipeable_1.pipe(run_1.run(config), TE.mapLeft(failureHandler), TE.map(successHandler));
+const f = getCamundaCloudCredentials_1.getCamundaCloudCredentials;
+const g = getEnvironment_1.getConfigurationFromEnvironment;
+const h = run_1.run;
+pipeable_1.pipe(f(), E.chain(g), TE.fromEither, TE.chain(h), TE.fold(failure, success))();
 
 
 /***/ }),
@@ -18313,10 +18320,10 @@ exports.Server = Server;
 var binary = __webpack_require__(774);
 var path = __webpack_require__(622);
 var binding_path =
-    __webpack_require__.ab + "/src/node/extension_binary/node-v72-linux-x64-glibc/grpc_node.node";
+    __webpack_require__.ab + "/src/node/extension_binary/node-v72-darwin-x64-unknown/grpc_node.node";
 var binding;
 try {
-  binding = __webpack_require__(707);
+  binding = __webpack_require__(591);
 } catch (e) {
   let fs = __webpack_require__(747);
   let searchPath = __webpack_require__.ab + "extension_binary";
@@ -22997,7 +23004,7 @@ function createWorkflowInstanceWithResult(config) {
         const res = yield zbc.createWorkflowInstanceWithResult({
             bpmnProcessId: config.bpmnProcessId,
             variables: config.variables,
-            requestTimeout: config.requestTimeout * 1000
+            requestTimeout: config.requestTimeoutSeconds * 1000
         });
         const result = JSON.stringify(res, null, 2);
         const output = JSON.stringify(res);
@@ -40250,7 +40257,12 @@ module.exports = (options, input) => {
 /* 588 */,
 /* 589 */,
 /* 590 */,
-/* 591 */,
+/* 591 */
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+module.exports = require(__webpack_require__.ab + "src/node/extension_binary/node-v72-darwin-x64-unknown/grpc_node.node")
+
+/***/ }),
 /* 592 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -41481,98 +41493,7 @@ module.exports = require("path");
 /* 625 */,
 /* 626 */,
 /* 627 */,
-/* 628 */
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
-const noConfig = {
-    ZEEBE_ADDRESS: undefined,
-    ZEEBE_CLIENT_ID: undefined,
-    ZEEBE_AUTHORIZATION_SERVER_URL: undefined,
-    ZEEBE_CLIENT_SECRET: undefined
-};
-function setupEnv() {
-    const clientConfig = parseClientConfig(core.getInput('client_config'));
-    const ZEEBE_ADDRESS = process.env.ZEEBE_ADDRESS ||
-        clientConfig.ZEEBE_ADDRESS ||
-        core.getInput('zeebe_address');
-    const ZEEBE_CLIENT_ID = process.env.ZEEBE_CLIENT_ID ||
-        clientConfig.ZEEBE_CLIENT_ID ||
-        core.getInput('zeebe_client_id');
-    const ZEEBE_AUTHORIZATION_SERVER_URL = process.env.ZEEBE_AUTHORIZATION_SERVER_URL ||
-        clientConfig.ZEEBE_AUTHORIZATION_SERVER_URL ||
-        core.getInput('zeebe_authorization_server_url');
-    const ZEEBE_CLIENT_SECRET = process.env.ZEEBE_CLIENT_SECRET ||
-        clientConfig.ZEEBE_CLIENT_SECRET ||
-        core.getInput('zeebe_client_secret');
-    const missingConfigValues = [];
-    if (ZEEBE_ADDRESS === '') {
-        missingConfigValues.push('ZEEBE_ADDRESS');
-    }
-    if (ZEEBE_AUTHORIZATION_SERVER_URL === '') {
-        missingConfigValues.push('ZEEBE_AUTHORIZATION_SERVER_URL');
-    }
-    if (ZEEBE_CLIENT_ID === '') {
-        missingConfigValues.push('ZEEBE_CLIENT_ID');
-    }
-    if (ZEEBE_CLIENT_SECRET === '') {
-        missingConfigValues.push('ZEEBE_CLIENT_SECRET');
-    }
-    if (missingConfigValues.length > 0) {
-        return missingConfigValues;
-    }
-    core.exportVariable('ZEEBE_ADDRESS', ZEEBE_ADDRESS);
-    core.exportVariable('ZEEBE_CLIENT_ID', ZEEBE_CLIENT_ID);
-    core.exportVariable('ZEEBE_AUTHORIZATION_SERVER_URL', ZEEBE_AUTHORIZATION_SERVER_URL);
-    core.exportVariable('ZEEBE_CLIENT_SECRET', ZEEBE_CLIENT_SECRET);
-    return [];
-}
-exports.setupEnv = setupEnv;
-function parseClientConfig(clientConfig) {
-    if (!clientConfig) {
-        return noConfig;
-    }
-    try {
-        // Let's see if it is the new JSON config from https://github.com/zeebe-io/zeebe/issues/3544
-        // When it lands we will need to normalise it here
-        return JSON.parse(clientConfig);
-    }
-    catch (e) {
-        try {
-            // Nope, let's parse it as the exported variable block from the console
-            return JSON.parse(`{"${clientConfig
-                .trim()
-                .substring(7)
-                .split("'")
-                .join('')
-                .split('export ')
-                .join('')
-                .split('\n')
-                .map(s => s.trimLeft())
-                .join('","')
-                .split('=')
-                .join('":"')}"}`);
-        }
-        catch (err) {
-            // Couldn't parse it
-            return noConfig;
-        }
-    }
-}
-exports.parseClientConfig = parseClientConfig;
-
-
-/***/ }),
+/* 628 */,
 /* 629 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -42431,22 +42352,31 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
+const E = __importStar(__webpack_require__(311));
 function getConfigurationFromEnvironment() {
+    const operation = core.getInput('operation', {
+        required: true
+    });
     const verbose = core.getInput('verbose') === 'true';
     const quiet = core.getInput('quiet') === 'true';
-    const messageName = core.getInput('message_name', { required: true });
+    const messageName = core.getInput('messageName');
     const { variables, variableParsingError } = parseVariables(core.getInput('variables'));
+    if (variableParsingError) {
+        return E.left({
+            message: `Could not parse supplied variables to JSON: ${core.getInput('variables')}`
+        });
+    }
     const correlationKey = core.getInput('correlationKey');
-    const timeToLive = parseInt((val => (val === '' ? '0' : val))(core.getInput('ttl')), 10);
-    const bpmnProcessId = core.getInput('bpmn_process_id', { required: true });
-    const requestTimeout = (val => (!val || val === '' ? 30 : parseInt(val, 10)))(core.getInput('requestTimeout'));
-    const workerHandlerFile = core.getInput('worker_handler_file');
-    const bpmnFilename = core.getInput('bpmn_filename');
-    const bpmnDir = core.getInput('bpmn_directory');
-    const workerLifetime = parseInt(core.getInput('worker_lifetime_mins'), 10);
-    return {
+    const timeToLive = parseInt((val => (val === '' ? '0' : val))(core.getInput('timeToLive')), 10);
+    const bpmnProcessId = core.getInput('bpmnProcessId');
+    const requestTimeoutSeconds = (val => !val || val === '' ? 30 : parseInt(val, 10))(core.getInput('requestTimeoutSeconds'));
+    const workerHandlerFile = core.getInput('workerHandlerFile');
+    const bpmnFilename = core.getInput('bpmnFilename');
+    const bpmnDir = core.getInput('bpmnDirectory');
+    const workerLifetime = parseInt(core.getInput('workerLifetimeMins'), 10);
+    const config = {
         bpmnProcessId,
-        requestTimeout,
+        requestTimeoutSeconds,
         timeToLive,
         correlationKey,
         variables,
@@ -42457,8 +42387,14 @@ function getConfigurationFromEnvironment() {
         workerHandlerFile,
         bpmnFilename,
         bpmnDir,
-        workerLifetime
+        workerLifetime,
+        operation
     };
+    if (verbose) {
+        core.info(`Run with configuration:`);
+        core.info(JSON.stringify(config));
+    }
+    return E.right(config);
 }
 exports.getConfigurationFromEnvironment = getConfigurationFromEnvironment;
 function parseVariables(vars) {
@@ -42650,12 +42586,7 @@ exports.deployWorkflow = deployWorkflow;
 /***/ }),
 /* 705 */,
 /* 706 */,
-/* 707 */
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-module.exports = require(__webpack_require__.ab + "src/node/extension_binary/node-v72-linux-x64-glibc/grpc_node.node")
-
-/***/ }),
+/* 707 */,
 /* 708 */,
 /* 709 */,
 /* 710 */,
@@ -44634,6 +44565,7 @@ function startWorkers(config) {
             return Promise.reject(new Error(`Could not find worker handler file ${path_1.resolve('./', workerHandlerFile)}`));
         }
         const workerCode = fs_1.readFileSync(`${__dirname}/${workerHandlerFile}`, 'utf8');
+        // This is here, otherwise the user won't see it until the workers exit
         core.info(`Loading workers with config from ${path_1.resolve('./', workerHandlerFile)}`);
         const output = [];
         yield workers_1.bootstrapWorkers(workerCode, workerLifetime);
@@ -44912,7 +44844,7 @@ module.exports = require("fs");
 /* 750 */
 /***/ (function(module) {
 
-module.exports = {"_args":[["grpc@1.24.2","/home/runner/work/zeebe-action/zeebe-action"]],"_from":"grpc@1.24.2","_id":"grpc@1.24.2","_inBundle":false,"_integrity":"sha512-EG3WH6AWMVvAiV15d+lr+K77HJ/KV/3FvMpjKjulXHbTwgDZkhkcWbwhxFAoTdxTkQvy0WFcO3Nog50QBbHZWw==","_location":"/grpc","_phantomChildren":{"ascli":"1.0.1","bytebuffer":"5.0.1","decamelize":"1.2.0","os-locale":"1.4.0","window-size":"0.1.4"},"_requested":{"type":"version","registry":true,"raw":"grpc@1.24.2","name":"grpc","escapedName":"grpc","rawSpec":"1.24.2","saveSpec":null,"fetchSpec":"1.24.2"},"_requiredBy":["/zeebe-node"],"_resolved":"https://registry.npmjs.org/grpc/-/grpc-1.24.2.tgz","_spec":"1.24.2","_where":"/home/runner/work/zeebe-action/zeebe-action","author":{"name":"Google Inc."},"binary":{"module_name":"grpc_node","module_path":"src/node/extension_binary/{node_abi}-{platform}-{arch}-{libc}","host":"https://node-precompiled-binaries.grpc.io/","remote_path":"{name}/v{version}","package_name":"{node_abi}-{platform}-{arch}-{libc}.tar.gz"},"bugs":{"url":"https://github.com/grpc/grpc-node/issues"},"bundleDependencies":["node-pre-gyp"],"contributors":[{"name":"Michael Lumish","email":"mlumish@google.com"}],"dependencies":{"@types/bytebuffer":"^5.0.40","lodash.camelcase":"^4.3.0","lodash.clone":"^4.5.0","nan":"^2.13.2","node-pre-gyp":"^0.14.0","protobufjs":"^5.0.3"},"description":"gRPC Library for Node","devDependencies":{"body-parser":"^1.15.2","electron-mocha":"^3.1.1","express":"^4.14.0","google-protobuf":"^3.0.0","istanbul":"^0.4.4","lodash":"^4.17.4","minimist":"^1.1.0","node-forge":"^0.7.5","poisson-process":"^0.2.1"},"directories":{"lib":"src"},"engines":{"node":">=4"},"files":["LICENSE","README.md","deps/grpc/etc/","index.js","index.d.ts","src/*.js","ext/*.{cc,h}","deps/grpc/include/grpc/**/*.h","deps/grpc/src/core/**/*.{c,cc,h}","deps/grpc/src/boringssl/err_data.c","deps/grpc/third_party/abseil-cpp/absl/**/*.{h,hh,inc}","deps/grpc/third_party/boringssl/crypto/**/*.{c,cc,h}","deps/grpc/third_party/boringssl/include/**/*.{c,cc,h}","deps/grpc/third_party/boringssl/ssl/**/*.{c,cc,h}","deps/grpc/third_party/boringssl/third_party/**/*.{c,h}","deps/grpc/third_party/nanopb/*.{c,cc,h}","deps/grpc/third_party/upb/**/*.{c,h,inc}","deps/grpc/third_party/zlib/**/*.{c,cc,h}","deps/grpc/third_party/address_sorting/**/*.{c,h}","deps/grpc/third_party/cares/**/*.{c,h}","binding.gyp"],"homepage":"https://grpc.io/","jshintConfig":{"bitwise":true,"curly":true,"eqeqeq":true,"esnext":true,"freeze":true,"immed":true,"indent":2,"latedef":"nofunc","maxlen":80,"mocha":true,"newcap":true,"node":true,"noarg":true,"quotmark":"single","strict":true,"trailing":true,"undef":true,"unused":"vars"},"license":"Apache-2.0","main":"index.js","name":"grpc","repository":{"type":"git","url":"git+https://github.com/grpc/grpc-node.git"},"scripts":{"build":"node-pre-gyp build","coverage":"istanbul cover ./node_modules/.bin/_mocha test","electron-build":"node-pre-gyp configure build --runtime=electron --disturl=https://atom.io/download/atom-shell","install":"node-pre-gyp install --fallback-to-build --library=static_library","prepack":"git submodule update --init --recursive && npm install"},"typings":"index.d.ts","version":"1.24.2"};
+module.exports = {"_args":[["grpc@1.24.2","/build"]],"_from":"grpc@1.24.2","_id":"grpc@1.24.2","_inBundle":false,"_integrity":"sha512-EG3WH6AWMVvAiV15d+lr+K77HJ/KV/3FvMpjKjulXHbTwgDZkhkcWbwhxFAoTdxTkQvy0WFcO3Nog50QBbHZWw==","_location":"/grpc","_phantomChildren":{"ascli":"1.0.1","bytebuffer":"5.0.1","decamelize":"1.2.0","os-locale":"1.4.0","window-size":"0.1.4"},"_requested":{"type":"version","registry":true,"raw":"grpc@1.24.2","name":"grpc","escapedName":"grpc","rawSpec":"1.24.2","saveSpec":null,"fetchSpec":"1.24.2"},"_requiredBy":["/zeebe-node"],"_resolved":"https://registry.npmjs.org/grpc/-/grpc-1.24.2.tgz","_spec":"1.24.2","_where":"/build","author":{"name":"Google Inc."},"binary":{"module_name":"grpc_node","module_path":"src/node/extension_binary/{node_abi}-{platform}-{arch}-{libc}","host":"https://node-precompiled-binaries.grpc.io/","remote_path":"{name}/v{version}","package_name":"{node_abi}-{platform}-{arch}-{libc}.tar.gz"},"bugs":{"url":"https://github.com/grpc/grpc-node/issues"},"bundleDependencies":["node-pre-gyp"],"contributors":[{"name":"Michael Lumish","email":"mlumish@google.com"}],"dependencies":{"@types/bytebuffer":"^5.0.40","lodash.camelcase":"^4.3.0","lodash.clone":"^4.5.0","nan":"^2.13.2","node-pre-gyp":"^0.14.0","protobufjs":"^5.0.3"},"description":"gRPC Library for Node","devDependencies":{"body-parser":"^1.15.2","electron-mocha":"^3.1.1","express":"^4.14.0","google-protobuf":"^3.0.0","istanbul":"^0.4.4","lodash":"^4.17.4","minimist":"^1.1.0","node-forge":"^0.7.5","poisson-process":"^0.2.1"},"directories":{"lib":"src"},"engines":{"node":">=4"},"files":["LICENSE","README.md","deps/grpc/etc/","index.js","index.d.ts","src/*.js","ext/*.{cc,h}","deps/grpc/include/grpc/**/*.h","deps/grpc/src/core/**/*.{c,cc,h}","deps/grpc/src/boringssl/err_data.c","deps/grpc/third_party/abseil-cpp/absl/**/*.{h,hh,inc}","deps/grpc/third_party/boringssl/crypto/**/*.{c,cc,h}","deps/grpc/third_party/boringssl/include/**/*.{c,cc,h}","deps/grpc/third_party/boringssl/ssl/**/*.{c,cc,h}","deps/grpc/third_party/boringssl/third_party/**/*.{c,h}","deps/grpc/third_party/nanopb/*.{c,cc,h}","deps/grpc/third_party/upb/**/*.{c,h,inc}","deps/grpc/third_party/zlib/**/*.{c,cc,h}","deps/grpc/third_party/address_sorting/**/*.{c,h}","deps/grpc/third_party/cares/**/*.{c,h}","binding.gyp"],"homepage":"https://grpc.io/","jshintConfig":{"bitwise":true,"curly":true,"eqeqeq":true,"esnext":true,"freeze":true,"immed":true,"indent":2,"latedef":"nofunc","maxlen":80,"mocha":true,"newcap":true,"node":true,"noarg":true,"quotmark":"single","strict":true,"trailing":true,"undef":true,"unused":"vars"},"license":"Apache-2.0","main":"index.js","name":"grpc","repository":{"type":"git","url":"git+https://github.com/grpc/grpc-node.git"},"scripts":{"build":"node-pre-gyp build","coverage":"istanbul cover ./node_modules/.bin/_mocha test","electron-build":"node-pre-gyp configure build --runtime=electron --disturl=https://atom.io/download/atom-shell","install":"node-pre-gyp install --fallback-to-build --library=static_library","prepack":"git submodule update --init --recursive && npm install"},"typings":"index.d.ts","version":"1.24.2"};
 
 /***/ }),
 /* 751 */,
@@ -47562,7 +47494,7 @@ module.exports.reNormalize = reNormalize;
 /* 848 */
 /***/ (function(module) {
 
-module.exports = {"_args":[["got@9.6.0","/home/runner/work/zeebe-action/zeebe-action"]],"_from":"got@9.6.0","_id":"got@9.6.0","_inBundle":false,"_integrity":"sha512-R7eWptXuGYxwijs0eV+v3o6+XH1IqVK8dJOEecQfTmkncw9AV4dcw/Dhxi8MdlqPthxxpZyizMzyg8RTmEsG+Q==","_location":"/got","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"got@9.6.0","name":"got","escapedName":"got","rawSpec":"9.6.0","saveSpec":null,"fetchSpec":"9.6.0"},"_requiredBy":["/zeebe-node"],"_resolved":"https://registry.npmjs.org/got/-/got-9.6.0.tgz","_spec":"9.6.0","_where":"/home/runner/work/zeebe-action/zeebe-action","ava":{"concurrency":4},"browser":{"decompress-response":false,"electron":false},"bugs":{"url":"https://github.com/sindresorhus/got/issues"},"dependencies":{"@sindresorhus/is":"^0.14.0","@szmarczak/http-timer":"^1.1.2","cacheable-request":"^6.0.0","decompress-response":"^3.3.0","duplexer3":"^0.1.4","get-stream":"^4.1.0","lowercase-keys":"^1.0.1","mimic-response":"^1.0.1","p-cancelable":"^1.0.0","to-readable-stream":"^1.0.0","url-parse-lax":"^3.0.0"},"description":"Simplified HTTP requests","devDependencies":{"ava":"^1.1.0","coveralls":"^3.0.0","delay":"^4.1.0","form-data":"^2.3.3","get-port":"^4.0.0","np":"^3.1.0","nyc":"^13.1.0","p-event":"^2.1.0","pem":"^1.13.2","proxyquire":"^2.0.1","sinon":"^7.2.2","slow-stream":"0.0.4","tempfile":"^2.0.0","tempy":"^0.2.1","tough-cookie":"^3.0.0","xo":"^0.24.0"},"engines":{"node":">=8.6"},"files":["source"],"homepage":"https://github.com/sindresorhus/got#readme","keywords":["http","https","get","got","url","uri","request","util","utility","simple","curl","wget","fetch","net","network","electron"],"license":"MIT","main":"source","name":"got","repository":{"type":"git","url":"git+https://github.com/sindresorhus/got.git"},"scripts":{"release":"np","test":"xo && nyc ava"},"version":"9.6.0"};
+module.exports = {"_args":[["got@9.6.0","/build"]],"_from":"got@9.6.0","_id":"got@9.6.0","_inBundle":false,"_integrity":"sha512-R7eWptXuGYxwijs0eV+v3o6+XH1IqVK8dJOEecQfTmkncw9AV4dcw/Dhxi8MdlqPthxxpZyizMzyg8RTmEsG+Q==","_location":"/got","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"got@9.6.0","name":"got","escapedName":"got","rawSpec":"9.6.0","saveSpec":null,"fetchSpec":"9.6.0"},"_requiredBy":["/zeebe-node"],"_resolved":"https://registry.npmjs.org/got/-/got-9.6.0.tgz","_spec":"9.6.0","_where":"/build","ava":{"concurrency":4},"browser":{"decompress-response":false,"electron":false},"bugs":{"url":"https://github.com/sindresorhus/got/issues"},"dependencies":{"@sindresorhus/is":"^0.14.0","@szmarczak/http-timer":"^1.1.2","cacheable-request":"^6.0.0","decompress-response":"^3.3.0","duplexer3":"^0.1.4","get-stream":"^4.1.0","lowercase-keys":"^1.0.1","mimic-response":"^1.0.1","p-cancelable":"^1.0.0","to-readable-stream":"^1.0.0","url-parse-lax":"^3.0.0"},"description":"Simplified HTTP requests","devDependencies":{"ava":"^1.1.0","coveralls":"^3.0.0","delay":"^4.1.0","form-data":"^2.3.3","get-port":"^4.0.0","np":"^3.1.0","nyc":"^13.1.0","p-event":"^2.1.0","pem":"^1.13.2","proxyquire":"^2.0.1","sinon":"^7.2.2","slow-stream":"0.0.4","tempfile":"^2.0.0","tempy":"^0.2.1","tough-cookie":"^3.0.0","xo":"^0.24.0"},"engines":{"node":">=8.6"},"files":["source"],"homepage":"https://github.com/sindresorhus/got#readme","keywords":["http","https","get","got","url","uri","request","util","utility","simple","curl","wget","fetch","net","network","electron"],"license":"MIT","main":"source","name":"got","repository":{"type":"git","url":"git+https://github.com/sindresorhus/got.git"},"scripts":{"release":"np","test":"xo && nyc ava"},"version":"9.6.0"};
 
 /***/ }),
 /* 849 */,
@@ -47590,38 +47522,24 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
 const TE = __importStar(__webpack_require__(579));
 const Operations = __importStar(__webpack_require__(839));
-const setup_env_1 = __webpack_require__(628);
 const operation_config_validation_1 = __webpack_require__(90);
 const pipeable_1 = __webpack_require__(194);
 const Either_1 = __webpack_require__(311);
 const PathReporter_1 = __webpack_require__(306);
-const main_1 = __webpack_require__(198);
+exports.OperationNames = [
+    'createWorkflowInstance',
+    'createWorkflowInstanceWithResult',
+    'deployWorkflow',
+    'publishMessage',
+    'startWorkers'
+];
+exports.bailWithMessage = (message) => TE.left({
+    message
+});
 function run(config) {
-    if (config.verbose) {
-        core.info(`Run with configuration:`);
-        core.info(JSON.stringify(config));
-    }
-    const bailWithMessage = (message) => TE.left({
-        message,
-        config
-    });
-    const missingCamundaCloudCredentialsConfig = setup_env_1.setupEnv();
-    if (missingCamundaCloudCredentialsConfig.length > 0) {
-        return bailWithMessage([
-            `Required configuration not found ${JSON.stringify(missingCamundaCloudCredentialsConfig)}`
-        ]);
-    }
-    const operationName = core.getInput('operation', {
-        required: true
-    });
-    if (config.variableParsingError) {
-        return bailWithMessage([
-            `Could not parse supplied variables to JSON: ${core.getInput('variables')}`
-        ]);
-    }
+    const operationName = config.operation;
     // lifts a validation using a specified error handler
     // https://github.com/gcanti/fp-ts/issues/526
     const liftWith = (handler) => (fa) => {
@@ -47650,9 +47568,7 @@ function run(config) {
             return pipeable_1.pipe(lift(operation_config_validation_1.Config.StartWorkers.decode(config)), TE.chain(Operations.startWorkers));
         }
         default: {
-            return bailWithMessage([
-                `Unknown operation ${operationName}. Valid operations: ${main_1.OperationNames.join(',')}`
-            ]);
+            return exports.bailWithMessage(`Unknown operation ${operationName}. Valid operations: ${exports.OperationNames.join(', ')}`);
         }
     }
 }
@@ -53278,7 +53194,101 @@ Writer._configure = function(BufferWriter_) {
 
 
 /***/ }),
-/* 954 */,
+/* 954 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const E = __importStar(__webpack_require__(311));
+const noConfig = {
+    ZEEBE_ADDRESS: undefined,
+    ZEEBE_CLIENT_ID: undefined,
+    ZEEBE_AUTHORIZATION_SERVER_URL: undefined,
+    ZEEBE_CLIENT_SECRET: undefined
+};
+function getCamundaCloudCredentials() {
+    const clientConfig = parseClientConfig(core.getInput('client_config'));
+    const ZEEBE_ADDRESS = process.env.ZEEBE_ADDRESS ||
+        clientConfig.ZEEBE_ADDRESS ||
+        core.getInput('zeebe_address');
+    const ZEEBE_CLIENT_ID = process.env.ZEEBE_CLIENT_ID ||
+        clientConfig.ZEEBE_CLIENT_ID ||
+        core.getInput('zeebe_client_id');
+    const ZEEBE_AUTHORIZATION_SERVER_URL = process.env.ZEEBE_AUTHORIZATION_SERVER_URL ||
+        clientConfig.ZEEBE_AUTHORIZATION_SERVER_URL ||
+        core.getInput('zeebe_authorization_server_url');
+    const ZEEBE_CLIENT_SECRET = process.env.ZEEBE_CLIENT_SECRET ||
+        clientConfig.ZEEBE_CLIENT_SECRET ||
+        core.getInput('zeebe_client_secret');
+    const missingConfigValues = [];
+    if (ZEEBE_ADDRESS === '') {
+        missingConfigValues.push('ZEEBE_ADDRESS');
+    }
+    if (ZEEBE_AUTHORIZATION_SERVER_URL === '') {
+        missingConfigValues.push('ZEEBE_AUTHORIZATION_SERVER_URL');
+    }
+    if (ZEEBE_CLIENT_ID === '') {
+        missingConfigValues.push('ZEEBE_CLIENT_ID');
+    }
+    if (ZEEBE_CLIENT_SECRET === '') {
+        missingConfigValues.push('ZEEBE_CLIENT_SECRET');
+    }
+    if (missingConfigValues.length > 0) {
+        return E.left({
+            message: `Required configuration not found ${JSON.stringify(missingConfigValues)}`
+        });
+    }
+    core.exportVariable('ZEEBE_ADDRESS', ZEEBE_ADDRESS);
+    core.exportVariable('ZEEBE_CLIENT_ID', ZEEBE_CLIENT_ID);
+    core.exportVariable('ZEEBE_AUTHORIZATION_SERVER_URL', ZEEBE_AUTHORIZATION_SERVER_URL);
+    core.exportVariable('ZEEBE_CLIENT_SECRET', ZEEBE_CLIENT_SECRET);
+    return E.right(void 0);
+}
+exports.getCamundaCloudCredentials = getCamundaCloudCredentials;
+function parseClientConfig(clientConfig) {
+    if (!clientConfig) {
+        return noConfig;
+    }
+    try {
+        // Let's see if it is the new JSON config from https://github.com/zeebe-io/zeebe/issues/3544
+        // When it lands we will need to normalise it here
+        return JSON.parse(clientConfig);
+    }
+    catch (e) {
+        try {
+            // Nope, let's parse it as the exported variable block from the console
+            return JSON.parse(`{"${clientConfig
+                .trim()
+                .substring(7)
+                .split("'")
+                .join('')
+                .split('export ')
+                .join('')
+                .split('\n')
+                .map(s => s.trimLeft())
+                .join('","')
+                .split('=')
+                .join('":"')}"}`);
+        }
+        catch (err) {
+            // Couldn't parse it
+            return noConfig;
+        }
+    }
+}
+exports.parseClientConfig = parseClientConfig;
+
+
+/***/ }),
 /* 955 */,
 /* 956 */
 /***/ (function(module, __unusedexports, __webpack_require__) {

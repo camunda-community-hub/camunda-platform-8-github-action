@@ -1,8 +1,8 @@
 import {ZBClient} from 'zeebe-node'
-import {OperationOutcome} from '../main'
 import {PublishMessage} from '../operation-config-validation'
 import * as t from 'io-ts'
 import * as TE from 'fp-ts/lib/TaskEither'
+import {OperationOutcome} from '../run'
 
 export function publishMessage(
   config: t.TypeOf<typeof PublishMessage>
@@ -14,7 +14,7 @@ export function publishMessage(
       const messagePayload = {
         name: config.messageName,
         variables: config.variables,
-        timeToLive: config.timeToLive,
+        timeToLive: config.timeToLive || 0,
         correlationKey:
           config.correlationKey || ((undefined as unknown) as string)
       }

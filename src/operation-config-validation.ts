@@ -1,13 +1,13 @@
 import * as t from 'io-ts'
 
 const PublishMessageRequired = t.type({
-  messageName: t.string,
-  variables: t.object,
-  timeToLive: t.number
+  messageName: t.string
 })
 
 const PublishMessageOptional = t.partial({
-  correlationKey: t.string
+  correlationKey: t.string,
+  variables: t.object,
+  timeToLive: t.number
 })
 
 export const PublishMessage = t.intersection([
@@ -15,16 +15,28 @@ export const PublishMessage = t.intersection([
   PublishMessageOptional
 ])
 
-export const CreateWorkflowInstance = t.type({
-  bpmnProcessId: t.string,
+export const CreateWorkflowInstanceRequired = t.type({
+  bpmnProcessId: t.string
+})
+
+export const CreateWorkflowInstanceOptional = t.partial({
   variables: t.object
 })
 
-export const CreateWorkflowInstanceWithResult = t.type({
+export const CreateWorkflowInstance = t.intersection([
+  CreateWorkflowInstanceRequired,
+  CreateWorkflowInstanceOptional
+])
+
+export const CreateWorkflowInstanceWithResultRequired = t.type({
   bpmnProcessId: t.string,
-  variables: t.object,
-  requestTimeout: t.number
+  requestTimeoutSeconds: t.number
 })
+
+export const CreateWorkflowInstanceWithResult = t.intersection([
+  CreateWorkflowInstanceWithResultRequired,
+  CreateWorkflowInstanceOptional
+])
 
 export const DeployWorkflowFile = t.type({
   bpmnFilename: t.string
@@ -41,7 +53,7 @@ export const StartWorkers = t.type({
   workerLifetime: t.number
 })
 
-export const Config = {
+export const ConfigValidator = {
   PublishMessage,
   CreateWorkflowInstance,
   CreateWorkflowInstanceWithResult,

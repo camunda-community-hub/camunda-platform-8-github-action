@@ -8,7 +8,7 @@ inputs:
   operation: # change this
     required: true
     description: 'The operation to perform. One of publishMessage | createWorkflowInstance | createWorkflowInstanceWithResult | deployWorkflow | startWorker'
-  message_name: 
+  messageName: 
     required: false
     description: "The name of the message for a publishMessage operation"
   variables: 
@@ -21,34 +21,34 @@ inputs:
   timeToLive: 
     required: false
     description: "The timeToLive for the message sent by a publishMessage operation"
-  bpmn_filename:
+  bpmnFilename:
     required: false
     description: "The bpmn file to deploy"
-  bpmn_directory:
+  bpmnDirectory:
     required: false
     description: "A directory from which to deploy bpmn files"
   bpmnProcessId:
     required: false
     description: "The id of the process definition for a createWorkflowInstance operation"
-  request_timeout:
+  requestTimeout:
     required: false
     description: "The requestTimeout for a createWorkflowInstanceWithResult operation"
-  zeebe_address: 
+  zeebeAddress: 
     required: false
     description: "The ZEEBE_ADDRESS from your Camunda Cloud client credentials"
-  zeebe_client_id: 
+  zeebeClientId: 
     required: false
     description: "The ZEEBE_CLIENT_ID from your Camunda Cloud client credentials"
-  zeebe_client_secret: 
+  zeebeClientSecret: 
     required: false
     description: "The ZEEBE_CLIENT_SECRET from your Camunda Cloud client credentials"
-  client_config:
+  clientConfig:
     required: true
     description: "The client credentials for Camunda Cloud"
-  worker_handler_file: 
+  workerHandlerFile: 
     required: false
     description: "The file in your repo to load the worker handlers from"
-  worker_lifetime_mins:
+  workerLifetimeMins:
     required: false
     description: "The number of minutes that the workers stay active"
     default: "10"

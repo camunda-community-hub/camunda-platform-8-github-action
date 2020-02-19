@@ -1,4 +1,6 @@
 import * as core from '@actions/core'
+import * as E from 'fp-ts/lib/Either'
+import {OperationFailure} from '../run'
 
 interface ZeebeClientConfig {
   ZEEBE_ADDRESS: string | undefined
@@ -14,7 +16,7 @@ const noConfig = {
   ZEEBE_CLIENT_SECRET: undefined
 }
 
-export function setupEnv(): string[] {
+export function getCamundaCloudCredentials(): E.Either<OperationFailure, void> {
   const clientConfig = parseClientConfig(core.getInput('client_config'))
   const ZEEBE_ADDRESS =
     process.env.ZEEBE_ADDRESS ||
@@ -48,7 +50,11 @@ export function setupEnv(): string[] {
     missingConfigValues.push('ZEEBE_CLIENT_SECRET')
   }
   if (missingConfigValues.length > 0) {
-    return missingConfigValues
+    return E.left({
+      message: `Required configuration not found ${JSON.stringify(
+        missingConfigValues
+      )}`
+    })
   }
 
   core.exportVariable('ZEEBE_ADDRESS', ZEEBE_ADDRESS)
@@ -58,7 +64,7 @@ export function setupEnv(): string[] {
     ZEEBE_AUTHORIZATION_SERVER_URL
   )
   core.exportVariable('ZEEBE_CLIENT_SECRET', ZEEBE_CLIENT_SECRET)
-  return []
+  return E.right(void 0)
 }
 
 export function parseClientConfig(clientConfig: string): ZeebeClientConfig {
