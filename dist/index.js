@@ -1933,7 +1933,38 @@ EventEmitter.prototype.emit = function emit(evt) {
 
 
 /***/ }),
-/* 46 */,
+/* 46 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @since 2.0.0
+ */
+var Applicative_1 = __webpack_require__(767);
+var Either_1 = __webpack_require__(311);
+function getEitherM(M) {
+    var A = Applicative_1.getApplicativeComposition(M, Either_1.either);
+    return __assign(__assign({}, A), { chain: function (ma, f) { return M.chain(ma, function (e) { return (Either_1.isLeft(e) ? M.of(Either_1.left(e.left)) : f(e.right)); }); }, alt: function (fx, f) { return M.chain(fx, function (e) { return (Either_1.isLeft(e) ? f() : A.of(e.right)); }); }, bimap: function (ma, f, g) { return M.map(ma, function (e) { return Either_1.either.bimap(e, f, g); }); }, mapLeft: function (ma, f) { return M.map(ma, function (e) { return Either_1.either.mapLeft(e, f); }); }, fold: function (ma, onLeft, onRight) { return M.chain(ma, Either_1.fold(onLeft, onRight)); }, getOrElse: function (ma, onLeft) { return M.chain(ma, Either_1.fold(onLeft, M.of)); }, orElse: function (ma, f) {
+            return M.chain(ma, Either_1.fold(f, function (a) { return A.of(a); }));
+        }, swap: function (ma) { return M.map(ma, Either_1.swap); }, rightM: function (ma) { return M.map(ma, Either_1.right); }, leftM: function (ml) { return M.map(ml, Either_1.left); }, left: function (e) { return M.of(Either_1.left(e)); } });
+}
+exports.getEitherM = getEitherM;
+
+
+/***/ }),
 /* 47 */,
 /* 48 */,
 /* 49 */
@@ -1985,98 +2016,7 @@ function onceStrict (fn) {
 
 /***/ }),
 /* 50 */,
-/* 51 */
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
-const noConfig = {
-    ZEEBE_ADDRESS: undefined,
-    ZEEBE_CLIENT_ID: undefined,
-    ZEEBE_AUTHORIZATION_SERVER_URL: undefined,
-    ZEEBE_CLIENT_SECRET: undefined
-};
-function setupEnv() {
-    const clientConfig = parseClientConfig(core.getInput('client_config'));
-    const ZEEBE_ADDRESS = process.env.ZEEBE_ADDRESS ||
-        clientConfig.ZEEBE_ADDRESS ||
-        core.getInput('zeebe_address');
-    const ZEEBE_CLIENT_ID = process.env.ZEEBE_CLIENT_ID ||
-        clientConfig.ZEEBE_CLIENT_ID ||
-        core.getInput('zeebe_client_id');
-    const ZEEBE_AUTHORIZATION_SERVER_URL = process.env.ZEEBE_AUTHORIZATION_SERVER_URL ||
-        clientConfig.ZEEBE_AUTHORIZATION_SERVER_URL ||
-        core.getInput('zeebe_authorization_server_url');
-    const ZEEBE_CLIENT_SECRET = process.env.ZEEBE_CLIENT_SECRET ||
-        clientConfig.ZEEBE_CLIENT_SECRET ||
-        core.getInput('zeebe_client_secret');
-    const missingConfigValues = [];
-    if (ZEEBE_ADDRESS === '') {
-        missingConfigValues.push('ZEEBE_ADDRESS');
-    }
-    if (ZEEBE_AUTHORIZATION_SERVER_URL === '') {
-        missingConfigValues.push('ZEEBE_AUTHORIZATION_SERVER_URL');
-    }
-    if (ZEEBE_CLIENT_ID === '') {
-        missingConfigValues.push('ZEEBE_CLIENT_ID');
-    }
-    if (ZEEBE_CLIENT_SECRET === '') {
-        missingConfigValues.push('ZEEBE_CLIENT_SECRET');
-    }
-    if (missingConfigValues.length > 0) {
-        return missingConfigValues;
-    }
-    core.exportVariable('ZEEBE_ADDRESS', ZEEBE_ADDRESS);
-    core.exportVariable('ZEEBE_CLIENT_ID', ZEEBE_CLIENT_ID);
-    core.exportVariable('ZEEBE_AUTHORIZATION_SERVER_URL', ZEEBE_AUTHORIZATION_SERVER_URL);
-    core.exportVariable('ZEEBE_CLIENT_SECRET', ZEEBE_CLIENT_SECRET);
-    return [];
-}
-exports.setupEnv = setupEnv;
-function parseClientConfig(clientConfig) {
-    if (!clientConfig) {
-        return noConfig;
-    }
-    try {
-        // Let's see if it is the new JSON config from https://github.com/zeebe-io/zeebe/issues/3544
-        // When it lands we will need to normalise it here
-        return JSON.parse(clientConfig);
-    }
-    catch (e) {
-        try {
-            // Nope, let's parse it as the exported variable block from the console
-            return JSON.parse(`{"${clientConfig
-                .trim()
-                .substring(7)
-                .split("'")
-                .join('')
-                .split('export ')
-                .join('')
-                .split('\n')
-                .map(s => s.trimLeft())
-                .join('","')
-                .split('=')
-                .join('":"')}"}`);
-        }
-        catch (err) {
-            // Couldn't parse it
-            return noConfig;
-        }
-    }
-}
-exports.parseClientConfig = parseClientConfig;
-
-
-/***/ }),
+/* 51 */,
 /* 52 */,
 /* 53 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
@@ -2757,7 +2697,40 @@ function tokenize(source, alternateCommentMode) {
 /* 61 */,
 /* 62 */,
 /* 63 */,
-/* 64 */,
+/* 64 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @since 2.0.0
+ */
+var Applicative_1 = __webpack_require__(767);
+var Either_1 = __webpack_require__(311);
+function getValidationM(S, M) {
+    var A = Applicative_1.getApplicativeComposition(M, Either_1.getValidation(S));
+    return __assign(__assign({}, A), { chain: function (ma, f) { return M.chain(ma, function (e) { return (Either_1.isLeft(e) ? M.of(Either_1.left(e.left)) : f(e.right)); }); }, alt: function (fx, f) {
+            return M.chain(fx, function (e1) {
+                return Either_1.isRight(e1) ? A.of(e1.right) : M.map(f(), function (e2) { return (Either_1.isLeft(e2) ? Either_1.left(S.concat(e1.left, e2.left)) : e2); });
+            });
+        } });
+}
+exports.getValidationM = getValidationM;
+
+
+/***/ }),
 /* 65 */,
 /* 66 */
 /***/ (function(module) {
@@ -2856,7 +2829,7 @@ var Metadata = __webpack_require__(18);
 
 var common = __webpack_require__(159);
 
-var constants = __webpack_require__(311);
+var constants = __webpack_require__(724);
 
 /**
  * @external GoogleCredential
@@ -3635,7 +3608,1500 @@ module.exports = v1;
 module.exports = require("os");
 
 /***/ }),
-/* 88 */,
+/* 88 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @since 1.0.0
+ */
+var Either_1 = __webpack_require__(311);
+var map = Either_1.either.map;
+var chain = Either_1.either.chain;
+/**
+ * @since 1.0.0
+ */
+var Type = /** @class */ (function () {
+    function Type(
+    /** a unique name for this codec */
+    name, 
+    /** a custom type guard */
+    is, 
+    /** succeeds if a value of type I can be decoded to a value of type A */
+    validate, 
+    /** converts a value of type A to a value of type O */
+    encode) {
+        this.name = name;
+        this.is = is;
+        this.validate = validate;
+        this.encode = encode;
+        this.decode = this.decode.bind(this);
+    }
+    /**
+     * @since 1.0.0
+     */
+    Type.prototype.pipe = function (ab, name) {
+        var _this = this;
+        if (name === void 0) { name = "pipe(" + this.name + ", " + ab.name + ")"; }
+        return new Type(name, ab.is, function (i, c) { return chain(_this.validate(i, c), function (a) { return ab.validate(a, c); }); }, this.encode === exports.identity && ab.encode === exports.identity ? exports.identity : function (b) { return _this.encode(ab.encode(b)); });
+    };
+    /**
+     * @since 1.0.0
+     */
+    Type.prototype.asDecoder = function () {
+        return this;
+    };
+    /**
+     * @since 1.0.0
+     */
+    Type.prototype.asEncoder = function () {
+        return this;
+    };
+    /**
+     * a version of `validate` with a default context
+     * @since 1.0.0
+     */
+    Type.prototype.decode = function (i) {
+        return this.validate(i, [{ key: '', type: this, actual: i }]);
+    };
+    return Type;
+}());
+exports.Type = Type;
+/**
+ * @since 1.0.0
+ */
+exports.identity = function (a) { return a; };
+/**
+ * @since 1.0.0
+ */
+exports.getFunctionName = function (f) {
+    return f.displayName || f.name || "<function" + f.length + ">";
+};
+/**
+ * @since 1.0.0
+ */
+exports.getContextEntry = function (key, decoder) { return ({ key: key, type: decoder }); };
+/**
+ * @since 1.0.0
+ */
+exports.appendContext = function (c, key, decoder, actual) {
+    var len = c.length;
+    var r = Array(len + 1);
+    for (var i = 0; i < len; i++) {
+        r[i] = c[i];
+    }
+    r[len] = { key: key, type: decoder, actual: actual };
+    return r;
+};
+/**
+ * @since 1.0.0
+ */
+exports.failures = Either_1.left;
+/**
+ * @since 1.0.0
+ */
+exports.failure = function (value, context, message) {
+    return exports.failures([{ value: value, context: context, message: message }]);
+};
+/**
+ * @since 1.0.0
+ */
+exports.success = Either_1.right;
+var pushAll = function (xs, ys) {
+    var l = ys.length;
+    for (var i = 0; i < l; i++) {
+        xs.push(ys[i]);
+    }
+};
+//
+// basic types
+//
+/**
+ * @since 1.0.0
+ */
+var NullType = /** @class */ (function (_super) {
+    __extends(NullType, _super);
+    function NullType() {
+        var _this = _super.call(this, 'null', function (u) { return u === null; }, function (u, c) { return (_this.is(u) ? exports.success(u) : exports.failure(u, c)); }, exports.identity) || this;
+        _this._tag = 'NullType';
+        return _this;
+    }
+    return NullType;
+}(Type));
+exports.NullType = NullType;
+/**
+ * @since 1.0.0
+ */
+exports.nullType = new NullType();
+exports.null = exports.nullType;
+/**
+ * @since 1.0.0
+ */
+var UndefinedType = /** @class */ (function (_super) {
+    __extends(UndefinedType, _super);
+    function UndefinedType() {
+        var _this = _super.call(this, 'undefined', function (u) { return u === void 0; }, function (u, c) { return (_this.is(u) ? exports.success(u) : exports.failure(u, c)); }, exports.identity) || this;
+        _this._tag = 'UndefinedType';
+        return _this;
+    }
+    return UndefinedType;
+}(Type));
+exports.UndefinedType = UndefinedType;
+var undefinedType = new UndefinedType();
+exports.undefined = undefinedType;
+/**
+ * @since 1.2.0
+ */
+var VoidType = /** @class */ (function (_super) {
+    __extends(VoidType, _super);
+    function VoidType() {
+        var _this = _super.call(this, 'void', undefinedType.is, undefinedType.validate, exports.identity) || this;
+        _this._tag = 'VoidType';
+        return _this;
+    }
+    return VoidType;
+}(Type));
+exports.VoidType = VoidType;
+/**
+ * @since 1.2.0
+ */
+exports.voidType = new VoidType();
+exports.void = exports.voidType;
+/**
+ * @since 1.5.0
+ */
+var UnknownType = /** @class */ (function (_super) {
+    __extends(UnknownType, _super);
+    function UnknownType() {
+        var _this = _super.call(this, 'unknown', function (_) { return true; }, exports.success, exports.identity) || this;
+        _this._tag = 'UnknownType';
+        return _this;
+    }
+    return UnknownType;
+}(Type));
+exports.UnknownType = UnknownType;
+/**
+ * @since 1.5.0
+ */
+exports.unknown = new UnknownType();
+/**
+ * @since 1.0.0
+ */
+var StringType = /** @class */ (function (_super) {
+    __extends(StringType, _super);
+    function StringType() {
+        var _this = _super.call(this, 'string', function (u) { return typeof u === 'string'; }, function (u, c) { return (_this.is(u) ? exports.success(u) : exports.failure(u, c)); }, exports.identity) || this;
+        _this._tag = 'StringType';
+        return _this;
+    }
+    return StringType;
+}(Type));
+exports.StringType = StringType;
+/**
+ * @since 1.0.0
+ */
+exports.string = new StringType();
+/**
+ * @since 1.0.0
+ */
+var NumberType = /** @class */ (function (_super) {
+    __extends(NumberType, _super);
+    function NumberType() {
+        var _this = _super.call(this, 'number', function (u) { return typeof u === 'number'; }, function (u, c) { return (_this.is(u) ? exports.success(u) : exports.failure(u, c)); }, exports.identity) || this;
+        _this._tag = 'NumberType';
+        return _this;
+    }
+    return NumberType;
+}(Type));
+exports.NumberType = NumberType;
+/**
+ * @since 1.0.0
+ */
+exports.number = new NumberType();
+/**
+ * @since 2.1.0
+ */
+var BigIntType = /** @class */ (function (_super) {
+    __extends(BigIntType, _super);
+    function BigIntType() {
+        var _this = _super.call(this, 'bigint', 
+        // tslint:disable-next-line: valid-typeof
+        function (u) { return typeof u === 'bigint'; }, function (u, c) { return (_this.is(u) ? exports.success(u) : exports.failure(u, c)); }, exports.identity) || this;
+        _this._tag = 'BigIntType';
+        return _this;
+    }
+    return BigIntType;
+}(Type));
+exports.BigIntType = BigIntType;
+/**
+ * @since 2.1.0
+ */
+exports.bigint = new BigIntType();
+/**
+ * @since 1.0.0
+ */
+var BooleanType = /** @class */ (function (_super) {
+    __extends(BooleanType, _super);
+    function BooleanType() {
+        var _this = _super.call(this, 'boolean', function (u) { return typeof u === 'boolean'; }, function (u, c) { return (_this.is(u) ? exports.success(u) : exports.failure(u, c)); }, exports.identity) || this;
+        _this._tag = 'BooleanType';
+        return _this;
+    }
+    return BooleanType;
+}(Type));
+exports.BooleanType = BooleanType;
+/**
+ * @since 1.0.0
+ */
+exports.boolean = new BooleanType();
+/**
+ * @since 1.0.0
+ */
+var AnyArrayType = /** @class */ (function (_super) {
+    __extends(AnyArrayType, _super);
+    function AnyArrayType() {
+        var _this = _super.call(this, 'UnknownArray', Array.isArray, function (u, c) { return (_this.is(u) ? exports.success(u) : exports.failure(u, c)); }, exports.identity) || this;
+        _this._tag = 'AnyArrayType';
+        return _this;
+    }
+    return AnyArrayType;
+}(Type));
+exports.AnyArrayType = AnyArrayType;
+/**
+ * @since 1.7.1
+ */
+exports.UnknownArray = new AnyArrayType();
+exports.Array = exports.UnknownArray;
+/**
+ * @since 1.0.0
+ */
+var AnyDictionaryType = /** @class */ (function (_super) {
+    __extends(AnyDictionaryType, _super);
+    function AnyDictionaryType() {
+        var _this = _super.call(this, 'UnknownRecord', function (u) {
+            var s = Object.prototype.toString.call(u);
+            return s === '[object Object]' || s === '[object Window]';
+        }, function (u, c) { return (_this.is(u) ? exports.success(u) : exports.failure(u, c)); }, exports.identity) || this;
+        _this._tag = 'AnyDictionaryType';
+        return _this;
+    }
+    return AnyDictionaryType;
+}(Type));
+exports.AnyDictionaryType = AnyDictionaryType;
+/**
+ * @since 1.7.1
+ */
+exports.UnknownRecord = new AnyDictionaryType();
+/**
+ * @since 1.0.0
+ * @deprecated
+ */
+var FunctionType = /** @class */ (function (_super) {
+    __extends(FunctionType, _super);
+    function FunctionType() {
+        var _this = _super.call(this, 'Function', 
+        // tslint:disable-next-line:strict-type-predicates
+        function (u) { return typeof u === 'function'; }, function (u, c) { return (_this.is(u) ? exports.success(u) : exports.failure(u, c)); }, exports.identity) || this;
+        _this._tag = 'FunctionType';
+        return _this;
+    }
+    return FunctionType;
+}(Type));
+exports.FunctionType = FunctionType;
+/**
+ * @since 1.0.0
+ * @deprecated
+ */
+// tslint:disable-next-line: deprecation
+exports.Function = new FunctionType();
+/**
+ * @since 1.0.0
+ */
+var RefinementType = /** @class */ (function (_super) {
+    __extends(RefinementType, _super);
+    function RefinementType(name, is, validate, encode, type, predicate) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.type = type;
+        _this.predicate = predicate;
+        _this._tag = 'RefinementType';
+        return _this;
+    }
+    return RefinementType;
+}(Type));
+exports.RefinementType = RefinementType;
+/**
+ * @since 1.8.1
+ */
+exports.brand = function (codec, predicate, name) {
+    // tslint:disable-next-line: deprecation
+    return refinement(codec, predicate, name);
+};
+/**
+ * A branded codec representing an integer
+ * @since 1.8.1
+ */
+exports.Int = exports.brand(exports.number, function (n) { return Number.isInteger(n); }, 'Int');
+/**
+ * @since 1.0.0
+ */
+var LiteralType = /** @class */ (function (_super) {
+    __extends(LiteralType, _super);
+    function LiteralType(name, is, validate, encode, value) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.value = value;
+        _this._tag = 'LiteralType';
+        return _this;
+    }
+    return LiteralType;
+}(Type));
+exports.LiteralType = LiteralType;
+/**
+ * @since 1.0.0
+ */
+exports.literal = function (value, name) {
+    if (name === void 0) { name = JSON.stringify(value); }
+    var is = function (u) { return u === value; };
+    return new LiteralType(name, is, function (u, c) { return (is(u) ? exports.success(value) : exports.failure(u, c)); }, exports.identity, value);
+};
+/**
+ * @since 1.0.0
+ */
+var KeyofType = /** @class */ (function (_super) {
+    __extends(KeyofType, _super);
+    function KeyofType(name, is, validate, encode, keys) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.keys = keys;
+        _this._tag = 'KeyofType';
+        return _this;
+    }
+    return KeyofType;
+}(Type));
+exports.KeyofType = KeyofType;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+/**
+ * @since 1.0.0
+ */
+exports.keyof = function (keys, name) {
+    if (name === void 0) { name = Object.keys(keys)
+        .map(function (k) { return JSON.stringify(k); })
+        .join(' | '); }
+    var is = function (u) { return exports.string.is(u) && hasOwnProperty.call(keys, u); };
+    return new KeyofType(name, is, function (u, c) { return (is(u) ? exports.success(u) : exports.failure(u, c)); }, exports.identity, keys);
+};
+/**
+ * @since 1.0.0
+ */
+var RecursiveType = /** @class */ (function (_super) {
+    __extends(RecursiveType, _super);
+    function RecursiveType(name, is, validate, encode, runDefinition) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.runDefinition = runDefinition;
+        _this._tag = 'RecursiveType';
+        return _this;
+    }
+    return RecursiveType;
+}(Type));
+exports.RecursiveType = RecursiveType;
+Object.defineProperty(RecursiveType.prototype, 'type', {
+    get: function () {
+        return this.runDefinition();
+    },
+    enumerable: true,
+    configurable: true
+});
+/**
+ * @since 1.0.0
+ */
+exports.recursion = function (name, definition) {
+    var cache;
+    var runDefinition = function () {
+        if (!cache) {
+            cache = definition(Self);
+            cache.name = name;
+        }
+        return cache;
+    };
+    var Self = new RecursiveType(name, function (u) { return runDefinition().is(u); }, function (u, c) { return runDefinition().validate(u, c); }, function (a) { return runDefinition().encode(a); }, runDefinition);
+    return Self;
+};
+/**
+ * @since 1.0.0
+ */
+var ArrayType = /** @class */ (function (_super) {
+    __extends(ArrayType, _super);
+    function ArrayType(name, is, validate, encode, type) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.type = type;
+        _this._tag = 'ArrayType';
+        return _this;
+    }
+    return ArrayType;
+}(Type));
+exports.ArrayType = ArrayType;
+/**
+ * @since 1.0.0
+ */
+exports.array = function (codec, name) {
+    if (name === void 0) { name = "Array<" + codec.name + ">"; }
+    return new ArrayType(name, function (u) { return exports.UnknownArray.is(u) && u.every(codec.is); }, function (u, c) {
+        return chain(exports.UnknownArray.validate(u, c), function (us) {
+            var len = us.length;
+            var as = us;
+            var errors = [];
+            for (var i = 0; i < len; i++) {
+                var ui = us[i];
+                var result = codec.validate(ui, exports.appendContext(c, String(i), codec, ui));
+                if (Either_1.isLeft(result)) {
+                    pushAll(errors, result.left);
+                }
+                else {
+                    var ai = result.right;
+                    if (ai !== ui) {
+                        if (as === us) {
+                            as = us.slice();
+                        }
+                        as[i] = ai;
+                    }
+                }
+            }
+            return errors.length > 0 ? exports.failures(errors) : exports.success(as);
+        });
+    }, codec.encode === exports.identity ? exports.identity : function (a) { return a.map(codec.encode); }, codec);
+};
+/**
+ * @since 1.0.0
+ */
+var InterfaceType = /** @class */ (function (_super) {
+    __extends(InterfaceType, _super);
+    function InterfaceType(name, is, validate, encode, props) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.props = props;
+        _this._tag = 'InterfaceType';
+        return _this;
+    }
+    return InterfaceType;
+}(Type));
+exports.InterfaceType = InterfaceType;
+var getNameFromProps = function (props) {
+    return Object.keys(props)
+        .map(function (k) { return k + ": " + props[k].name; })
+        .join(', ');
+};
+var useIdentity = function (codecs) {
+    for (var i = 0; i < codecs.length; i++) {
+        if (codecs[i].encode !== exports.identity) {
+            return false;
+        }
+    }
+    return true;
+};
+var getInterfaceTypeName = function (props) {
+    return "{ " + getNameFromProps(props) + " }";
+};
+/**
+ * @since 1.0.0
+ */
+exports.type = function (props, name) {
+    if (name === void 0) { name = getInterfaceTypeName(props); }
+    var keys = Object.keys(props);
+    var types = keys.map(function (key) { return props[key]; });
+    var len = keys.length;
+    return new InterfaceType(name, function (u) {
+        if (exports.UnknownRecord.is(u)) {
+            for (var i = 0; i < len; i++) {
+                var k = keys[i];
+                if (!hasOwnProperty.call(u, k) || !types[i].is(u[k])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }, function (u, c) {
+        return chain(exports.UnknownRecord.validate(u, c), function (o) {
+            var a = o;
+            var errors = [];
+            for (var i = 0; i < len; i++) {
+                var k = keys[i];
+                if (!hasOwnProperty.call(a, k)) {
+                    if (a === o) {
+                        a = __assign({}, o);
+                    }
+                    a[k] = a[k];
+                }
+                var ak = a[k];
+                var type_1 = types[i];
+                var result = type_1.validate(ak, exports.appendContext(c, k, type_1, ak));
+                if (Either_1.isLeft(result)) {
+                    pushAll(errors, result.left);
+                }
+                else {
+                    var vak = result.right;
+                    if (vak !== ak) {
+                        /* istanbul ignore next */
+                        if (a === o) {
+                            a = __assign({}, o);
+                        }
+                        a[k] = vak;
+                    }
+                }
+            }
+            return errors.length > 0 ? exports.failures(errors) : exports.success(a);
+        });
+    }, useIdentity(types)
+        ? exports.identity
+        : function (a) {
+            var s = __assign({}, a);
+            for (var i = 0; i < len; i++) {
+                var k = keys[i];
+                var encode = types[i].encode;
+                if (encode !== exports.identity) {
+                    s[k] = encode(a[k]);
+                }
+            }
+            return s;
+        }, props);
+};
+exports.interface = exports.type;
+/**
+ * @since 1.0.0
+ */
+var PartialType = /** @class */ (function (_super) {
+    __extends(PartialType, _super);
+    function PartialType(name, is, validate, encode, props) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.props = props;
+        _this._tag = 'PartialType';
+        return _this;
+    }
+    return PartialType;
+}(Type));
+exports.PartialType = PartialType;
+var getPartialTypeName = function (inner) {
+    return "Partial<" + inner + ">";
+};
+/**
+ * @since 1.0.0
+ */
+exports.partial = function (props, name) {
+    if (name === void 0) { name = getPartialTypeName(getInterfaceTypeName(props)); }
+    var keys = Object.keys(props);
+    var types = keys.map(function (key) { return props[key]; });
+    var len = keys.length;
+    return new PartialType(name, function (u) {
+        if (exports.UnknownRecord.is(u)) {
+            for (var i = 0; i < len; i++) {
+                var k = keys[i];
+                var uk = u[k];
+                if (uk !== undefined && !props[k].is(uk)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }, function (u, c) {
+        return chain(exports.UnknownRecord.validate(u, c), function (o) {
+            var a = o;
+            var errors = [];
+            for (var i = 0; i < len; i++) {
+                var k = keys[i];
+                var ak = a[k];
+                var type_2 = props[k];
+                var result = type_2.validate(ak, exports.appendContext(c, k, type_2, ak));
+                if (Either_1.isLeft(result)) {
+                    if (ak !== undefined) {
+                        pushAll(errors, result.left);
+                    }
+                }
+                else {
+                    var vak = result.right;
+                    if (vak !== ak) {
+                        /* istanbul ignore next */
+                        if (a === o) {
+                            a = __assign({}, o);
+                        }
+                        a[k] = vak;
+                    }
+                }
+            }
+            return errors.length > 0 ? exports.failures(errors) : exports.success(a);
+        });
+    }, useIdentity(types)
+        ? exports.identity
+        : function (a) {
+            var s = __assign({}, a);
+            for (var i = 0; i < len; i++) {
+                var k = keys[i];
+                var ak = a[k];
+                if (ak !== undefined) {
+                    s[k] = types[i].encode(ak);
+                }
+            }
+            return s;
+        }, props);
+};
+/**
+ * @since 1.0.0
+ */
+var DictionaryType = /** @class */ (function (_super) {
+    __extends(DictionaryType, _super);
+    function DictionaryType(name, is, validate, encode, domain, codomain) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.domain = domain;
+        _this.codomain = codomain;
+        _this._tag = 'DictionaryType';
+        return _this;
+    }
+    return DictionaryType;
+}(Type));
+exports.DictionaryType = DictionaryType;
+function enumerableRecord(keys, domain, codomain, name) {
+    if (name === void 0) { name = "{ [K in " + domain.name + "]: " + codomain.name + " }"; }
+    var len = keys.length;
+    return new DictionaryType(name, function (u) { return exports.UnknownRecord.is(u) && keys.every(function (k) { return codomain.is(u[k]); }); }, function (u, c) {
+        return chain(exports.UnknownRecord.validate(u, c), function (o) {
+            var a = {};
+            var errors = [];
+            var changed = false;
+            for (var i = 0; i < len; i++) {
+                var k = keys[i];
+                var ok = o[k];
+                var codomainResult = codomain.validate(ok, exports.appendContext(c, k, codomain, ok));
+                if (Either_1.isLeft(codomainResult)) {
+                    pushAll(errors, codomainResult.left);
+                }
+                else {
+                    var vok = codomainResult.right;
+                    changed = changed || vok !== ok;
+                    a[k] = vok;
+                }
+            }
+            return errors.length > 0 ? exports.failures(errors) : exports.success((changed || Object.keys(o).length !== len ? a : o));
+        });
+    }, codomain.encode === exports.identity
+        ? exports.identity
+        : function (a) {
+            var s = {};
+            for (var i = 0; i < len; i++) {
+                var k = keys[i];
+                s[k] = codomain.encode(a[k]);
+            }
+            return s;
+        }, domain, codomain);
+}
+/**
+ * @internal
+ */
+function getDomainKeys(domain) {
+    var _a;
+    if (isLiteralC(domain)) {
+        var literal_1 = domain.value;
+        if (exports.string.is(literal_1)) {
+            return _a = {}, _a[literal_1] = null, _a;
+        }
+    }
+    else if (isKeyofC(domain)) {
+        return domain.keys;
+    }
+    else if (isUnionC(domain)) {
+        var keys = domain.types.map(function (type) { return getDomainKeys(type); });
+        return keys.some(undefinedType.is) ? undefined : Object.assign.apply(Object, __spreadArrays([{}], keys));
+    }
+    return undefined;
+}
+exports.getDomainKeys = getDomainKeys;
+function nonEnumerableRecord(domain, codomain, name) {
+    if (name === void 0) { name = "{ [K in " + domain.name + "]: " + codomain.name + " }"; }
+    return new DictionaryType(name, function (u) {
+        if (exports.UnknownRecord.is(u)) {
+            return Object.keys(u).every(function (k) { return domain.is(k) && codomain.is(u[k]); });
+        }
+        return isAnyC(codomain) && Array.isArray(u);
+    }, function (u, c) {
+        if (exports.UnknownRecord.is(u)) {
+            var a = {};
+            var errors = [];
+            var keys = Object.keys(u);
+            var len = keys.length;
+            var changed = false;
+            for (var i = 0; i < len; i++) {
+                var k = keys[i];
+                var ok = u[k];
+                var domainResult = domain.validate(k, exports.appendContext(c, k, domain, k));
+                if (Either_1.isLeft(domainResult)) {
+                    pushAll(errors, domainResult.left);
+                }
+                else {
+                    var vk = domainResult.right;
+                    changed = changed || vk !== k;
+                    k = vk;
+                    var codomainResult = codomain.validate(ok, exports.appendContext(c, k, codomain, ok));
+                    if (Either_1.isLeft(codomainResult)) {
+                        pushAll(errors, codomainResult.left);
+                    }
+                    else {
+                        var vok = codomainResult.right;
+                        changed = changed || vok !== ok;
+                        a[k] = vok;
+                    }
+                }
+            }
+            return errors.length > 0 ? exports.failures(errors) : exports.success((changed ? a : u));
+        }
+        if (isAnyC(codomain) && Array.isArray(u)) {
+            return exports.success(u);
+        }
+        return exports.failure(u, c);
+    }, domain.encode === exports.identity && codomain.encode === exports.identity
+        ? exports.identity
+        : function (a) {
+            var s = {};
+            var keys = Object.keys(a);
+            var len = keys.length;
+            for (var i = 0; i < len; i++) {
+                var k = keys[i];
+                s[String(domain.encode(k))] = codomain.encode(a[k]);
+            }
+            return s;
+        }, domain, codomain);
+}
+/**
+ * @since 1.7.1
+ */
+function record(domain, codomain, name) {
+    var keys = getDomainKeys(domain);
+    return keys
+        ? enumerableRecord(Object.keys(keys), domain, codomain, name)
+        : nonEnumerableRecord(domain, codomain, name);
+}
+exports.record = record;
+/**
+ * @since 1.0.0
+ */
+var UnionType = /** @class */ (function (_super) {
+    __extends(UnionType, _super);
+    function UnionType(name, is, validate, encode, types) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.types = types;
+        _this._tag = 'UnionType';
+        return _this;
+    }
+    return UnionType;
+}(Type));
+exports.UnionType = UnionType;
+var getUnionName = function (codecs) {
+    return '(' + codecs.map(function (type) { return type.name; }).join(' | ') + ')';
+};
+/**
+ * @since 1.0.0
+ */
+exports.union = function (codecs, name) {
+    if (name === void 0) { name = getUnionName(codecs); }
+    var index = getIndex(codecs);
+    if (index !== undefined && codecs.length > 0) {
+        var tag_1 = index[0], groups_1 = index[1];
+        var len_1 = groups_1.length;
+        var find_1 = function (value) {
+            for (var i = 0; i < len_1; i++) {
+                if (groups_1[i].indexOf(value) !== -1) {
+                    return i;
+                }
+            }
+            return undefined;
+        };
+        // tslint:disable-next-line: deprecation
+        return new TaggedUnionType(name, function (u) {
+            if (exports.UnknownRecord.is(u)) {
+                var i = find_1(u[tag_1]);
+                return i !== undefined ? codecs[i].is(u) : false;
+            }
+            return false;
+        }, function (u, c) {
+            return chain(exports.UnknownRecord.validate(u, c), function (r) {
+                var i = find_1(r[tag_1]);
+                if (i === undefined) {
+                    return exports.failure(u, c);
+                }
+                var codec = codecs[i];
+                return codec.validate(r, exports.appendContext(c, String(i), codec, r));
+            });
+        }, useIdentity(codecs)
+            ? exports.identity
+            : function (a) {
+                var i = find_1(a[tag_1]);
+                if (i === undefined) {
+                    // https://github.com/gcanti/io-ts/pull/305
+                    throw new Error("no codec found to encode value in union codec " + name);
+                }
+                else {
+                    return codecs[i].encode(a);
+                }
+            }, codecs, tag_1);
+    }
+    else {
+        return new UnionType(name, function (u) { return codecs.some(function (type) { return type.is(u); }); }, function (u, c) {
+            var errors = [];
+            for (var i = 0; i < codecs.length; i++) {
+                var codec = codecs[i];
+                var result = codec.validate(u, exports.appendContext(c, String(i), codec, u));
+                if (Either_1.isLeft(result)) {
+                    pushAll(errors, result.left);
+                }
+                else {
+                    return exports.success(result.right);
+                }
+            }
+            return exports.failures(errors);
+        }, useIdentity(codecs)
+            ? exports.identity
+            : function (a) {
+                for (var _i = 0, codecs_1 = codecs; _i < codecs_1.length; _i++) {
+                    var codec = codecs_1[_i];
+                    if (codec.is(a)) {
+                        return codec.encode(a);
+                    }
+                }
+                // https://github.com/gcanti/io-ts/pull/305
+                throw new Error("no codec found to encode value in union type " + name);
+            }, codecs);
+    }
+};
+/**
+ * @since 1.0.0
+ */
+var IntersectionType = /** @class */ (function (_super) {
+    __extends(IntersectionType, _super);
+    function IntersectionType(name, is, validate, encode, types) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.types = types;
+        _this._tag = 'IntersectionType';
+        return _this;
+    }
+    return IntersectionType;
+}(Type));
+exports.IntersectionType = IntersectionType;
+var mergeAll = function (base, us) {
+    var equal = true;
+    var primitive = true;
+    for (var _i = 0, us_1 = us; _i < us_1.length; _i++) {
+        var u = us_1[_i];
+        if (u !== base) {
+            equal = false;
+        }
+        if (exports.UnknownRecord.is(u)) {
+            primitive = false;
+        }
+    }
+    if (equal) {
+        return base;
+    }
+    else if (primitive) {
+        return us[us.length - 1];
+    }
+    var r = {};
+    for (var _a = 0, us_2 = us; _a < us_2.length; _a++) {
+        var u = us_2[_a];
+        for (var k in u) {
+            if (u[k] !== base[k] || !r.hasOwnProperty(k)) {
+                r[k] = u[k];
+            }
+        }
+    }
+    return r;
+};
+function intersection(codecs, name) {
+    if (name === void 0) { name = "(" + codecs.map(function (type) { return type.name; }).join(' & ') + ")"; }
+    var len = codecs.length;
+    return new IntersectionType(name, function (u) { return codecs.every(function (type) { return type.is(u); }); }, codecs.length === 0
+        ? exports.success
+        : function (u, c) {
+            var us = [];
+            var errors = [];
+            for (var i = 0; i < len; i++) {
+                var codec = codecs[i];
+                var result = codec.validate(u, exports.appendContext(c, String(i), codec, u));
+                if (Either_1.isLeft(result)) {
+                    pushAll(errors, result.left);
+                }
+                else {
+                    us.push(result.right);
+                }
+            }
+            return errors.length > 0 ? exports.failures(errors) : exports.success(mergeAll(u, us));
+        }, codecs.length === 0
+        ? exports.identity
+        : function (a) {
+            return mergeAll(a, codecs.map(function (codec) { return codec.encode(a); }));
+        }, codecs);
+}
+exports.intersection = intersection;
+/**
+ * @since 1.0.0
+ */
+var TupleType = /** @class */ (function (_super) {
+    __extends(TupleType, _super);
+    function TupleType(name, is, validate, encode, types) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.types = types;
+        _this._tag = 'TupleType';
+        return _this;
+    }
+    return TupleType;
+}(Type));
+exports.TupleType = TupleType;
+function tuple(codecs, name) {
+    if (name === void 0) { name = "[" + codecs.map(function (type) { return type.name; }).join(', ') + "]"; }
+    var len = codecs.length;
+    return new TupleType(name, function (u) { return exports.UnknownArray.is(u) && u.length === len && codecs.every(function (type, i) { return type.is(u[i]); }); }, function (u, c) {
+        return chain(exports.UnknownArray.validate(u, c), function (us) {
+            var as = us.length > len ? us.slice(0, len) : us; // strip additional components
+            var errors = [];
+            for (var i = 0; i < len; i++) {
+                var a = us[i];
+                var type_3 = codecs[i];
+                var result = type_3.validate(a, exports.appendContext(c, String(i), type_3, a));
+                if (Either_1.isLeft(result)) {
+                    pushAll(errors, result.left);
+                }
+                else {
+                    var va = result.right;
+                    if (va !== a) {
+                        /* istanbul ignore next */
+                        if (as === us) {
+                            as = us.slice();
+                        }
+                        as[i] = va;
+                    }
+                }
+            }
+            return errors.length > 0 ? exports.failures(errors) : exports.success(as);
+        });
+    }, useIdentity(codecs) ? exports.identity : function (a) { return codecs.map(function (type, i) { return type.encode(a[i]); }); }, codecs);
+}
+exports.tuple = tuple;
+/**
+ * @since 1.0.0
+ */
+var ReadonlyType = /** @class */ (function (_super) {
+    __extends(ReadonlyType, _super);
+    function ReadonlyType(name, is, validate, encode, type) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.type = type;
+        _this._tag = 'ReadonlyType';
+        return _this;
+    }
+    return ReadonlyType;
+}(Type));
+exports.ReadonlyType = ReadonlyType;
+/**
+ * @since 1.0.0
+ */
+exports.readonly = function (codec, name) {
+    if (name === void 0) { name = "Readonly<" + codec.name + ">"; }
+    return new ReadonlyType(name, codec.is, function (u, c) {
+        return map(codec.validate(u, c), function (x) {
+            if (process.env.NODE_ENV !== 'production') {
+                return Object.freeze(x);
+            }
+            return x;
+        });
+    }, codec.encode === exports.identity ? exports.identity : codec.encode, codec);
+};
+/**
+ * @since 1.0.0
+ */
+var ReadonlyArrayType = /** @class */ (function (_super) {
+    __extends(ReadonlyArrayType, _super);
+    function ReadonlyArrayType(name, is, validate, encode, type) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.type = type;
+        _this._tag = 'ReadonlyArrayType';
+        return _this;
+    }
+    return ReadonlyArrayType;
+}(Type));
+exports.ReadonlyArrayType = ReadonlyArrayType;
+/**
+ * @since 1.0.0
+ */
+exports.readonlyArray = function (codec, name) {
+    if (name === void 0) { name = "ReadonlyArray<" + codec.name + ">"; }
+    var arrayType = exports.array(codec);
+    return new ReadonlyArrayType(name, arrayType.is, function (u, c) {
+        return map(arrayType.validate(u, c), function (x) {
+            if (process.env.NODE_ENV !== 'production') {
+                return Object.freeze(x);
+            }
+            return x;
+        });
+    }, arrayType.encode, codec);
+};
+/**
+ * Strips additional properties
+ * @since 1.0.0
+ */
+exports.strict = function (props, name) {
+    return exports.exact(exports.type(props), name);
+};
+/**
+ * @since 1.3.0
+ * @deprecated
+ */
+var TaggedUnionType = /** @class */ (function (_super) {
+    __extends(TaggedUnionType, _super);
+    function TaggedUnionType(name, 
+    // tslint:disable-next-line: deprecation
+    is, 
+    // tslint:disable-next-line: deprecation
+    validate, 
+    // tslint:disable-next-line: deprecation
+    encode, codecs, tag) {
+        var _this = _super.call(this, name, is, validate, encode, codecs) /* istanbul ignore next */ // <= workaround for https://github.com/Microsoft/TypeScript/issues/13455
+         || this;
+        _this.tag = tag;
+        return _this;
+    }
+    return TaggedUnionType;
+}(UnionType));
+exports.TaggedUnionType = TaggedUnionType;
+/**
+ * Use `union` instead
+ *
+ * @since 1.3.0
+ * @deprecated
+ */
+exports.taggedUnion = function (tag, codecs, name
+// tslint:disable-next-line: deprecation
+) {
+    if (name === void 0) { name = getUnionName(codecs); }
+    var U = exports.union(codecs, name);
+    // tslint:disable-next-line: deprecation
+    if (U instanceof TaggedUnionType) {
+        return U;
+    }
+    else {
+        console.warn("[io-ts] Cannot build a tagged union for " + name + ", returning a de-optimized union");
+        // tslint:disable-next-line: deprecation
+        return new TaggedUnionType(name, U.is, U.validate, U.encode, codecs, tag);
+    }
+};
+/**
+ * @since 1.1.0
+ */
+var ExactType = /** @class */ (function (_super) {
+    __extends(ExactType, _super);
+    function ExactType(name, is, validate, encode, type) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.type = type;
+        _this._tag = 'ExactType';
+        return _this;
+    }
+    return ExactType;
+}(Type));
+exports.ExactType = ExactType;
+var getProps = function (codec) {
+    switch (codec._tag) {
+        case 'RefinementType':
+        case 'ReadonlyType':
+            return getProps(codec.type);
+        case 'InterfaceType':
+        case 'StrictType':
+        case 'PartialType':
+            return codec.props;
+        case 'IntersectionType':
+            return codec.types.reduce(function (props, type) { return Object.assign(props, getProps(type)); }, {});
+    }
+};
+var stripKeys = function (o, props) {
+    var keys = Object.getOwnPropertyNames(o);
+    var shouldStrip = false;
+    var r = {};
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        if (!hasOwnProperty.call(props, key)) {
+            shouldStrip = true;
+        }
+        else {
+            r[key] = o[key];
+        }
+    }
+    return shouldStrip ? r : o;
+};
+var getExactTypeName = function (codec) {
+    if (isTypeC(codec)) {
+        return "{| " + getNameFromProps(codec.props) + " |}";
+    }
+    else if (isPartialC(codec)) {
+        return getPartialTypeName("{| " + getNameFromProps(codec.props) + " |}");
+    }
+    return "Exact<" + codec.name + ">";
+};
+/**
+ * Strips additional properties
+ * @since 1.1.0
+ */
+exports.exact = function (codec, name) {
+    if (name === void 0) { name = getExactTypeName(codec); }
+    var props = getProps(codec);
+    return new ExactType(name, codec.is, function (u, c) { return chain(exports.UnknownRecord.validate(u, c), function () { return map(codec.validate(u, c), function (a) { return stripKeys(a, props); }); }); }, function (a) { return codec.encode(stripKeys(a, props)); }, codec);
+};
+/**
+ * @since 1.0.0
+ * @deprecated
+ */
+exports.getValidationError /* istanbul ignore next */ = function (value, context) { return ({
+    value: value,
+    context: context
+}); };
+/**
+ * @since 1.0.0
+ * @deprecated
+ */
+exports.getDefaultContext /* istanbul ignore next */ = function (decoder) { return [
+    { key: '', type: decoder }
+]; };
+/**
+ * @since 1.0.0
+ * @deprecated
+ */
+var NeverType = /** @class */ (function (_super) {
+    __extends(NeverType, _super);
+    function NeverType() {
+        var _this = _super.call(this, 'never', function (_) { return false; }, function (u, c) { return exports.failure(u, c); }, 
+        /* istanbul ignore next */
+        function () {
+            throw new Error('cannot encode never');
+        }) || this;
+        _this._tag = 'NeverType';
+        return _this;
+    }
+    return NeverType;
+}(Type));
+exports.NeverType = NeverType;
+/**
+ * @since 1.0.0
+ * @deprecated
+ */
+// tslint:disable-next-line: deprecation
+exports.never = new NeverType();
+/**
+ * @since 1.0.0
+ * @deprecated
+ */
+var AnyType = /** @class */ (function (_super) {
+    __extends(AnyType, _super);
+    function AnyType() {
+        var _this = _super.call(this, 'any', function (_) { return true; }, exports.success, exports.identity) || this;
+        _this._tag = 'AnyType';
+        return _this;
+    }
+    return AnyType;
+}(Type));
+exports.AnyType = AnyType;
+/**
+ * Use `unknown` instead
+ * @since 1.0.0
+ * @deprecated
+ */
+// tslint:disable-next-line: deprecation
+exports.any = new AnyType();
+/**
+ * Use `UnknownRecord` instead
+ * @since 1.0.0
+ * @deprecated
+ */
+exports.Dictionary = exports.UnknownRecord;
+/**
+ * @since 1.0.0
+ * @deprecated
+ */
+var ObjectType = /** @class */ (function (_super) {
+    __extends(ObjectType, _super);
+    function ObjectType() {
+        var _this = _super.call(this, 'object', function (u) { return u !== null && typeof u === 'object'; }, function (u, c) { return (_this.is(u) ? exports.success(u) : exports.failure(u, c)); }, exports.identity) || this;
+        _this._tag = 'ObjectType';
+        return _this;
+    }
+    return ObjectType;
+}(Type));
+exports.ObjectType = ObjectType;
+/**
+ * Use `UnknownRecord` instead
+ * @since 1.0.0
+ * @deprecated
+ */
+// tslint:disable-next-line: deprecation
+exports.object = new ObjectType();
+/**
+ * Use `brand` instead
+ * @since 1.0.0
+ * @deprecated
+ */
+function refinement(codec, predicate, name) {
+    if (name === void 0) { name = "(" + codec.name + " | " + exports.getFunctionName(predicate) + ")"; }
+    return new RefinementType(name, function (u) { return codec.is(u) && predicate(u); }, function (i, c) { return chain(codec.validate(i, c), function (a) { return (predicate(a) ? exports.success(a) : exports.failure(a, c)); }); }, codec.encode, codec, predicate);
+}
+exports.refinement = refinement;
+/**
+ * Use `Int` instead
+ * @since 1.0.0
+ * @deprecated
+ */
+// tslint:disable-next-line: deprecation
+exports.Integer = refinement(exports.number, Number.isInteger, 'Integer');
+/**
+ * Use `record` instead
+ * @since 1.0.0
+ * @deprecated
+ */
+exports.dictionary = record;
+/**
+ * @since 1.0.0
+ * @deprecated
+ */
+var StrictType = /** @class */ (function (_super) {
+    __extends(StrictType, _super);
+    function StrictType(name, 
+    // tslint:disable-next-line: deprecation
+    is, 
+    // tslint:disable-next-line: deprecation
+    validate, 
+    // tslint:disable-next-line: deprecation
+    encode, props) {
+        var _this = _super.call(this, name, is, validate, encode) || this;
+        _this.props = props;
+        _this._tag = 'StrictType';
+        return _this;
+    }
+    return StrictType;
+}(Type));
+exports.StrictType = StrictType;
+/**
+ * Drops the codec "kind"
+ * @since 1.1.0
+ * @deprecated
+ */
+function clean(codec) {
+    return codec;
+}
+exports.clean = clean;
+function alias(codec) {
+    return function () { return codec; };
+}
+exports.alias = alias;
+var isNonEmpty = function (as) { return as.length > 0; };
+/**
+ * @internal
+ */
+exports.emptyTags = {};
+function intersect(a, b) {
+    var r = [];
+    for (var _i = 0, a_1 = a; _i < a_1.length; _i++) {
+        var v = a_1[_i];
+        if (b.indexOf(v) !== -1) {
+            r.push(v);
+        }
+    }
+    return r;
+}
+function mergeTags(a, b) {
+    if (a === exports.emptyTags) {
+        return b;
+    }
+    if (b === exports.emptyTags) {
+        return a;
+    }
+    var r = Object.assign({}, a);
+    for (var k in b) {
+        if (a.hasOwnProperty(k)) {
+            var intersection_1 = intersect(a[k], b[k]);
+            if (isNonEmpty(intersection_1)) {
+                r[k] = intersection_1;
+            }
+            else {
+                r = exports.emptyTags;
+                break;
+            }
+        }
+        else {
+            r[k] = b[k];
+        }
+    }
+    return r;
+}
+function intersectTags(a, b) {
+    if (a === exports.emptyTags || b === exports.emptyTags) {
+        return exports.emptyTags;
+    }
+    var r = exports.emptyTags;
+    for (var k in a) {
+        if (b.hasOwnProperty(k)) {
+            var intersection_2 = intersect(a[k], b[k]);
+            if (intersection_2.length === 0) {
+                if (r === exports.emptyTags) {
+                    r = {};
+                }
+                r[k] = a[k].concat(b[k]);
+            }
+        }
+    }
+    return r;
+}
+// tslint:disable-next-line: deprecation
+function isAnyC(codec) {
+    return codec._tag === 'AnyType';
+}
+function isLiteralC(codec) {
+    return codec._tag === 'LiteralType';
+}
+function isKeyofC(codec) {
+    return codec._tag === 'KeyofType';
+}
+function isTypeC(codec) {
+    return codec._tag === 'InterfaceType';
+}
+function isPartialC(codec) {
+    return codec._tag === 'PartialType';
+}
+// tslint:disable-next-line: deprecation
+function isStrictC(codec) {
+    return codec._tag === 'StrictType';
+}
+function isExactC(codec) {
+    return codec._tag === 'ExactType';
+}
+// tslint:disable-next-line: deprecation
+function isRefinementC(codec) {
+    return codec._tag === 'RefinementType';
+}
+function isIntersectionC(codec) {
+    return codec._tag === 'IntersectionType';
+}
+function isUnionC(codec) {
+    return codec._tag === 'UnionType';
+}
+function isRecursiveC(codec) {
+    return codec._tag === 'RecursiveType';
+}
+var lazyCodecs = [];
+/**
+ * @internal
+ */
+function getTags(codec) {
+    if (lazyCodecs.indexOf(codec) !== -1) {
+        return exports.emptyTags;
+    }
+    if (isTypeC(codec) || isStrictC(codec)) {
+        var index = exports.emptyTags;
+        // tslint:disable-next-line: forin
+        for (var k in codec.props) {
+            var prop = codec.props[k];
+            if (isLiteralC(prop)) {
+                if (index === exports.emptyTags) {
+                    index = {};
+                }
+                index[k] = [prop.value];
+            }
+        }
+        return index;
+    }
+    else if (isExactC(codec) || isRefinementC(codec)) {
+        return getTags(codec.type);
+    }
+    else if (isIntersectionC(codec)) {
+        return codec.types.reduce(function (tags, codec) { return mergeTags(tags, getTags(codec)); }, exports.emptyTags);
+    }
+    else if (isUnionC(codec)) {
+        return codec.types.slice(1).reduce(function (tags, codec) { return intersectTags(tags, getTags(codec)); }, getTags(codec.types[0]));
+    }
+    else if (isRecursiveC(codec)) {
+        lazyCodecs.push(codec);
+        var tags = getTags(codec.type);
+        lazyCodecs.pop();
+        return tags;
+    }
+    return exports.emptyTags;
+}
+exports.getTags = getTags;
+/**
+ * @internal
+ */
+function getIndex(codecs) {
+    var tags = getTags(codecs[0]);
+    var keys = Object.keys(tags);
+    var len = codecs.length;
+    var _loop_1 = function (k) {
+        var all = tags[k].slice();
+        var index = [tags[k]];
+        for (var i = 1; i < len; i++) {
+            var codec = codecs[i];
+            var ctags = getTags(codec);
+            var values = ctags[k];
+            // tslint:disable-next-line: strict-type-predicates
+            if (values === undefined) {
+                return "continue-keys";
+            }
+            else {
+                if (values.some(function (v) { return all.indexOf(v) !== -1; })) {
+                    return "continue-keys";
+                }
+                else {
+                    all.push.apply(all, values);
+                    index.push(values);
+                }
+            }
+        }
+        return { value: [k, index] };
+    };
+    keys: for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+        var k = keys_1[_i];
+        var state_1 = _loop_1(k);
+        if (typeof state_1 === "object")
+            return state_1.value;
+        switch (state_1) {
+            case "continue-keys": continue keys;
+        }
+    }
+    return undefined;
+}
+exports.getIndex = getIndex;
+
+
+/***/ }),
 /* 89 */
 /***/ (function(module) {
 
@@ -3733,7 +5199,62 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 
 /***/ }),
-/* 90 */,
+/* 90 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const t = __importStar(__webpack_require__(88));
+const PublishMessageRequired = t.type({
+    messageName: t.string,
+    variables: t.object,
+    timeToLive: t.number
+});
+const PublishMessageOptional = t.partial({
+    correlationKey: t.string
+});
+exports.PublishMessage = t.intersection([
+    PublishMessageRequired,
+    PublishMessageOptional
+]);
+exports.CreateWorkflowInstance = t.type({
+    bpmnProcessId: t.string,
+    variables: t.object
+});
+exports.CreateWorkflowInstanceWithResult = t.type({
+    bpmnProcessId: t.string,
+    variables: t.object,
+    requestTimeout: t.number
+});
+exports.DeployWorkflowFile = t.type({
+    bpmnFilename: t.string
+});
+exports.DeployWorkflowDir = t.type({
+    bpmnDir: t.string
+});
+exports.DeployWorkflow = t.union([exports.DeployWorkflowFile, exports.DeployWorkflowDir]);
+exports.StartWorkers = t.type({
+    workerHandlerFile: t.string,
+    workerLifetime: t.number
+});
+exports.Config = {
+    PublishMessage: exports.PublishMessage,
+    CreateWorkflowInstance: exports.CreateWorkflowInstance,
+    CreateWorkflowInstanceWithResult: exports.CreateWorkflowInstanceWithResult,
+    DeployWorkflow: exports.DeployWorkflow,
+    StartWorkers: exports.StartWorkers
+};
+
+
+/***/ }),
 /* 91 */,
 /* 92 */,
 /* 93 */
@@ -4006,7 +5527,26 @@ LongBits.prototype.length = function length() {
 
 /***/ }),
 /* 98 */,
-/* 99 */,
+/* 99 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @since 2.0.0
+ */
+function tailRec(a, f) {
+    var v = f(a);
+    while (v._tag === 'Left') {
+        v = f(v.left);
+    }
+    return v.right;
+}
+exports.tailRec = tailRec;
+
+
+/***/ }),
 /* 100 */,
 /* 101 */,
 /* 102 */,
@@ -4806,7 +6346,7 @@ module.exports = require("child_process");
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 var concatMap = __webpack_require__(403);
-var balanced = __webpack_require__(527);
+var balanced = __webpack_require__(406);
 
 module.exports = expandTop;
 
@@ -5339,7 +6879,89 @@ function onceStrict (fn) {
 
 /***/ }),
 /* 143 */,
-/* 144 */,
+/* 144 */
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+"use strict";
+
+
+var stream = __webpack_require__(413);
+
+function DuplexWrapper(options, writable, readable) {
+  if (typeof readable === "undefined") {
+    readable = writable;
+    writable = options;
+    options = null;
+  }
+
+  stream.Duplex.call(this, options);
+
+  if (typeof readable.read !== "function") {
+    readable = (new stream.Readable(options)).wrap(readable);
+  }
+
+  this._writable = writable;
+  this._readable = readable;
+  this._waiting = false;
+
+  var self = this;
+
+  writable.once("finish", function() {
+    self.end();
+  });
+
+  this.once("finish", function() {
+    writable.end();
+  });
+
+  readable.on("readable", function() {
+    if (self._waiting) {
+      self._waiting = false;
+      self._read();
+    }
+  });
+
+  readable.once("end", function() {
+    self.push(null);
+  });
+
+  if (!options || typeof options.bubbleErrors === "undefined" || options.bubbleErrors) {
+    writable.on("error", function(err) {
+      self.emit("error", err);
+    });
+
+    readable.on("error", function(err) {
+      self.emit("error", err);
+    });
+  }
+}
+
+DuplexWrapper.prototype = Object.create(stream.Duplex.prototype, {constructor: {value: DuplexWrapper}});
+
+DuplexWrapper.prototype._write = function _write(input, encoding, done) {
+  this._writable.write(input, encoding, done);
+};
+
+DuplexWrapper.prototype._read = function _read() {
+  var buf;
+  var reads = 0;
+  while ((buf = this._readable.read()) !== null) {
+    this.push(buf);
+    reads++;
+  }
+  if (reads === 0) {
+    this._waiting = true;
+  }
+};
+
+module.exports = function duplex2(options, writable, readable) {
+  return new DuplexWrapper(options, writable, readable);
+};
+
+module.exports.DuplexWrapper = DuplexWrapper;
+
+
+/***/ }),
 /* 145 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -6689,7 +8311,7 @@ module.exports = Keyv;
 
 
 
-var constants = __webpack_require__(311);
+var constants = __webpack_require__(724);
 
 /**
  * Wrap a function to pass null-like values through without calling it. If no
@@ -8462,7 +10084,7 @@ var common = __webpack_require__(159);
 
 var Metadata = __webpack_require__(18);
 
-var constants = __webpack_require__(311);
+var constants = __webpack_require__(724);
 
 var EventEmitter = __webpack_require__(614).EventEmitter;
 
@@ -9509,7 +11131,42 @@ exports.InterceptingCall = client_interceptors.InterceptingCall;
 /* 182 */,
 /* 183 */,
 /* 184 */,
-/* 185 */,
+/* 185 */
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+"use strict";
+
+const PassThrough = __webpack_require__(413).PassThrough;
+const zlib = __webpack_require__(761);
+const mimicResponse = __webpack_require__(576);
+
+module.exports = response => {
+	// TODO: Use Array#includes when targeting Node.js 6
+	if (['gzip', 'deflate'].indexOf(response.headers['content-encoding']) === -1) {
+		return response;
+	}
+
+	const unzip = zlib.createUnzip();
+	const stream = new PassThrough();
+
+	mimicResponse(response, stream);
+
+	unzip.on('error', err => {
+		if (err.code === 'Z_BUF_ERROR') {
+			stream.end();
+			return;
+		}
+
+		stream.emit('error', err);
+	});
+
+	response.pipe(unzip).pipe(stream);
+
+	return stream;
+};
+
+
+/***/ }),
 /* 186 */,
 /* 187 */,
 /* 188 */,
@@ -9608,7 +11265,192 @@ if (typeof Object.create === 'function') {
 /* 191 */,
 /* 192 */,
 /* 193 */,
-/* 194 */,
+/* 194 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var function_1 = __webpack_require__(231);
+function pipe(a, ab, bc, cd, de, ef, fg, gh, hi, ij) {
+    switch (arguments.length) {
+        case 1:
+            return a;
+        case 2:
+            return ab(a);
+        case 3:
+            return bc(ab(a));
+        case 4:
+            return cd(bc(ab(a)));
+        case 5:
+            return de(cd(bc(ab(a))));
+        case 6:
+            return ef(de(cd(bc(ab(a)))));
+        case 7:
+            return fg(ef(de(cd(bc(ab(a))))));
+        case 8:
+            return gh(fg(ef(de(cd(bc(ab(a)))))));
+        case 9:
+            return hi(gh(fg(ef(de(cd(bc(ab(a))))))));
+        case 10:
+            return ij(hi(gh(fg(ef(de(cd(bc(ab(a)))))))));
+    }
+    return;
+}
+exports.pipe = pipe;
+var isFunctor = function (I) { return typeof I.map === 'function'; };
+var isContravariant = function (I) { return typeof I.contramap === 'function'; };
+var isFunctorWithIndex = function (I) { return typeof I.mapWithIndex === 'function'; };
+var isApply = function (I) { return typeof I.ap === 'function'; };
+var isChain = function (I) { return typeof I.chain === 'function'; };
+var isBifunctor = function (I) { return typeof I.bimap === 'function'; };
+var isExtend = function (I) { return typeof I.extend === 'function'; };
+var isFoldable = function (I) { return typeof I.reduce === 'function'; };
+var isFoldableWithIndex = function (I) { return typeof I.reduceWithIndex === 'function'; };
+var isAlt = function (I) { return typeof I.alt === 'function'; };
+var isCompactable = function (I) { return typeof I.compact === 'function'; };
+var isFilterable = function (I) { return typeof I.filter === 'function'; };
+var isFilterableWithIndex = function (I) {
+    return typeof I.filterWithIndex === 'function';
+};
+var isProfunctor = function (I) { return typeof I.promap === 'function'; };
+var isSemigroupoid = function (I) { return typeof I.compose === 'function'; };
+var isMonadThrow = function (I) { return typeof I.throwError === 'function'; };
+function pipeable(I) {
+    var r = {};
+    if (isFunctor(I)) {
+        var map = function (f) { return function (fa) { return I.map(fa, f); }; };
+        r.map = map;
+    }
+    if (isContravariant(I)) {
+        var contramap = function (f) { return function (fa) { return I.contramap(fa, f); }; };
+        r.contramap = contramap;
+    }
+    if (isFunctorWithIndex(I)) {
+        var mapWithIndex = function (f) { return function (fa) { return I.mapWithIndex(fa, f); }; };
+        r.mapWithIndex = mapWithIndex;
+    }
+    if (isApply(I)) {
+        var ap = function (fa) { return function (fab) { return I.ap(fab, fa); }; };
+        var apFirst = function (fb) { return function (fa) {
+            return I.ap(I.map(fa, function (a) { return function () { return a; }; }), fb);
+        }; };
+        r.ap = ap;
+        r.apFirst = apFirst;
+        r.apSecond = function (fb) { return function (fa) {
+            return I.ap(I.map(fa, function () { return function (b) { return b; }; }), fb);
+        }; };
+    }
+    if (isChain(I)) {
+        var chain = function (f) { return function (ma) { return I.chain(ma, f); }; };
+        var chainFirst = function (f) { return function (ma) { return I.chain(ma, function (a) { return I.map(f(a), function () { return a; }); }); }; };
+        var flatten = function (mma) { return I.chain(mma, function_1.identity); };
+        r.chain = chain;
+        r.chainFirst = chainFirst;
+        r.flatten = flatten;
+    }
+    if (isBifunctor(I)) {
+        var bimap = function (f, g) { return function (fa) { return I.bimap(fa, f, g); }; };
+        var mapLeft = function (f) { return function (fa) { return I.mapLeft(fa, f); }; };
+        r.bimap = bimap;
+        r.mapLeft = mapLeft;
+    }
+    if (isExtend(I)) {
+        var extend = function (f) { return function (wa) { return I.extend(wa, f); }; };
+        var duplicate = function (wa) { return I.extend(wa, function_1.identity); };
+        r.extend = extend;
+        r.duplicate = duplicate;
+    }
+    if (isFoldable(I)) {
+        var reduce = function (b, f) { return function (fa) { return I.reduce(fa, b, f); }; };
+        var foldMap = function (M) {
+            var foldMapM = I.foldMap(M);
+            return function (f) { return function (fa) { return foldMapM(fa, f); }; };
+        };
+        var reduceRight = function (b, f) { return function (fa) { return I.reduceRight(fa, b, f); }; };
+        r.reduce = reduce;
+        r.foldMap = foldMap;
+        r.reduceRight = reduceRight;
+    }
+    if (isFoldableWithIndex(I)) {
+        var reduceWithIndex = function (b, f) { return function (fa) {
+            return I.reduceWithIndex(fa, b, f);
+        }; };
+        var foldMapWithIndex = function (M) {
+            var foldMapM = I.foldMapWithIndex(M);
+            return function (f) { return function (fa) { return foldMapM(fa, f); }; };
+        };
+        var reduceRightWithIndex = function (b, f) { return function (fa) {
+            return I.reduceRightWithIndex(fa, b, f);
+        }; };
+        r.reduceWithIndex = reduceWithIndex;
+        r.foldMapWithIndex = foldMapWithIndex;
+        r.reduceRightWithIndex = reduceRightWithIndex;
+    }
+    if (isAlt(I)) {
+        var alt = function (that) { return function (fa) { return I.alt(fa, that); }; };
+        r.alt = alt;
+    }
+    if (isCompactable(I)) {
+        r.compact = I.compact;
+        r.separate = I.separate;
+    }
+    if (isFilterable(I)) {
+        var filter = function (predicate) { return function (fa) {
+            return I.filter(fa, predicate);
+        }; };
+        var filterMap = function (f) { return function (fa) { return I.filterMap(fa, f); }; };
+        var partition = function (predicate) { return function (fa) {
+            return I.partition(fa, predicate);
+        }; };
+        var partitionMap = function (f) { return function (fa) { return I.partitionMap(fa, f); }; };
+        r.filter = filter;
+        r.filterMap = filterMap;
+        r.partition = partition;
+        r.partitionMap = partitionMap;
+    }
+    if (isFilterableWithIndex(I)) {
+        var filterWithIndex = function (predicateWithIndex) { return function (fa) { return I.filterWithIndex(fa, predicateWithIndex); }; };
+        var filterMapWithIndex = function (f) { return function (fa) {
+            return I.filterMapWithIndex(fa, f);
+        }; };
+        var partitionWithIndex = function (predicateWithIndex) { return function (fa) { return I.partitionWithIndex(fa, predicateWithIndex); }; };
+        var partitionMapWithIndex = function (f) { return function (fa) {
+            return I.partitionMapWithIndex(fa, f);
+        }; };
+        r.filterWithIndex = filterWithIndex;
+        r.filterMapWithIndex = filterMapWithIndex;
+        r.partitionWithIndex = partitionWithIndex;
+        r.partitionMapWithIndex = partitionMapWithIndex;
+    }
+    if (isProfunctor(I)) {
+        var promap = function (f, g) { return function (fa) { return I.promap(fa, f, g); }; };
+        r.promap = promap;
+    }
+    if (isSemigroupoid(I)) {
+        var compose = function (that) { return function (fa) { return I.compose(fa, that); }; };
+        r.compose = compose;
+    }
+    if (isMonadThrow(I)) {
+        var fromOption = function (onNone) { return function (ma) {
+            return ma._tag === 'None' ? I.throwError(onNone()) : I.of(ma.value);
+        }; };
+        var fromEither = function (ma) {
+            return ma._tag === 'Left' ? I.throwError(ma.left) : I.of(ma.right);
+        };
+        var fromPredicate = function (predicate, onFalse) { return function (a) { return (predicate(a) ? I.of(a) : I.throwError(onFalse(a))); }; };
+        var filterOrElse = function (predicate, onFalse) { return function (ma) { return I.chain(ma, function (a) { return (predicate(a) ? I.of(a) : I.throwError(onFalse(a))); }); }; };
+        r.fromOption = fromOption;
+        r.fromEither = fromEither;
+        r.fromPredicate = fromPredicate;
+        r.filterOrElse = filterOrElse;
+    }
+    return r;
+}
+exports.pipeable = pipeable;
+
+
+/***/ }),
 /* 195 */,
 /* 196 */,
 /* 197 */,
@@ -9617,15 +11459,6 @@ if (typeof Object.create === 'function') {
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -9635,135 +11468,35 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
-const zeebe_node_1 = __webpack_require__(94);
-const setup_env_1 = __webpack_require__(51);
-const fs_1 = __webpack_require__(747);
-const path_1 = __webpack_require__(622);
-const workers_1 = __webpack_require__(78);
-function getVariables() {
-    let variables;
-    const vars = core.getInput('variables');
-    try {
-        variables = JSON.parse(vars || '{}');
+const pipeable_1 = __webpack_require__(194);
+const TE = __importStar(__webpack_require__(579));
+const run_1 = __webpack_require__(861);
+const getEnvironment_1 = __webpack_require__(683);
+exports.OperationNames = [
+    'createWorkflowInstance',
+    'createWorkflowInstanceWithResult',
+    'deployWorkflow',
+    'publishMessage',
+    'startWorkers'
+];
+const failureHandler = (outcome) => {
+    const messages = typeof outcome.message === 'string' ? [outcome.message] : outcome.message;
+    for (const message in messages) {
+        core.info(message);
     }
-    catch (e) {
-        return {
-            err: true,
-            message: `Could not parse supplied variables to JSON: ${vars}`,
-            variables: undefined
-        };
+    core.setFailed('An error occurred. See the previous messages for details.');
+    return outcome;
+};
+const successHandler = (outcome) => {
+    const infos = typeof outcome.info === 'string' ? [outcome.info] : outcome.info;
+    for (const info in infos) {
+        core.info(info);
     }
-    return {
-        err: false,
-        variables
-    };
-}
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const missingConfigKeys = setup_env_1.setupEnv();
-        if (missingConfigKeys.length > 0) {
-            return core.setFailed(`Required configuration not found ${JSON.stringify(missingConfigKeys)}`);
-        }
-        try {
-            const operation = core.getInput('operation', {
-                required: true
-            });
-            switch (operation) {
-                case 'publishMessage': {
-                    const name = core.getInput('message_name', { required: true });
-                    const { variables, err } = getVariables();
-                    if (err) {
-                        return core.setFailed(`Could not parse supplied variables to JSON: ${core.getInput('variables')}`);
-                    }
-                    const correlationKey = core.getInput('correlationKey');
-                    const timeToLive = parseInt((val => (val === '' ? '0' : val))(core.getInput('ttl')), 10);
-                    const zbc = new zeebe_node_1.ZBClient();
-                    const messagePayload = {
-                        name,
-                        correlationKey,
-                        variables,
-                        timeToLive
-                    };
-                    yield zbc.publishMessage(messagePayload);
-                    core.info(`Published message to Zeebe.`);
-                    core.info(JSON.stringify(messagePayload, null, 2));
-                    yield zbc.close();
-                    break;
-                }
-                case 'createWorkflowInstance': {
-                    const bpmnProcessId = core.getInput('bpmn_process_id', { required: true });
-                    const { variables, err } = getVariables();
-                    if (err) {
-                        return core.setFailed(`Could not parse supplied variables to JSON: ${core.getInput('variables')}`);
-                    }
-                    const zbc = new zeebe_node_1.ZBClient();
-                    const res = JSON.stringify(yield zbc.createWorkflowInstance(bpmnProcessId, variables), null, 2);
-                    core.info(res);
-                    core.setOutput('result', res);
-                    yield zbc.close();
-                    break;
-                }
-                case 'createWorkflowInstanceWithResult': {
-                    const bpmnProcessId = core.getInput('bpmn_process_id', { required: true });
-                    const { variables, err } = getVariables();
-                    if (err) {
-                        return core.setFailed(`Could not parse supplied variables to JSON: ${core.getInput('variables')}`);
-                    }
-                    const requestTimeout = (val => !val || val === '' ? 30000 : parseInt(val, 10))(core.getInput('requestTimeout'));
-                    const zbc = new zeebe_node_1.ZBClient();
-                    const res = yield zbc.createWorkflowInstanceWithResult({
-                        bpmnProcessId,
-                        variables,
-                        requestTimeout
-                    });
-                    core.info(JSON.stringify(res, null, 2));
-                    core.setOutput('result', JSON.stringify(res));
-                    yield zbc.close();
-                    break;
-                }
-                case 'deployWorkflow': {
-                    const filename = core.getInput('bpmn_filename');
-                    const dir = core.getInput('bpmn_directory');
-                    if ((!filename && !dir) || (filename && dir)) {
-                        return core.setFailed('deployWorkflow requires exactly one of bpmn_filename or bpmn_directory');
-                    }
-                    const zbc = new zeebe_node_1.ZBClient();
-                    const toDeploy = filename
-                        ? `./${filename}`
-                        : fs_1.readdirSync(dir)
-                            .filter(f => f.endsWith('.bpmn'))
-                            .map(f => `${dir}/${f}`);
-                    const res = yield zbc.deployWorkflow(toDeploy);
-                    core.info(JSON.stringify(res, null, 2));
-                    core.setOutput('result', JSON.stringify(res));
-                    yield zbc.close();
-                    break;
-                }
-                case 'startWorkers': {
-                    const configFile = core.getInput('worker_handler_file');
-                    if (!configFile) {
-                        return core.setFailed('Missing worker_handler_file parameter');
-                    }
-                    const lifetime = parseInt(core.getInput('worker_lifetime_mins'), 10);
-                    if (!fs_1.existsSync(`./${configFile}`)) {
-                        return core.setFailed(`Could not find worker handler file ${path_1.resolve('./', configFile)}`);
-                    }
-                    const workerCode = fs_1.readFileSync(`./${configFile}`, 'utf8');
-                    core.info(`Loading workers with config from ${path_1.resolve('./', configFile)}`);
-                    yield workers_1.bootstrapWorkers(workerCode, lifetime);
-                    break;
-                }
-                default: {
-                    core.setFailed(`Unknown operation ${operation}. Valid operations are: publishMessage, createWorkflowInstance, createWorkflowInstanceWithResult, deployWorkflow, startWorkers.`);
-                }
-            }
-        }
-        catch (error) {
-            core.setFailed(error.message);
-        }
-    });
-}
-run();
+    core.setOutput('result', outcome.output);
+    return outcome;
+};
+const config = getEnvironment_1.getConfigurationFromEnvironment();
+pipeable_1.pipe(run_1.run(config), TE.mapLeft(failureHandler), TE.map(successHandler));
 
 
 /***/ }),
@@ -10072,7 +11805,7 @@ module.exports = Parser;
 module.exports = (function() {
     "use strict";
 
-    var buffer = __webpack_require__(293),
+    var buffer = __webpack_require__(407),
         Buffer = buffer["Buffer"],
         Long = __webpack_require__(315),
         memcpy = null; try { memcpy = __webpack_require__(871); } catch (e) {}
@@ -14424,7 +16157,195 @@ if (util && util.inspect && util.inspect.custom) {
 /* 228 */,
 /* 229 */,
 /* 230 */,
-/* 231 */,
+/* 231 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+/**
+ * @since 2.0.0
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @since 2.0.0
+ */
+function identity(a) {
+    return a;
+}
+exports.identity = identity;
+/**
+ * @since 2.0.0
+ */
+exports.unsafeCoerce = identity;
+/**
+ * @since 2.0.0
+ */
+function not(predicate) {
+    return function (a) { return !predicate(a); };
+}
+exports.not = not;
+/**
+ * @since 2.0.0
+ */
+function constant(a) {
+    return function () { return a; };
+}
+exports.constant = constant;
+/**
+ * A thunk that returns always `true`
+ *
+ * @since 2.0.0
+ */
+exports.constTrue = function () {
+    return true;
+};
+/**
+ * A thunk that returns always `false`
+ *
+ * @since 2.0.0
+ */
+exports.constFalse = function () {
+    return false;
+};
+/**
+ * A thunk that returns always `null`
+ *
+ * @since 2.0.0
+ */
+exports.constNull = function () {
+    return null;
+};
+/**
+ * A thunk that returns always `undefined`
+ *
+ * @since 2.0.0
+ */
+exports.constUndefined = function () {
+    return;
+};
+/**
+ * A thunk that returns always `void`
+ *
+ * @since 2.0.0
+ */
+exports.constVoid = function () {
+    return;
+};
+/**
+ * Flips the order of the arguments of a function of two arguments.
+ *
+ * @since 2.0.0
+ */
+function flip(f) {
+    return function (b, a) { return f(a, b); };
+}
+exports.flip = flip;
+function flow(ab, bc, cd, de, ef, fg, gh, hi, ij) {
+    switch (arguments.length) {
+        case 1:
+            return ab;
+        case 2:
+            return function () {
+                return bc(ab.apply(this, arguments));
+            };
+        case 3:
+            return function () {
+                return cd(bc(ab.apply(this, arguments)));
+            };
+        case 4:
+            return function () {
+                return de(cd(bc(ab.apply(this, arguments))));
+            };
+        case 5:
+            return function () {
+                return ef(de(cd(bc(ab.apply(this, arguments)))));
+            };
+        case 6:
+            return function () {
+                return fg(ef(de(cd(bc(ab.apply(this, arguments))))));
+            };
+        case 7:
+            return function () {
+                return gh(fg(ef(de(cd(bc(ab.apply(this, arguments)))))));
+            };
+        case 8:
+            return function () {
+                return hi(gh(fg(ef(de(cd(bc(ab.apply(this, arguments))))))));
+            };
+        case 9:
+            return function () {
+                return ij(hi(gh(fg(ef(de(cd(bc(ab.apply(this, arguments)))))))));
+            };
+    }
+    return;
+}
+exports.flow = flow;
+/**
+ * @since 2.0.0
+ */
+function tuple() {
+    var t = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        t[_i] = arguments[_i];
+    }
+    return t;
+}
+exports.tuple = tuple;
+/**
+ * @since 2.0.0
+ */
+function increment(n) {
+    return n + 1;
+}
+exports.increment = increment;
+/**
+ * @since 2.0.0
+ */
+function decrement(n) {
+    return n - 1;
+}
+exports.decrement = decrement;
+/**
+ * @since 2.0.0
+ */
+function absurd(_) {
+    throw new Error('Called `absurd` function which should be uncallable');
+}
+exports.absurd = absurd;
+/**
+ * Creates a tupled version of this function: instead of `n` arguments, it accepts a single tuple argument.
+ *
+ * @example
+ * import { tupled } from 'fp-ts/lib/function'
+ *
+ * const add = tupled((x: number, y: number): number => x + y)
+ *
+ * assert.strictEqual(add([1, 2]), 3)
+ *
+ * @since 2.4.0
+ */
+function tupled(f) {
+    return function (a) { return f.apply(void 0, a); };
+}
+exports.tupled = tupled;
+/**
+ * Inverse function of `tupled`
+ *
+ * @since 2.4.0
+ */
+function untupled(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return f(a);
+    };
+}
+exports.untupled = untupled;
+
+
+/***/ }),
 /* 232 */,
 /* 233 */,
 /* 234 */,
@@ -15382,7 +17303,7 @@ var common = __webpack_require__(159);
 
 var Metadata = __webpack_require__(18);
 
-var constants = __webpack_require__(311);
+var constants = __webpack_require__(724);
 
 var stream = __webpack_require__(413);
 
@@ -16431,7 +18352,38 @@ module.exports = binding;
 /***/ }),
 /* 254 */,
 /* 255 */,
-/* 256 */,
+/* 256 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var Functor_1 = __webpack_require__(943);
+var Option_1 = __webpack_require__(293);
+function getCompactableComposition(F, G) {
+    var FC = Functor_1.getFunctorComposition(F, G);
+    var CC = __assign(__assign({}, FC), { compact: function (fga) { return F.map(fga, G.compact); }, separate: function (fge) {
+            var left = CC.compact(FC.map(fge, Option_1.getLeft));
+            var right = CC.compact(FC.map(fge, Option_1.getRight));
+            return { left: left, right: right };
+        } });
+    return CC;
+}
+exports.getCompactableComposition = getCompactableComposition;
+
+
+/***/ }),
 /* 257 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -18897,9 +20849,628 @@ module.exports = clone;
 /***/ }),
 /* 292 */,
 /* 293 */
-/***/ (function(module) {
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-module.exports = require("buffer");
+"use strict";
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var pipeable_1 = __webpack_require__(194);
+/**
+ * @since 2.0.0
+ */
+exports.URI = 'Option';
+/**
+ * @since 2.0.0
+ */
+exports.none = { _tag: 'None' };
+/**
+ * @since 2.0.0
+ */
+function some(a) {
+    return { _tag: 'Some', value: a };
+}
+exports.some = some;
+/**
+ * Returns `true` if the option is an instance of `Some`, `false` otherwise
+ *
+ * @example
+ * import { some, none, isSome } from 'fp-ts/lib/Option'
+ *
+ * assert.strictEqual(isSome(some(1)), true)
+ * assert.strictEqual(isSome(none), false)
+ *
+ * @since 2.0.0
+ */
+function isSome(fa) {
+    return fa._tag === 'Some';
+}
+exports.isSome = isSome;
+/**
+ * Returns `true` if the option is `None`, `false` otherwise
+ *
+ * @example
+ * import { some, none, isNone } from 'fp-ts/lib/Option'
+ *
+ * assert.strictEqual(isNone(some(1)), false)
+ * assert.strictEqual(isNone(none), true)
+ *
+ * @since 2.0.0
+ */
+function isNone(fa) {
+    return fa._tag === 'None';
+}
+exports.isNone = isNone;
+/**
+ * Takes a default value, a function, and an `Option` value, if the `Option` value is `None` the default value is
+ * returned, otherwise the function is applied to the value inside the `Some` and the result is returned.
+ *
+ * @example
+ * import { some, none, fold } from 'fp-ts/lib/Option'
+ * import { pipe } from 'fp-ts/lib/pipeable'
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     some(1),
+ *     fold(() => 'a none', a => `a some containing ${a}`)
+ *   ),
+ *   'a some containing 1'
+ * )
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     none,
+ *     fold(() => 'a none', a => `a some containing ${a}`)
+ *   ),
+ *   'a none'
+ * )
+ *
+ * @since 2.0.0
+ */
+function fold(onNone, onSome) {
+    return function (ma) { return (isNone(ma) ? onNone() : onSome(ma.value)); };
+}
+exports.fold = fold;
+/**
+ * Constructs a new `Option` from a nullable type. If the value is `null` or `undefined`, returns `None`, otherwise
+ * returns the value wrapped in a `Some`
+ *
+ * @example
+ * import { none, some, fromNullable } from 'fp-ts/lib/Option'
+ *
+ * assert.deepStrictEqual(fromNullable(undefined), none)
+ * assert.deepStrictEqual(fromNullable(null), none)
+ * assert.deepStrictEqual(fromNullable(1), some(1))
+ *
+ * @since 2.0.0
+ */
+function fromNullable(a) {
+    return a == null ? exports.none : some(a);
+}
+exports.fromNullable = fromNullable;
+/**
+ * Extracts the value out of the structure, if it exists. Otherwise returns `null`.
+ *
+ * @example
+ * import { some, none, toNullable } from 'fp-ts/lib/Option'
+ * import { pipe } from 'fp-ts/lib/pipeable'
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     some(1),
+ *     toNullable
+ *   ),
+ *   1
+ * )
+ * assert.strictEqual(
+ *   pipe(
+ *     none,
+ *     toNullable
+ *   ),
+ *   null
+ * )
+ *
+ * @since 2.0.0
+ */
+function toNullable(ma) {
+    return isNone(ma) ? null : ma.value;
+}
+exports.toNullable = toNullable;
+/**
+ * Extracts the value out of the structure, if it exists. Otherwise returns `undefined`.
+ *
+ * @example
+ * import { some, none, toUndefined } from 'fp-ts/lib/Option'
+ * import { pipe } from 'fp-ts/lib/pipeable'
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     some(1),
+ *     toUndefined
+ *   ),
+ *   1
+ * )
+ * assert.strictEqual(
+ *   pipe(
+ *     none,
+ *     toUndefined
+ *   ),
+ *   undefined
+ * )
+ *
+ * @since 2.0.0
+ */
+function toUndefined(ma) {
+    return isNone(ma) ? undefined : ma.value;
+}
+exports.toUndefined = toUndefined;
+/**
+ * Extracts the value out of the structure, if it exists. Otherwise returns the given default value
+ *
+ * @example
+ * import { some, none, getOrElse } from 'fp-ts/lib/Option'
+ * import { pipe } from 'fp-ts/lib/pipeable'
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     some(1),
+ *     getOrElse(() => 0)
+ *   ),
+ *   1
+ * )
+ * assert.strictEqual(
+ *   pipe(
+ *     none,
+ *     getOrElse(() => 0)
+ *   ),
+ *   0
+ * )
+ *
+ * @since 2.0.0
+ */
+function getOrElse(onNone) {
+    return function (ma) { return (isNone(ma) ? onNone() : ma.value); };
+}
+exports.getOrElse = getOrElse;
+/**
+ * Returns `true` if `ma` contains `a`
+ *
+ * @example
+ * import { some, none, elem } from 'fp-ts/lib/Option'
+ * import { eqNumber } from 'fp-ts/lib/Eq'
+ *
+ * assert.strictEqual(elem(eqNumber)(1, some(1)), true)
+ * assert.strictEqual(elem(eqNumber)(2, some(1)), false)
+ * assert.strictEqual(elem(eqNumber)(1, none), false)
+ *
+ * @since 2.0.0
+ */
+function elem(E) {
+    return function (a, ma) { return (isNone(ma) ? false : E.equals(a, ma.value)); };
+}
+exports.elem = elem;
+/**
+ * Returns `true` if the predicate is satisfied by the wrapped value
+ *
+ * @example
+ * import { some, none, exists } from 'fp-ts/lib/Option'
+ * import { pipe } from 'fp-ts/lib/pipeable'
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     some(1),
+ *     exists(n => n > 0)
+ *   ),
+ *   true
+ * )
+ * assert.strictEqual(
+ *   pipe(
+ *     some(1),
+ *     exists(n => n > 1)
+ *   ),
+ *   false
+ * )
+ * assert.strictEqual(
+ *   pipe(
+ *     none,
+ *     exists(n => n > 0)
+ *   ),
+ *   false
+ * )
+ *
+ * @since 2.0.0
+ */
+function exists(predicate) {
+    return function (ma) { return (isNone(ma) ? false : predicate(ma.value)); };
+}
+exports.exists = exists;
+function fromPredicate(predicate) {
+    return function (a) { return (predicate(a) ? some(a) : exports.none); };
+}
+exports.fromPredicate = fromPredicate;
+/**
+ * Transforms an exception into an `Option`. If `f` throws, returns `None`, otherwise returns the output wrapped in
+ * `Some`
+ *
+ * @example
+ * import { none, some, tryCatch } from 'fp-ts/lib/Option'
+ *
+ * assert.deepStrictEqual(
+ *   tryCatch(() => {
+ *     throw new Error()
+ *   }),
+ *   none
+ * )
+ * assert.deepStrictEqual(tryCatch(() => 1), some(1))
+ *
+ * @since 2.0.0
+ */
+function tryCatch(f) {
+    try {
+        return some(f());
+    }
+    catch (e) {
+        return exports.none;
+    }
+}
+exports.tryCatch = tryCatch;
+/**
+ * Returns an `E` value if possible
+ *
+ * @since 2.0.0
+ */
+function getLeft(ma) {
+    return ma._tag === 'Right' ? exports.none : some(ma.left);
+}
+exports.getLeft = getLeft;
+/**
+ * Returns an `A` value if possible
+ *
+ * @since 2.0.0
+ */
+function getRight(ma) {
+    return ma._tag === 'Left' ? exports.none : some(ma.right);
+}
+exports.getRight = getRight;
+/**
+ * Returns a `Refinement` (i.e. a custom type guard) from a `Option` returning function.
+ * This function ensures that a custom type guard definition is type-safe.
+ *
+ * ```ts
+ * import { some, none, getRefinement } from 'fp-ts/lib/Option'
+ *
+ * type A = { type: 'A' }
+ * type B = { type: 'B' }
+ * type C = A | B
+ *
+ * const isA = (c: C): c is A => c.type === 'B' // <= typo but typescript doesn't complain
+ * const isA = getRefinement<C, A>(c => (c.type === 'B' ? some(c) : none)) // static error: Type '"B"' is not assignable to type '"A"'
+ * ```
+ *
+ * @since 2.0.0
+ */
+function getRefinement(getOption) {
+    return function (a) { return isSome(getOption(a)); };
+}
+exports.getRefinement = getRefinement;
+/**
+ * This is `chain` + `fromNullable`, useful when working with optional values
+ *
+ * @example
+ * import { some, none, fromNullable, mapNullable } from 'fp-ts/lib/Option'
+ * import { pipe } from 'fp-ts/lib/pipeable'
+ *
+ * interface Employee {
+ *   company?: {
+ *     address?: {
+ *       street?: {
+ *         name?: string
+ *       }
+ *     }
+ *   }
+ * }
+ *
+ * const employee1: Employee = { company: { address: { street: { name: 'high street' } } } }
+ *
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     fromNullable(employee1.company),
+ *     mapNullable(company => company.address),
+ *     mapNullable(address => address.street),
+ *     mapNullable(street => street.name)
+ *   ),
+ *   some('high street')
+ * )
+ *
+ * const employee2: Employee = { company: { address: { street: {} } } }
+ *
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     fromNullable(employee2.company),
+ *     mapNullable(company => company.address),
+ *     mapNullable(address => address.street),
+ *     mapNullable(street => street.name)
+ *   ),
+ *   none
+ * )
+ *
+ * @since 2.0.0
+ */
+function mapNullable(f) {
+    return function (ma) { return (isNone(ma) ? exports.none : fromNullable(f(ma.value))); };
+}
+exports.mapNullable = mapNullable;
+/**
+ * @since 2.0.0
+ */
+function getShow(S) {
+    return {
+        show: function (ma) { return (isNone(ma) ? 'none' : "some(" + S.show(ma.value) + ")"); }
+    };
+}
+exports.getShow = getShow;
+/**
+ * @example
+ * import { none, some, getEq } from 'fp-ts/lib/Option'
+ * import { eqNumber } from 'fp-ts/lib/Eq'
+ *
+ * const E = getEq(eqNumber)
+ * assert.strictEqual(E.equals(none, none), true)
+ * assert.strictEqual(E.equals(none, some(1)), false)
+ * assert.strictEqual(E.equals(some(1), none), false)
+ * assert.strictEqual(E.equals(some(1), some(2)), false)
+ * assert.strictEqual(E.equals(some(1), some(1)), true)
+ *
+ * @since 2.0.0
+ */
+function getEq(E) {
+    return {
+        equals: function (x, y) { return x === y || (isNone(x) ? isNone(y) : isNone(y) ? false : E.equals(x.value, y.value)); }
+    };
+}
+exports.getEq = getEq;
+/**
+ * The `Ord` instance allows `Option` values to be compared with
+ * `compare`, whenever there is an `Ord` instance for
+ * the type the `Option` contains.
+ *
+ * `None` is considered to be less than any `Some` value.
+ *
+ *
+ * @example
+ * import { none, some, getOrd } from 'fp-ts/lib/Option'
+ * import { ordNumber } from 'fp-ts/lib/Ord'
+ *
+ * const O = getOrd(ordNumber)
+ * assert.strictEqual(O.compare(none, none), 0)
+ * assert.strictEqual(O.compare(none, some(1)), -1)
+ * assert.strictEqual(O.compare(some(1), none), 1)
+ * assert.strictEqual(O.compare(some(1), some(2)), -1)
+ * assert.strictEqual(O.compare(some(1), some(1)), 0)
+ *
+ * @since 2.0.0
+ */
+function getOrd(O) {
+    return {
+        equals: getEq(O).equals,
+        compare: function (x, y) { return (x === y ? 0 : isSome(x) ? (isSome(y) ? O.compare(x.value, y.value) : 1) : -1); }
+    };
+}
+exports.getOrd = getOrd;
+/**
+ * `Apply` semigroup
+ *
+ * | x       | y       | concat(x, y)       |
+ * | ------- | ------- | ------------------ |
+ * | none    | none    | none               |
+ * | some(a) | none    | none               |
+ * | none    | some(a) | none               |
+ * | some(a) | some(b) | some(concat(a, b)) |
+ *
+ * @example
+ * import { getApplySemigroup, some, none } from 'fp-ts/lib/Option'
+ * import { semigroupSum } from 'fp-ts/lib/Semigroup'
+ *
+ * const S = getApplySemigroup(semigroupSum)
+ * assert.deepStrictEqual(S.concat(none, none), none)
+ * assert.deepStrictEqual(S.concat(some(1), none), none)
+ * assert.deepStrictEqual(S.concat(none, some(1)), none)
+ * assert.deepStrictEqual(S.concat(some(1), some(2)), some(3))
+ *
+ * @since 2.0.0
+ */
+function getApplySemigroup(S) {
+    return {
+        concat: function (x, y) { return (isSome(x) && isSome(y) ? some(S.concat(x.value, y.value)) : exports.none); }
+    };
+}
+exports.getApplySemigroup = getApplySemigroup;
+/**
+ * @since 2.0.0
+ */
+function getApplyMonoid(M) {
+    return __assign(__assign({}, getApplySemigroup(M)), { empty: some(M.empty) });
+}
+exports.getApplyMonoid = getApplyMonoid;
+/**
+ * Monoid returning the left-most non-`None` value
+ *
+ * | x       | y       | concat(x, y) |
+ * | ------- | ------- | ------------ |
+ * | none    | none    | none         |
+ * | some(a) | none    | some(a)      |
+ * | none    | some(a) | some(a)      |
+ * | some(a) | some(b) | some(a)      |
+ *
+ * @example
+ * import { getFirstMonoid, some, none } from 'fp-ts/lib/Option'
+ *
+ * const M = getFirstMonoid<number>()
+ * assert.deepStrictEqual(M.concat(none, none), none)
+ * assert.deepStrictEqual(M.concat(some(1), none), some(1))
+ * assert.deepStrictEqual(M.concat(none, some(1)), some(1))
+ * assert.deepStrictEqual(M.concat(some(1), some(2)), some(1))
+ *
+ * @since 2.0.0
+ */
+function getFirstMonoid() {
+    return {
+        concat: function (x, y) { return (isNone(x) ? y : x); },
+        empty: exports.none
+    };
+}
+exports.getFirstMonoid = getFirstMonoid;
+/**
+ * Monoid returning the right-most non-`None` value
+ *
+ * | x       | y       | concat(x, y) |
+ * | ------- | ------- | ------------ |
+ * | none    | none    | none         |
+ * | some(a) | none    | some(a)      |
+ * | none    | some(a) | some(a)      |
+ * | some(a) | some(b) | some(b)      |
+ *
+ * @example
+ * import { getLastMonoid, some, none } from 'fp-ts/lib/Option'
+ *
+ * const M = getLastMonoid<number>()
+ * assert.deepStrictEqual(M.concat(none, none), none)
+ * assert.deepStrictEqual(M.concat(some(1), none), some(1))
+ * assert.deepStrictEqual(M.concat(none, some(1)), some(1))
+ * assert.deepStrictEqual(M.concat(some(1), some(2)), some(2))
+ *
+ * @since 2.0.0
+ */
+function getLastMonoid() {
+    return {
+        concat: function (x, y) { return (isNone(y) ? x : y); },
+        empty: exports.none
+    };
+}
+exports.getLastMonoid = getLastMonoid;
+/**
+ * Monoid returning the left-most non-`None` value. If both operands are `Some`s then the inner values are
+ * appended using the provided `Semigroup`
+ *
+ * | x       | y       | concat(x, y)       |
+ * | ------- | ------- | ------------------ |
+ * | none    | none    | none               |
+ * | some(a) | none    | some(a)            |
+ * | none    | some(a) | some(a)            |
+ * | some(a) | some(b) | some(concat(a, b)) |
+ *
+ * @example
+ * import { getMonoid, some, none } from 'fp-ts/lib/Option'
+ * import { semigroupSum } from 'fp-ts/lib/Semigroup'
+ *
+ * const M = getMonoid(semigroupSum)
+ * assert.deepStrictEqual(M.concat(none, none), none)
+ * assert.deepStrictEqual(M.concat(some(1), none), some(1))
+ * assert.deepStrictEqual(M.concat(none, some(1)), some(1))
+ * assert.deepStrictEqual(M.concat(some(1), some(2)), some(3))
+ *
+ * @since 2.0.0
+ */
+function getMonoid(S) {
+    return {
+        concat: function (x, y) { return (isNone(x) ? y : isNone(y) ? x : some(S.concat(x.value, y.value))); },
+        empty: exports.none
+    };
+}
+exports.getMonoid = getMonoid;
+var defaultSeparate = { left: exports.none, right: exports.none };
+var identity = function (a) { return a; };
+/**
+ * @since 2.0.0
+ */
+exports.option = {
+    URI: exports.URI,
+    map: function (ma, f) { return (isNone(ma) ? exports.none : some(f(ma.value))); },
+    of: some,
+    ap: function (mab, ma) { return (isNone(mab) ? exports.none : isNone(ma) ? exports.none : some(mab.value(ma.value))); },
+    chain: function (ma, f) { return (isNone(ma) ? exports.none : f(ma.value)); },
+    reduce: function (fa, b, f) { return (isNone(fa) ? b : f(b, fa.value)); },
+    foldMap: function (M) { return function (fa, f) { return (isNone(fa) ? M.empty : f(fa.value)); }; },
+    reduceRight: function (fa, b, f) { return (isNone(fa) ? b : f(fa.value, b)); },
+    traverse: function (F) { return function (ta, f) {
+        return isNone(ta) ? F.of(exports.none) : F.map(f(ta.value), some);
+    }; },
+    sequence: function (F) { return function (ta) {
+        return isNone(ta) ? F.of(exports.none) : F.map(ta.value, some);
+    }; },
+    zero: function () { return exports.none; },
+    alt: function (ma, f) { return (isNone(ma) ? f() : ma); },
+    extend: function (wa, f) { return (isNone(wa) ? exports.none : some(f(wa))); },
+    compact: function (ma) { return exports.option.chain(ma, identity); },
+    separate: function (ma) {
+        var o = exports.option.map(ma, function (e) { return ({
+            left: getLeft(e),
+            right: getRight(e)
+        }); });
+        return isNone(o) ? defaultSeparate : o.value;
+    },
+    filter: function (fa, predicate) {
+        return isNone(fa) ? exports.none : predicate(fa.value) ? fa : exports.none;
+    },
+    filterMap: function (ma, f) { return (isNone(ma) ? exports.none : f(ma.value)); },
+    partition: function (fa, predicate) {
+        return {
+            left: exports.option.filter(fa, function (a) { return !predicate(a); }),
+            right: exports.option.filter(fa, predicate)
+        };
+    },
+    partitionMap: function (fa, f) { return exports.option.separate(exports.option.map(fa, f)); },
+    wither: function (F) { return function (fa, f) {
+        return isNone(fa) ? F.of(exports.none) : f(fa.value);
+    }; },
+    wilt: function (F) { return function (fa, f) {
+        var o = exports.option.map(fa, function (a) {
+            return F.map(f(a), function (e) { return ({
+                left: getLeft(e),
+                right: getRight(e)
+            }); });
+        });
+        return isNone(o)
+            ? F.of({
+                left: exports.none,
+                right: exports.none
+            })
+            : o.value;
+    }; },
+    throwError: function () { return exports.none; }
+};
+var _a = pipeable_1.pipeable(exports.option), alt = _a.alt, ap = _a.ap, apFirst = _a.apFirst, apSecond = _a.apSecond, chain = _a.chain, chainFirst = _a.chainFirst, duplicate = _a.duplicate, extend = _a.extend, filter = _a.filter, filterMap = _a.filterMap, flatten = _a.flatten, foldMap = _a.foldMap, map = _a.map, partition = _a.partition, partitionMap = _a.partitionMap, reduce = _a.reduce, reduceRight = _a.reduceRight, compact = _a.compact, separate = _a.separate, fromEither = _a.fromEither;
+exports.alt = alt;
+exports.ap = ap;
+exports.apFirst = apFirst;
+exports.apSecond = apSecond;
+exports.chain = chain;
+exports.chainFirst = chainFirst;
+exports.duplicate = duplicate;
+exports.extend = extend;
+exports.filter = filter;
+exports.filterMap = filterMap;
+exports.flatten = flatten;
+exports.foldMap = foldMap;
+exports.map = map;
+exports.partition = partition;
+exports.partitionMap = partitionMap;
+exports.reduce = reduce;
+exports.reduceRight = reduceRight;
+exports.compact = compact;
+exports.separate = separate;
+exports.fromEither = fromEither;
+
 
 /***/ }),
 /* 294 */,
@@ -20396,7 +22967,51 @@ function coerce (version) {
 /* 297 */,
 /* 298 */,
 /* 299 */,
-/* 300 */,
+/* 300 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const zeebe_node_1 = __webpack_require__(94);
+const TE = __importStar(__webpack_require__(579));
+function createWorkflowInstanceWithResult(config) {
+    return TE.tryCatch(() => __awaiter(this, void 0, void 0, function* () {
+        const zbc = new zeebe_node_1.ZBClient();
+        const res = yield zbc.createWorkflowInstanceWithResult({
+            bpmnProcessId: config.bpmnProcessId,
+            variables: config.variables,
+            requestTimeout: config.requestTimeout * 1000
+        });
+        const result = JSON.stringify(res, null, 2);
+        const output = JSON.stringify(res);
+        yield zbc.close();
+        return {
+            info: [result],
+            output
+        };
+    }), (failure) => ({ message: failure.message }));
+}
+exports.createWorkflowInstanceWithResult = createWorkflowInstanceWithResult;
+
+
+/***/ }),
 /* 301 */,
 /* 302 */,
 /* 303 */
@@ -20407,280 +23022,589 @@ module.exports = {"nested":{"google":{"nested":{"protobuf":{"nested":{"FileDescr
 /***/ }),
 /* 304 */,
 /* 305 */,
-/* 306 */,
+/* 306 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var _1 = __webpack_require__(88);
+var Either_1 = __webpack_require__(311);
+function stringify(v) {
+    if (typeof v === 'function') {
+        return _1.getFunctionName(v);
+    }
+    if (typeof v === 'number' && !isFinite(v)) {
+        if (isNaN(v)) {
+            return 'NaN';
+        }
+        return v > 0 ? 'Infinity' : '-Infinity';
+    }
+    return JSON.stringify(v);
+}
+function getContextPath(context) {
+    return context.map(function (_a) {
+        var key = _a.key, type = _a.type;
+        return key + ": " + type.name;
+    }).join('/');
+}
+function getMessage(e) {
+    return e.message !== undefined
+        ? e.message
+        : "Invalid value " + stringify(e.value) + " supplied to " + getContextPath(e.context);
+}
+/**
+ * @since 1.0.0
+ */
+function failure(es) {
+    return es.map(getMessage);
+}
+exports.failure = failure;
+/**
+ * @since 1.0.0
+ */
+function success() {
+    return ['No errors!'];
+}
+exports.success = success;
+/**
+ * @since 1.0.0
+ */
+exports.PathReporter = {
+    report: Either_1.fold(failure, success)
+};
+
+
+/***/ }),
 /* 307 */,
 /* 308 */,
 /* 309 */,
 /* 310 */,
 /* 311 */
-/***/ (function(__unusedmodule, exports) {
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
 
 /**
- * @license
- * Copyright 2017 gRPC authors.
+ * Represents a value of one of two possible types (a disjoint union).
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * An instance of `Either` is either an instance of `Left` or `Right`.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * A common use of `Either` is as an alternative to `Option` for dealing with possible missing values. In this usage,
+ * `None` is replaced with a `Left` which can contain useful information. `Right` takes the place of `Some`. Convention
+ * dictates that `Left` is used for failure and `Right` is used for success.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * For example, you could use `Either<string, number>` to detect whether a received input is a `string` or a `number`.
  *
- */
-
-/* The comments about status codes are copied verbatim (with some formatting
- * modifications) from include/grpc/impl/codegen/status.h, for the purpose of
- * including them in generated documentation.
- */
-/**
- * Enum of status codes that gRPC can return
- * @memberof grpc
- * @alias grpc.status
- * @readonly
- * @enum {number}
- */
-exports.status = {
-  /** Not an error; returned on success */
-  OK: 0,
-  /** The operation was cancelled (typically by the caller). */
-  CANCELLED: 1,
-  /**
-   * Unknown error.  An example of where this error may be returned is
-   * if a status value received from another address space belongs to
-   * an error-space that is not known in this address space.  Also
-   * errors raised by APIs that do not return enough error information
-   * may be converted to this error.
-   */
-  UNKNOWN: 2,
-  /**
-   * Client specified an invalid argument.  Note that this differs
-   * from FAILED_PRECONDITION.  INVALID_ARGUMENT indicates arguments
-   * that are problematic regardless of the state of the system
-   * (e.g., a malformed file name).
-   */
-  INVALID_ARGUMENT: 3,
-  /**
-   * Deadline expired before operation could complete.  For operations
-   * that change the state of the system, this error may be returned
-   * even if the operation has completed successfully.  For example, a
-   * successful response from a server could have been delayed long
-   * enough for the deadline to expire.
-   */
-  DEADLINE_EXCEEDED: 4,
-  /** Some requested entity (e.g., file or directory) was not found. */
-  NOT_FOUND: 5,
-  /**
-   * Some entity that we attempted to create (e.g., file or directory)
-   * already exists.
-   */
-  ALREADY_EXISTS: 6,
-  /**
-   * The caller does not have permission to execute the specified
-   * operation.  PERMISSION_DENIED must not be used for rejections
-   * caused by exhausting some resource (use RESOURCE_EXHAUSTED
-   * instead for those errors).  PERMISSION_DENIED must not be
-   * used if the caller can not be identified (use UNAUTHENTICATED
-   * instead for those errors).
-   */
-  PERMISSION_DENIED: 7,
-  /**
-   * Some resource has been exhausted, perhaps a per-user quota, or
-   * perhaps the entire file system is out of space.
-   */
-  RESOURCE_EXHAUSTED: 8,
-  /**
-   * Operation was rejected because the system is not in a state
-   * required for the operation's execution.  For example, directory
-   * to be deleted may be non-empty, an rmdir operation is applied to
-   * a non-directory, etc.
-   *
-   * A litmus test that may help a service implementor in deciding
-   * between FAILED_PRECONDITION, ABORTED, and UNAVAILABLE:
-   *
-   *  - Use UNAVAILABLE if the client can retry just the failing call.
-   *  - Use ABORTED if the client should retry at a higher-level
-   *    (e.g., restarting a read-modify-write sequence).
-   *  - Use FAILED_PRECONDITION if the client should not retry until
-   *    the system state has been explicitly fixed.  E.g., if an "rmdir"
-   *    fails because the directory is non-empty, FAILED_PRECONDITION
-   *    should be returned since the client should not retry unless
-   *    they have first fixed up the directory by deleting files from it.
-   *  - Use FAILED_PRECONDITION if the client performs conditional
-   *    REST Get/Update/Delete on a resource and the resource on the
-   *    server does not match the condition. E.g., conflicting
-   *    read-modify-write on the same resource.
-   */
-  FAILED_PRECONDITION: 9,
-  /**
-   * The operation was aborted, typically due to a concurrency issue
-   * like sequencer check failures, transaction aborts, etc.
-   *
-   * See litmus test above for deciding between FAILED_PRECONDITION,
-   * ABORTED, and UNAVAILABLE.
-   */
-  ABORTED: 10,
-  /**
-   * Operation was attempted past the valid range.  E.g., seeking or
-   * reading past end of file.
-   *
-   * Unlike INVALID_ARGUMENT, this error indicates a problem that may
-   * be fixed if the system state changes. For example, a 32-bit file
-   * system will generate INVALID_ARGUMENT if asked to read at an
-   * offset that is not in the range [0,2^32-1], but it will generate
-   * OUT_OF_RANGE if asked to read from an offset past the current
-   * file size.
-   *
-   * There is a fair bit of overlap between FAILED_PRECONDITION and
-   * OUT_OF_RANGE.  We recommend using OUT_OF_RANGE (the more specific
-   * error) when it applies so that callers who are iterating through
-   * a space can easily look for an OUT_OF_RANGE error to detect when
-   * they are done.
-   */
-  OUT_OF_RANGE: 11,
-  /** Operation is not implemented or not supported/enabled in this service. */
-  UNIMPLEMENTED: 12,
-  /**
-   * Internal errors.  Means some invariants expected by underlying
-   * system has been broken.  If you see one of these errors,
-   * something is very broken.
-   */
-  INTERNAL: 13,
-  /**
-   * The service is currently unavailable.  This is a most likely a
-   * transient condition and may be corrected by retrying with
-   * a backoff.
-   *
-   * See litmus test above for deciding between FAILED_PRECONDITION,
-   * ABORTED, and UNAVAILABLE.
-   */
-  UNAVAILABLE: 14,
-  /** Unrecoverable data loss or corruption. */
-  DATA_LOSS: 15,
-  /**
-   * The request does not have valid authentication credentials for the
-   * operation.
-   */
-  UNAUTHENTICATED: 16
-};
-
-/* The comments about propagation bit flags are copied from
- * include/grpc/impl/codegen/propagation_bits.h for the purpose of including
- * them in generated documentation.
- */
-/**
- * Propagation flags: these can be bitwise or-ed to form the propagation option
- * for calls.
+ * ```ts
+ * import { Either, left, right } from 'fp-ts/lib/Either'
  *
- * Users are encouraged to write propagation masks as deltas from the default.
- * i.e. write `grpc.propagate.DEFAULTS & ~grpc.propagate.DEADLINE` to disable
- * deadline propagation.
- * @memberof grpc
- * @alias grpc.propagate
- * @enum {number}
+ * function parse(input: string): Either<Error, number> {
+ *   const n = parseInt(input, 10)
+ *   return isNaN(n) ? left(new Error('not a number')) : right(n)
+ * }
+ * ```
+ *
+ * `Either` is right-biased, which means that `Right` is assumed to be the default case to operate on. If it is `Left`,
+ * operations like `map`, `chain`, ... return the `Left` value unchanged:
+ *
+ * ```ts
+ * import { map, left, right } from 'fp-ts/lib/Either'
+ * import { pipe } from 'fp-ts/lib/pipeable'
+ *
+ * pipe(right(12), map(double)) // right(24)
+ * pipe(left(23), map(double))  // left(23)
+ * ```
+ *
+ * @since 2.0.0
  */
-exports.propagate = {
-  DEADLINE: 1,
-  CENSUS_STATS_CONTEXT: 2,
-  CENSUS_TRACING_CONTEXT: 4,
-  CANCELLATION: 8,
-  DEFAULTS: 65535
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
 };
-
-/* Many of the following comments are copied from
- * include/grpc/impl/codegen/grpc_types.h
- */
+Object.defineProperty(exports, "__esModule", { value: true });
+var ChainRec_1 = __webpack_require__(99);
+var pipeable_1 = __webpack_require__(194);
 /**
- * Call error constants. Call errors almost always indicate bugs in the gRPC
- * library, and these error codes are mainly useful for finding those bugs.
- * @memberof grpc
- * @readonly
- * @enum {number}
+ * @since 2.0.0
  */
-const callError = {
-  OK: 0,
-  ERROR: 1,
-  NOT_ON_SERVER: 2,
-  NOT_ON_CLIENT: 3,
-  ALREADY_INVOKED: 5,
-  NOT_INVOKED: 6,
-  ALREADY_FINISHED: 7,
-  TOO_MANY_OPERATIONS: 8,
-  INVALID_FLAGS: 9,
-  INVALID_METADATA: 10,
-  INVALID_MESSAGE: 11,
-  NOT_SERVER_COMPLETION_QUEUE: 12,
-  BATCH_TOO_BIG: 13,
-  PAYLOAD_TYPE_MISMATCH: 14
-};
-
-exports.callError = callError;
-
+exports.URI = 'Either';
 /**
- * Write flags: these can be bitwise or-ed to form write options that modify
- * how data is written.
- * @memberof grpc
- * @alias grpc.writeFlags
- * @readonly
- * @enum {number}
+ * Constructs a new `Either` holding a `Left` value. This usually represents a failure, due to the right-bias of this
+ * structure
+ *
+ * @since 2.0.0
  */
-exports.writeFlags = {
-  /**
-   * Hint that the write may be buffered and need not go out on the wire
-   * immediately. GRPC is free to buffer the message until the next non-buffered
-   * write, or until writes_done, but it need not buffer completely or at all.
-   */
-  BUFFER_HINT: 1,
-  /**
-   * Force compression to be disabled for a particular write
-   */
-  NO_COMPRESS: 2
-};
-
+function left(e) {
+    return { _tag: 'Left', left: e };
+}
+exports.left = left;
 /**
- * @memberof grpc
- * @alias grpc.logVerbosity
- * @readonly
- * @enum {number}
+ * Constructs a new `Either` holding a `Right` value. This usually represents a successful value due to the right bias
+ * of this structure
+ *
+ * @since 2.0.0
  */
-exports.logVerbosity = {
-  DEBUG: 0,
-  INFO: 1,
-  ERROR: 2
-};
-
+function right(a) {
+    return { _tag: 'Right', right: a };
+}
+exports.right = right;
 /**
- * Method types: the supported RPC types
- * @memberof grpc
- * @alias grpc.methodTypes
- * @readonly
- * @enum {number}
+ * Takes a default and a nullable value, if the value is not nully, turn it into a `Right`, if the value is nully use
+ * the provided default as a `Left`
+ *
+ * @example
+ * import { fromNullable, left, right } from 'fp-ts/lib/Either'
+ *
+ * const parse = fromNullable('nully')
+ *
+ * assert.deepStrictEqual(parse(1), right(1))
+ * assert.deepStrictEqual(parse(null), left('nully'))
+ *
+ * @since 2.0.0
  */
-exports.methodTypes = {
-  UNARY: 0,
-  CLIENT_STREAMING: 1,
-  SERVER_STREAMING: 2,
-  BIDI_STREAMING: 3
-};
-
+function fromNullable(e) {
+    return function (a) { return (a == null ? left(e) : right(a)); };
+}
+exports.fromNullable = fromNullable;
 /**
- * Connectivity state values
- * @memberof grpc
- * @alias grpc.connectivityState
- * @readonly
- * @enum {number}
+ * Default value for the `onError` argument of `tryCatch`
+ *
+ * @since 2.0.0
  */
-exports.connectivityState = {
-  IDLE: 0,
-  CONNECTING: 1,
-  READY: 2,
-  TRANSIENT_FAILURE: 3,
-  SHUTDOWN: 4
+function toError(e) {
+    return e instanceof Error ? e : new Error(String(e));
+}
+exports.toError = toError;
+/**
+ * Constructs a new `Either` from a function that might throw
+ *
+ * @example
+ * import { Either, left, right, tryCatch } from 'fp-ts/lib/Either'
+ *
+ * const unsafeHead = <A>(as: Array<A>): A => {
+ *   if (as.length > 0) {
+ *     return as[0]
+ *   } else {
+ *     throw new Error('empty array')
+ *   }
+ * }
+ *
+ * const head = <A>(as: Array<A>): Either<Error, A> => {
+ *   return tryCatch(() => unsafeHead(as), e => (e instanceof Error ? e : new Error('unknown error')))
+ * }
+ *
+ * assert.deepStrictEqual(head([]), left(new Error('empty array')))
+ * assert.deepStrictEqual(head([1, 2, 3]), right(1))
+ *
+ * @since 2.0.0
+ */
+function tryCatch(f, onError) {
+    try {
+        return right(f());
+    }
+    catch (e) {
+        return left(onError(e));
+    }
+}
+exports.tryCatch = tryCatch;
+/**
+ * Takes two functions and an `Either` value, if the value is a `Left` the inner value is applied to the first function,
+ * if the value is a `Right` the inner value is applied to the second function.
+ *
+ * @example
+ * import { fold, left, right } from 'fp-ts/lib/Either'
+ * import { pipe } from 'fp-ts/lib/pipeable'
+ *
+ * function onLeft(errors: Array<string>): string {
+ *   return `Errors: ${errors.join(', ')}`
+ * }
+ *
+ * function onRight(value: number): string {
+ *   return `Ok: ${value}`
+ * }
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     right(1),
+ *     fold(onLeft, onRight)
+ *   ),
+ *   'Ok: 1'
+ * )
+ * assert.strictEqual(
+ *   pipe(
+ *     left(['error 1', 'error 2']),
+ *     fold(onLeft, onRight)
+ *   ),
+ *   'Errors: error 1, error 2'
+ * )
+ *
+ * @since 2.0.0
+ */
+function fold(onLeft, onRight) {
+    return function (ma) { return (isLeft(ma) ? onLeft(ma.left) : onRight(ma.right)); };
+}
+exports.fold = fold;
+/**
+ * @since 2.0.0
+ */
+function getShow(SE, SA) {
+    return {
+        show: function (ma) { return (isLeft(ma) ? "left(" + SE.show(ma.left) + ")" : "right(" + SA.show(ma.right) + ")"); }
+    };
+}
+exports.getShow = getShow;
+/**
+ * @since 2.0.0
+ */
+function getEq(EL, EA) {
+    return {
+        equals: function (x, y) {
+            return x === y || (isLeft(x) ? isLeft(y) && EL.equals(x.left, y.left) : isRight(y) && EA.equals(x.right, y.right));
+        }
+    };
+}
+exports.getEq = getEq;
+/**
+ * Semigroup returning the left-most non-`Left` value. If both operands are `Right`s then the inner values are
+ * appended using the provided `Semigroup`
+ *
+ * @example
+ * import { getSemigroup, left, right } from 'fp-ts/lib/Either'
+ * import { semigroupSum } from 'fp-ts/lib/Semigroup'
+ *
+ * const S = getSemigroup<string, number>(semigroupSum)
+ * assert.deepStrictEqual(S.concat(left('a'), left('b')), left('a'))
+ * assert.deepStrictEqual(S.concat(left('a'), right(2)), right(2))
+ * assert.deepStrictEqual(S.concat(right(1), left('b')), right(1))
+ * assert.deepStrictEqual(S.concat(right(1), right(2)), right(3))
+ *
+ *
+ * @since 2.0.0
+ */
+function getSemigroup(S) {
+    return {
+        concat: function (x, y) { return (isLeft(y) ? x : isLeft(x) ? y : right(S.concat(x.right, y.right))); }
+    };
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * `Apply` semigroup
+ *
+ * @example
+ * import { getApplySemigroup, left, right } from 'fp-ts/lib/Either'
+ * import { semigroupSum } from 'fp-ts/lib/Semigroup'
+ *
+ * const S = getApplySemigroup<string, number>(semigroupSum)
+ * assert.deepStrictEqual(S.concat(left('a'), left('b')), left('a'))
+ * assert.deepStrictEqual(S.concat(left('a'), right(2)), left('a'))
+ * assert.deepStrictEqual(S.concat(right(1), left('b')), left('b'))
+ * assert.deepStrictEqual(S.concat(right(1), right(2)), right(3))
+ *
+ *
+ * @since 2.0.0
+ */
+function getApplySemigroup(S) {
+    return {
+        concat: function (x, y) { return (isLeft(x) ? x : isLeft(y) ? y : right(S.concat(x.right, y.right))); }
+    };
+}
+exports.getApplySemigroup = getApplySemigroup;
+/**
+ * @since 2.0.0
+ */
+function getApplyMonoid(M) {
+    return __assign(__assign({}, getApplySemigroup(M)), { empty: right(M.empty) });
+}
+exports.getApplyMonoid = getApplyMonoid;
+/**
+ * Returns `true` if the either is an instance of `Left`, `false` otherwise
+ *
+ * @since 2.0.0
+ */
+function isLeft(ma) {
+    switch (ma._tag) {
+        case 'Left':
+            return true;
+        case 'Right':
+            return false;
+    }
+}
+exports.isLeft = isLeft;
+/**
+ * Returns `true` if the either is an instance of `Right`, `false` otherwise
+ *
+ * @since 2.0.0
+ */
+function isRight(ma) {
+    return isLeft(ma) ? false : true;
+}
+exports.isRight = isRight;
+/**
+ * @since 2.0.0
+ */
+function swap(ma) {
+    return isLeft(ma) ? right(ma.left) : left(ma.right);
+}
+exports.swap = swap;
+/**
+ * @since 2.0.0
+ */
+function orElse(onLeft) {
+    return function (ma) { return (isLeft(ma) ? onLeft(ma.left) : ma); };
+}
+exports.orElse = orElse;
+/**
+ * @since 2.0.0
+ */
+function getOrElse(onLeft) {
+    return function (ma) { return (isLeft(ma) ? onLeft(ma.left) : ma.right); };
+}
+exports.getOrElse = getOrElse;
+/**
+ * @since 2.0.0
+ */
+function elem(E) {
+    return function (a, ma) { return (isLeft(ma) ? false : E.equals(a, ma.right)); };
+}
+exports.elem = elem;
+/**
+ * Returns `false` if `Left` or returns the result of the application of the given predicate to the `Right` value.
+ *
+ * @example
+ * import { exists, left, right } from 'fp-ts/lib/Either'
+ *
+ * const gt2 = exists((n: number) => n > 2)
+ *
+ * assert.strictEqual(gt2(left('a')), false)
+ * assert.strictEqual(gt2(right(1)), false)
+ * assert.strictEqual(gt2(right(3)), true)
+ *
+ * @since 2.0.0
+ */
+function exists(predicate) {
+    return function (ma) { return (isLeft(ma) ? false : predicate(ma.right)); };
+}
+exports.exists = exists;
+/**
+ * Converts a JavaScript Object Notation (JSON) string into an object.
+ *
+ * @example
+ * import { parseJSON, toError, right, left } from 'fp-ts/lib/Either'
+ *
+ * assert.deepStrictEqual(parseJSON('{"a":1}', toError), right({ a: 1 }))
+ * assert.deepStrictEqual(parseJSON('{"a":}', toError), left(new SyntaxError('Unexpected token } in JSON at position 5')))
+ *
+ * @since 2.0.0
+ */
+function parseJSON(s, onError) {
+    return tryCatch(function () { return JSON.parse(s); }, onError);
+}
+exports.parseJSON = parseJSON;
+/**
+ * Converts a JavaScript value to a JavaScript Object Notation (JSON) string.
+ *
+ * @example
+ * import * as E from 'fp-ts/lib/Either'
+ * import { pipe } from 'fp-ts/lib/pipeable'
+ *
+ * assert.deepStrictEqual(E.stringifyJSON({ a: 1 }, E.toError), E.right('{"a":1}'))
+ * const circular: any = { ref: null }
+ * circular.ref = circular
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     E.stringifyJSON(circular, E.toError),
+ *     E.mapLeft(e => e.message.includes('Converting circular structure to JSON'))
+ *   ),
+ *   E.left(true)
+ * )
+ *
+ * @since 2.0.0
+ */
+function stringifyJSON(u, onError) {
+    return tryCatch(function () { return JSON.stringify(u); }, onError);
+}
+exports.stringifyJSON = stringifyJSON;
+/**
+ * Builds `Witherable` instance for `Either` given `Monoid` for the left side
+ *
+ * @since 2.0.0
+ */
+function getWitherable(M) {
+    var empty = left(M.empty);
+    var compact = function (ma) {
+        return isLeft(ma) ? ma : ma.right._tag === 'None' ? left(M.empty) : right(ma.right.value);
+    };
+    var separate = function (ma) {
+        return isLeft(ma)
+            ? { left: ma, right: ma }
+            : isLeft(ma.right)
+                ? { left: right(ma.right.left), right: empty }
+                : { left: empty, right: right(ma.right.right) };
+    };
+    var partitionMap = function (ma, f) {
+        if (isLeft(ma)) {
+            return { left: ma, right: ma };
+        }
+        var e = f(ma.right);
+        return isLeft(e) ? { left: right(e.left), right: empty } : { left: empty, right: right(e.right) };
+    };
+    var partition = function (ma, p) {
+        return isLeft(ma)
+            ? { left: ma, right: ma }
+            : p(ma.right)
+                ? { left: empty, right: right(ma.right) }
+                : { left: right(ma.right), right: empty };
+    };
+    var filterMap = function (ma, f) {
+        if (isLeft(ma)) {
+            return ma;
+        }
+        var ob = f(ma.right);
+        return ob._tag === 'None' ? left(M.empty) : right(ob.value);
+    };
+    var filter = function (ma, predicate) {
+        return isLeft(ma) ? ma : predicate(ma.right) ? ma : left(M.empty);
+    };
+    var wither = function (F) {
+        var traverseF = exports.either.traverse(F);
+        return function (ma, f) { return F.map(traverseF(ma, f), compact); };
+    };
+    var wilt = function (F) {
+        var traverseF = exports.either.traverse(F);
+        return function (ma, f) { return F.map(traverseF(ma, f), separate); };
+    };
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: exports.either.map,
+        compact: compact,
+        separate: separate,
+        filter: filter,
+        filterMap: filterMap,
+        partition: partition,
+        partitionMap: partitionMap,
+        traverse: exports.either.traverse,
+        sequence: exports.either.sequence,
+        reduce: exports.either.reduce,
+        foldMap: exports.either.foldMap,
+        reduceRight: exports.either.reduceRight,
+        wither: wither,
+        wilt: wilt
+    };
+}
+exports.getWitherable = getWitherable;
+/**
+ * @since 2.0.0
+ */
+function getValidation(S) {
+    return {
+        URI: exports.URI,
+        _E: undefined,
+        map: exports.either.map,
+        of: exports.either.of,
+        ap: function (mab, ma) {
+            return isLeft(mab)
+                ? isLeft(ma)
+                    ? left(S.concat(mab.left, ma.left))
+                    : mab
+                : isLeft(ma)
+                    ? ma
+                    : right(mab.right(ma.right));
+        },
+        chain: exports.either.chain,
+        alt: function (fx, f) {
+            if (isRight(fx)) {
+                return fx;
+            }
+            var fy = f();
+            return isLeft(fy) ? left(S.concat(fx.left, fy.left)) : fy;
+        }
+    };
+}
+exports.getValidation = getValidation;
+/**
+ * @since 2.0.0
+ */
+function getValidationSemigroup(SE, SA) {
+    return {
+        concat: function (fx, fy) {
+            return isLeft(fx)
+                ? isLeft(fy)
+                    ? left(SE.concat(fx.left, fy.left))
+                    : fx
+                : isLeft(fy)
+                    ? fy
+                    : right(SA.concat(fx.right, fy.right));
+        }
+    };
+}
+exports.getValidationSemigroup = getValidationSemigroup;
+/**
+ * @since 2.0.0
+ */
+function getValidationMonoid(SE, SA) {
+    return {
+        concat: getValidationSemigroup(SE, SA).concat,
+        empty: right(SA.empty)
+    };
+}
+exports.getValidationMonoid = getValidationMonoid;
+/**
+ * @since 2.0.0
+ */
+exports.either = {
+    URI: exports.URI,
+    map: function (ma, f) { return (isLeft(ma) ? ma : right(f(ma.right))); },
+    of: right,
+    ap: function (mab, ma) { return (isLeft(mab) ? mab : isLeft(ma) ? ma : right(mab.right(ma.right))); },
+    chain: function (ma, f) { return (isLeft(ma) ? ma : f(ma.right)); },
+    reduce: function (fa, b, f) { return (isLeft(fa) ? b : f(b, fa.right)); },
+    foldMap: function (M) { return function (fa, f) { return (isLeft(fa) ? M.empty : f(fa.right)); }; },
+    reduceRight: function (fa, b, f) { return (isLeft(fa) ? b : f(fa.right, b)); },
+    traverse: function (F) { return function (ma, f) {
+        return isLeft(ma) ? F.of(left(ma.left)) : F.map(f(ma.right), right);
+    }; },
+    sequence: function (F) { return function (ma) {
+        return isLeft(ma) ? F.of(left(ma.left)) : F.map(ma.right, right);
+    }; },
+    bimap: function (fea, f, g) { return (isLeft(fea) ? left(f(fea.left)) : right(g(fea.right))); },
+    mapLeft: function (fea, f) { return (isLeft(fea) ? left(f(fea.left)) : fea); },
+    alt: function (fx, fy) { return (isLeft(fx) ? fy() : fx); },
+    extend: function (wa, f) { return (isLeft(wa) ? wa : right(f(wa))); },
+    chainRec: function (a, f) {
+        return ChainRec_1.tailRec(f(a), function (e) {
+            return isLeft(e) ? right(left(e.left)) : isLeft(e.right) ? left(f(e.right.left)) : right(right(e.right.right));
+        });
+    },
+    throwError: left
 };
+var _a = pipeable_1.pipeable(exports.either), alt = _a.alt, ap = _a.ap, apFirst = _a.apFirst, apSecond = _a.apSecond, bimap = _a.bimap, chain = _a.chain, chainFirst = _a.chainFirst, duplicate = _a.duplicate, extend = _a.extend, flatten = _a.flatten, foldMap = _a.foldMap, map = _a.map, mapLeft = _a.mapLeft, reduce = _a.reduce, reduceRight = _a.reduceRight, fromOption = _a.fromOption, fromPredicate = _a.fromPredicate, filterOrElse = _a.filterOrElse;
+exports.alt = alt;
+exports.ap = ap;
+exports.apFirst = apFirst;
+exports.apSecond = apSecond;
+exports.bimap = bimap;
+exports.chain = chain;
+exports.chainFirst = chainFirst;
+exports.duplicate = duplicate;
+exports.extend = extend;
+exports.flatten = flatten;
+exports.foldMap = foldMap;
+exports.map = map;
+exports.mapLeft = mapLeft;
+exports.reduce = reduce;
+exports.reduceRight = reduceRight;
+exports.fromOption = fromOption;
+exports.fromPredicate = fromPredicate;
+exports.filterOrElse = filterOrElse;
 
 
 /***/ }),
@@ -22064,7 +24988,7 @@ var grpc = __webpack_require__(253);
 var protobuf_js_5_common = __webpack_require__(811);
 var protobuf_js_6_common = __webpack_require__(867);
 
-var constants = __webpack_require__(311);
+var constants = __webpack_require__(724);
 
 grpc.setDefaultRootsPem(fs.readFileSync(__webpack_require__.ab + "roots.pem", 'ascii'));
 
@@ -30531,8 +33455,78 @@ var isArray = Array.isArray || function (xs) {
 /***/ }),
 /* 404 */,
 /* 405 */,
-/* 406 */,
-/* 407 */,
+/* 406 */
+/***/ (function(module) {
+
+"use strict";
+
+module.exports = balanced;
+function balanced(a, b, str) {
+  if (a instanceof RegExp) a = maybeMatch(a, str);
+  if (b instanceof RegExp) b = maybeMatch(b, str);
+
+  var r = range(a, b, str);
+
+  return r && {
+    start: r[0],
+    end: r[1],
+    pre: str.slice(0, r[0]),
+    body: str.slice(r[0] + a.length, r[1]),
+    post: str.slice(r[1] + b.length)
+  };
+}
+
+function maybeMatch(reg, str) {
+  var m = str.match(reg);
+  return m ? m[0] : null;
+}
+
+balanced.range = range;
+function range(a, b, str) {
+  var begs, beg, left, right, result;
+  var ai = str.indexOf(a);
+  var bi = str.indexOf(b, ai + 1);
+  var i = ai;
+
+  if (ai >= 0 && bi > 0) {
+    begs = [];
+    left = str.length;
+
+    while (i >= 0 && !result) {
+      if (i == ai) {
+        begs.push(i);
+        ai = str.indexOf(a, i + 1);
+      } else if (begs.length == 1) {
+        result = [ begs.pop(), bi ];
+      } else {
+        beg = begs.pop();
+        if (beg < left) {
+          left = beg;
+          right = bi;
+        }
+
+        bi = str.indexOf(b, i + 1);
+      }
+
+      i = ai < bi && ai >= 0 ? ai : bi;
+    }
+
+    if (begs.length) {
+      result = [ left, right ];
+    }
+  }
+
+  return result;
+}
+
+
+/***/ }),
+/* 407 */
+/***/ (function(module) {
+
+module.exports = require("buffer");
+
+/***/ }),
 /* 408 */,
 /* 409 */,
 /* 410 */,
@@ -31617,7 +34611,52 @@ module.exports = [
 
 
 /***/ }),
-/* 434 */,
+/* 434 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const zeebe_node_1 = __webpack_require__(94);
+const TE = __importStar(__webpack_require__(579));
+function publishMessage(config) {
+    return TE.tryCatch(() => __awaiter(this, void 0, void 0, function* () {
+        const result = [];
+        const zbc = new zeebe_node_1.ZBClient();
+        const messagePayload = {
+            name: config.messageName,
+            variables: config.variables,
+            timeToLive: config.timeToLive,
+            correlationKey: config.correlationKey || undefined
+        };
+        yield zbc.publishMessage(messagePayload);
+        result.push(`Published message to Zeebe.`);
+        result.push(JSON.stringify(messagePayload, null, 2));
+        const output = JSON.stringify(messagePayload, null, 2);
+        yield zbc.close();
+        return { info: result, output };
+    }), (failure) => ({ message: failure.message }));
+}
+exports.publishMessage = publishMessage;
+
+
+/***/ }),
 /* 435 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -34766,68 +37805,42 @@ Delegator.prototype.fluent = function (name) {
 /* 525 */,
 /* 526 */,
 /* 527 */
-/***/ (function(module) {
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
-module.exports = balanced;
-function balanced(a, b, str) {
-  if (a instanceof RegExp) a = maybeMatch(a, str);
-  if (b instanceof RegExp) b = maybeMatch(b, str);
-
-  var r = range(a, b, str);
-
-  return r && {
-    start: r[0],
-    end: r[1],
-    pre: str.slice(0, r[0]),
-    body: str.slice(r[0] + a.length, r[1]),
-    post: str.slice(r[1] + b.length)
-  };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const zeebe_node_1 = __webpack_require__(94);
+const TE = __importStar(__webpack_require__(579));
+function createWorkflowInstance(config) {
+    return TE.tryCatch(() => __awaiter(this, void 0, void 0, function* () {
+        const zbc = new zeebe_node_1.ZBClient();
+        const res = JSON.stringify(yield zbc.createWorkflowInstance(config.bpmnProcessId, config.variables), null, 2);
+        yield zbc.close();
+        return {
+            error: false,
+            info: [res],
+            output: res
+        };
+    }), (failure) => ({ message: failure.message }));
 }
-
-function maybeMatch(reg, str) {
-  var m = str.match(reg);
-  return m ? m[0] : null;
-}
-
-balanced.range = range;
-function range(a, b, str) {
-  var begs, beg, left, right, result;
-  var ai = str.indexOf(a);
-  var bi = str.indexOf(b, ai + 1);
-  var i = ai;
-
-  if (ai >= 0 && bi > 0) {
-    begs = [];
-    left = str.length;
-
-    while (i >= 0 && !result) {
-      if (i == ai) {
-        begs.push(i);
-        ai = str.indexOf(a, i + 1);
-      } else if (begs.length == 1) {
-        result = [ begs.pop(), bi ];
-      } else {
-        beg = begs.pop();
-        if (beg < left) {
-          left = beg;
-          right = bi;
-        }
-
-        bi = str.indexOf(b, i + 1);
-      }
-
-      i = ai < bi && ai >= 0 ? ai : bi;
-    }
-
-    if (begs.length) {
-      result = [ left, right ];
-    }
-  }
-
-  return result;
-}
+exports.createWorkflowInstance = createWorkflowInstance;
 
 
 /***/ }),
@@ -35976,7 +38989,18 @@ Namespace._configure = function(Type_, Service_, Enum_) {
 
 
 /***/ }),
-/* 559 */,
+/* 559 */
+/***/ (function(module) {
+
+"use strict";
+
+
+module.exports = function spin (spinstr, spun) {
+  return spinstr[spun % spinstr.length]
+}
+
+
+/***/ }),
 /* 560 */,
 /* 561 */,
 /* 562 */,
@@ -35984,7 +39008,7 @@ Namespace._configure = function(Type_, Service_, Enum_) {
 /***/ (function(module, exports, __webpack_require__) {
 
 /* eslint-disable node/no-deprecated-api */
-var buffer = __webpack_require__(293)
+var buffer = __webpack_require__(407)
 var Buffer = buffer.Buffer
 
 // alternative to using Object.keys for old browsers
@@ -36625,7 +39649,278 @@ function objectToString(o) {
 
 
 /***/ }),
-/* 579 */,
+/* 579 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var E = __webpack_require__(311);
+var EitherT_1 = __webpack_require__(46);
+var Filterable_1 = __webpack_require__(718);
+var pipeable_1 = __webpack_require__(194);
+var Task_1 = __webpack_require__(969);
+var ValidationT_1 = __webpack_require__(64);
+var T = EitherT_1.getEitherM(Task_1.task);
+/**
+ * @since 2.0.0
+ */
+exports.URI = 'TaskEither';
+/**
+ * @since 2.0.0
+ */
+exports.left = T.left;
+/**
+ * @since 2.0.0
+ */
+exports.right = T.of;
+/**
+ * @since 2.0.0
+ */
+function rightIO(ma) {
+    return exports.rightTask(Task_1.task.fromIO(ma));
+}
+exports.rightIO = rightIO;
+/**
+ * @since 2.0.0
+ */
+function leftIO(me) {
+    return exports.leftTask(Task_1.task.fromIO(me));
+}
+exports.leftIO = leftIO;
+/**
+ * @since 2.0.0
+ */
+exports.rightTask = T.rightM;
+/**
+ * @since 2.0.0
+ */
+exports.leftTask = T.leftM;
+/**
+ * @since 2.0.0
+ */
+exports.fromIOEither = Task_1.task.fromIO;
+/**
+ * @since 2.0.0
+ */
+function fold(onLeft, onRight) {
+    return function (ma) { return T.fold(ma, onLeft, onRight); };
+}
+exports.fold = fold;
+/**
+ * @since 2.0.0
+ */
+function getOrElse(onLeft) {
+    return function (ma) { return T.getOrElse(ma, onLeft); };
+}
+exports.getOrElse = getOrElse;
+/**
+ * @since 2.0.0
+ */
+function orElse(onLeft) {
+    return function (ma) { return T.orElse(ma, onLeft); };
+}
+exports.orElse = orElse;
+/**
+ * @since 2.0.0
+ */
+exports.swap = T.swap;
+/**
+ * @since 2.0.0
+ */
+function getSemigroup(S) {
+    return Task_1.getSemigroup(E.getSemigroup(S));
+}
+exports.getSemigroup = getSemigroup;
+/**
+ * @since 2.0.0
+ */
+function getApplySemigroup(S) {
+    return Task_1.getSemigroup(E.getApplySemigroup(S));
+}
+exports.getApplySemigroup = getApplySemigroup;
+/**
+ * @since 2.0.0
+ */
+function getApplyMonoid(M) {
+    return {
+        concat: getApplySemigroup(M).concat,
+        empty: exports.right(M.empty)
+    };
+}
+exports.getApplyMonoid = getApplyMonoid;
+/**
+ * Transforms a `Promise` that may reject to a `Promise` that never rejects and returns an `Either` instead.
+ *
+ * Note: `f` should never `throw` errors, they are not caught.
+ *
+ * @example
+ * import { left, right } from 'fp-ts/lib/Either'
+ * import { tryCatch } from 'fp-ts/lib/TaskEither'
+ *
+ * tryCatch(() => Promise.resolve(1), String)().then(result => {
+ *   assert.deepStrictEqual(result, right(1))
+ * })
+ * tryCatch(() => Promise.reject('error'), String)().then(result => {
+ *   assert.deepStrictEqual(result, left('error'))
+ * })
+ *
+ * @since 2.0.0
+ */
+function tryCatch(f, onRejected) {
+    return function () { return f().then(E.right, function (reason) { return E.left(onRejected(reason)); }); };
+}
+exports.tryCatch = tryCatch;
+/**
+ * Make sure that a resource is cleaned up in the event of an exception (*). The release action is called regardless of
+ * whether the body action throws (*) or returns.
+ *
+ * (*) i.e. returns a `Left`
+ *
+ * @since 2.0.0
+ */
+function bracket(acquire, use, release) {
+    return T.chain(acquire, function (a) {
+        return T.chain(Task_1.task.map(use(a), E.right), function (e) {
+            return T.chain(release(a, e), function () { return (E.isLeft(e) ? T.left(e.left) : T.of(e.right)); });
+        });
+    });
+}
+exports.bracket = bracket;
+function taskify(f) {
+    return function () {
+        var args = Array.prototype.slice.call(arguments);
+        return function () {
+            return new Promise(function (resolve) {
+                var cbResolver = function (e, r) { return (e != null ? resolve(E.left(e)) : resolve(E.right(r))); };
+                f.apply(null, args.concat(cbResolver));
+            });
+        };
+    };
+}
+exports.taskify = taskify;
+/**
+ * @since 2.0.0
+ */
+function getTaskValidation(S) {
+    var T = ValidationT_1.getValidationM(S, Task_1.task);
+    return __assign({ URI: exports.URI, _E: undefined, throwError: exports.taskEither.throwError, bimap: exports.taskEither.bimap, mapLeft: exports.taskEither.mapLeft, fromIO: exports.taskEither.fromIO, fromTask: exports.taskEither.fromTask }, T);
+}
+exports.getTaskValidation = getTaskValidation;
+/**
+ * @since 2.1.0
+ */
+function getFilterable(M) {
+    var F = E.getWitherable(M);
+    return __assign({ URI: exports.URI, _E: undefined }, Filterable_1.getFilterableComposition(Task_1.task, F));
+}
+exports.getFilterable = getFilterable;
+/**
+ * @since 2.4.0
+ */
+function fromEitherK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return fromEither(f.apply(void 0, a));
+    };
+}
+exports.fromEitherK = fromEitherK;
+/**
+ * @since 2.4.0
+ */
+function chainEitherK(f) {
+    return chain(fromEitherK(f));
+}
+exports.chainEitherK = chainEitherK;
+/**
+ * @since 2.4.0
+ */
+function fromIOEitherK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return exports.fromIOEither(f.apply(void 0, a));
+    };
+}
+exports.fromIOEitherK = fromIOEitherK;
+/**
+ * @since 2.4.0
+ */
+function chainIOEitherK(f) {
+    return chain(fromIOEitherK(f));
+}
+exports.chainIOEitherK = chainIOEitherK;
+/**
+ * Converts a function returning a `Promise` to one returning a `TaskEither`.
+ *
+ * @since 2.5.0
+ */
+function tryCatchK(f, onRejected) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return tryCatch(function () { return f.apply(void 0, a); }, onRejected);
+    };
+}
+exports.tryCatchK = tryCatchK;
+/**
+ * @since 2.0.0
+ */
+exports.taskEither = {
+    URI: exports.URI,
+    bimap: T.bimap,
+    mapLeft: T.mapLeft,
+    map: T.map,
+    of: T.of,
+    ap: T.ap,
+    chain: T.chain,
+    alt: T.alt,
+    fromIO: rightIO,
+    fromTask: exports.rightTask,
+    throwError: exports.left
+};
+/**
+ * Like `TaskEither` but `ap` is sequential
+ *
+ * @since 2.0.0
+ */
+exports.taskEitherSeq = __assign(__assign({}, exports.taskEither), { ap: function (mab, ma) { return T.chain(mab, function (f) { return T.map(ma, f); }); } });
+var _a = pipeable_1.pipeable(exports.taskEither), alt = _a.alt, ap = _a.ap, apFirst = _a.apFirst, apSecond = _a.apSecond, bimap = _a.bimap, chain = _a.chain, chainFirst = _a.chainFirst, flatten = _a.flatten, map = _a.map, mapLeft = _a.mapLeft, fromEither = _a.fromEither, fromOption = _a.fromOption, fromPredicate = _a.fromPredicate, filterOrElse = _a.filterOrElse;
+exports.alt = alt;
+exports.ap = ap;
+exports.apFirst = apFirst;
+exports.apSecond = apSecond;
+exports.bimap = bimap;
+exports.chain = chain;
+exports.chainFirst = chainFirst;
+exports.flatten = flatten;
+exports.map = map;
+exports.mapLeft = mapLeft;
+exports.fromEither = fromEither;
+exports.fromOption = fromOption;
+exports.fromPredicate = fromPredicate;
+exports.filterOrElse = filterOrElse;
+
+
+/***/ }),
 /* 580 */,
 /* 581 */,
 /* 582 */,
@@ -38186,7 +41481,98 @@ module.exports = require("path");
 /* 625 */,
 /* 626 */,
 /* 627 */,
-/* 628 */,
+/* 628 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const noConfig = {
+    ZEEBE_ADDRESS: undefined,
+    ZEEBE_CLIENT_ID: undefined,
+    ZEEBE_AUTHORIZATION_SERVER_URL: undefined,
+    ZEEBE_CLIENT_SECRET: undefined
+};
+function setupEnv() {
+    const clientConfig = parseClientConfig(core.getInput('client_config'));
+    const ZEEBE_ADDRESS = process.env.ZEEBE_ADDRESS ||
+        clientConfig.ZEEBE_ADDRESS ||
+        core.getInput('zeebe_address');
+    const ZEEBE_CLIENT_ID = process.env.ZEEBE_CLIENT_ID ||
+        clientConfig.ZEEBE_CLIENT_ID ||
+        core.getInput('zeebe_client_id');
+    const ZEEBE_AUTHORIZATION_SERVER_URL = process.env.ZEEBE_AUTHORIZATION_SERVER_URL ||
+        clientConfig.ZEEBE_AUTHORIZATION_SERVER_URL ||
+        core.getInput('zeebe_authorization_server_url');
+    const ZEEBE_CLIENT_SECRET = process.env.ZEEBE_CLIENT_SECRET ||
+        clientConfig.ZEEBE_CLIENT_SECRET ||
+        core.getInput('zeebe_client_secret');
+    const missingConfigValues = [];
+    if (ZEEBE_ADDRESS === '') {
+        missingConfigValues.push('ZEEBE_ADDRESS');
+    }
+    if (ZEEBE_AUTHORIZATION_SERVER_URL === '') {
+        missingConfigValues.push('ZEEBE_AUTHORIZATION_SERVER_URL');
+    }
+    if (ZEEBE_CLIENT_ID === '') {
+        missingConfigValues.push('ZEEBE_CLIENT_ID');
+    }
+    if (ZEEBE_CLIENT_SECRET === '') {
+        missingConfigValues.push('ZEEBE_CLIENT_SECRET');
+    }
+    if (missingConfigValues.length > 0) {
+        return missingConfigValues;
+    }
+    core.exportVariable('ZEEBE_ADDRESS', ZEEBE_ADDRESS);
+    core.exportVariable('ZEEBE_CLIENT_ID', ZEEBE_CLIENT_ID);
+    core.exportVariable('ZEEBE_AUTHORIZATION_SERVER_URL', ZEEBE_AUTHORIZATION_SERVER_URL);
+    core.exportVariable('ZEEBE_CLIENT_SECRET', ZEEBE_CLIENT_SECRET);
+    return [];
+}
+exports.setupEnv = setupEnv;
+function parseClientConfig(clientConfig) {
+    if (!clientConfig) {
+        return noConfig;
+    }
+    try {
+        // Let's see if it is the new JSON config from https://github.com/zeebe-io/zeebe/issues/3544
+        // When it lands we will need to normalise it here
+        return JSON.parse(clientConfig);
+    }
+    catch (e) {
+        try {
+            // Nope, let's parse it as the exported variable block from the console
+            return JSON.parse(`{"${clientConfig
+                .trim()
+                .substring(7)
+                .split("'")
+                .join('')
+                .split('export ')
+                .join('')
+                .split('\n')
+                .map(s => s.trimLeft())
+                .join('","')
+                .split('=')
+                .join('":"')}"}`);
+        }
+        catch (err) {
+            // Couldn't parse it
+            return noConfig;
+        }
+    }
+}
+exports.parseClientConfig = parseClientConfig;
+
+
+/***/ }),
 /* 629 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -38242,7 +41628,7 @@ module.exports = require("net");
 
 "use strict";
 
-const decompressResponse = __webpack_require__(861);
+const decompressResponse = __webpack_require__(185);
 const is = __webpack_require__(534);
 const mimicResponse = __webpack_require__(576);
 const progress = __webpack_require__(365);
@@ -39031,7 +42417,71 @@ module.exports = (input, options) => {
 /* 680 */,
 /* 681 */,
 /* 682 */,
-/* 683 */,
+/* 683 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+function getConfigurationFromEnvironment() {
+    const verbose = core.getInput('verbose') === 'true';
+    const quiet = core.getInput('quiet') === 'true';
+    const messageName = core.getInput('message_name', { required: true });
+    const { variables, variableParsingError } = parseVariables(core.getInput('variables'));
+    const correlationKey = core.getInput('correlationKey');
+    const timeToLive = parseInt((val => (val === '' ? '0' : val))(core.getInput('ttl')), 10);
+    const bpmnProcessId = core.getInput('bpmn_process_id', { required: true });
+    const requestTimeout = (val => (!val || val === '' ? 30 : parseInt(val, 10)))(core.getInput('requestTimeout'));
+    const workerHandlerFile = core.getInput('worker_handler_file');
+    const bpmnFilename = core.getInput('bpmn_filename');
+    const bpmnDir = core.getInput('bpmn_directory');
+    const workerLifetime = parseInt(core.getInput('worker_lifetime_mins'), 10);
+    return {
+        bpmnProcessId,
+        requestTimeout,
+        timeToLive,
+        correlationKey,
+        variables,
+        variableParsingError,
+        messageName,
+        quiet,
+        verbose,
+        workerHandlerFile,
+        bpmnFilename,
+        bpmnDir,
+        workerLifetime
+    };
+}
+exports.getConfigurationFromEnvironment = getConfigurationFromEnvironment;
+function parseVariables(vars) {
+    let variables;
+    try {
+        variables = JSON.parse(vars || '{}');
+    }
+    catch (e) {
+        return {
+            variableParsingError: true,
+            message: `Could not parse supplied variables to JSON: ${vars}`,
+            variables: undefined
+        };
+    }
+    return {
+        variableParsingError: false,
+        variables
+    };
+}
+exports.parseVariables = parseVariables;
+
+
+/***/ }),
 /* 684 */,
 /* 685 */,
 /* 686 */,
@@ -39149,7 +42599,55 @@ module.exports = cloneResponse;
 /* 701 */,
 /* 702 */,
 /* 703 */,
-/* 704 */,
+/* 704 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const zeebe_node_1 = __webpack_require__(94);
+const TE = __importStar(__webpack_require__(579));
+const fs_1 = __webpack_require__(747);
+function isDeployFile(config) {
+    return !!config.bpmnFilename;
+}
+function deployWorkflow(config) {
+    return TE.tryCatch(() => __awaiter(this, void 0, void 0, function* () {
+        const zbc = new zeebe_node_1.ZBClient();
+        const toDeploy = isDeployFile(config)
+            ? `./${config.bpmnFilename}`
+            : fs_1.readdirSync(config.bpmnDir)
+                .filter(f => f.endsWith('.bpmn'))
+                .map(f => `${config.bpmnDir}/${f}`);
+        const res = yield zbc.deployWorkflow(toDeploy);
+        yield zbc.close();
+        return {
+            error: false,
+            info: [JSON.stringify(res, null, 2)],
+            output: JSON.stringify(res)
+        };
+    }), (failure) => ({ message: failure.message }));
+}
+exports.deployWorkflow = deployWorkflow;
+
+
+/***/ }),
 /* 705 */,
 /* 706 */,
 /* 707 */
@@ -39234,85 +42732,44 @@ function inquire(moduleName) {
 /* 716 */,
 /* 717 */,
 /* 718 */
-/***/ (function(module, __unusedexports, __webpack_require__) {
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
-
-var stream = __webpack_require__(413);
-
-function DuplexWrapper(options, writable, readable) {
-  if (typeof readable === "undefined") {
-    readable = writable;
-    writable = options;
-    options = null;
-  }
-
-  stream.Duplex.call(this, options);
-
-  if (typeof readable.read !== "function") {
-    readable = (new stream.Readable(options)).wrap(readable);
-  }
-
-  this._writable = writable;
-  this._readable = readable;
-  this._waiting = false;
-
-  var self = this;
-
-  writable.once("finish", function() {
-    self.end();
-  });
-
-  this.once("finish", function() {
-    writable.end();
-  });
-
-  readable.on("readable", function() {
-    if (self._waiting) {
-      self._waiting = false;
-      self._read();
-    }
-  });
-
-  readable.once("end", function() {
-    self.push(null);
-  });
-
-  if (!options || typeof options.bubbleErrors === "undefined" || options.bubbleErrors) {
-    writable.on("error", function(err) {
-      self.emit("error", err);
-    });
-
-    readable.on("error", function(err) {
-      self.emit("error", err);
-    });
-  }
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * `Filterable` represents data structures which can be _partitioned_/_filtered_.
+ *
+ * Adapted from https://github.com/LiamGoodacre/purescript-filterable/blob/master/src/Data/Filterable.purs
+ *
+ * @since 2.0.0
+ */
+var Compactable_1 = __webpack_require__(256);
+var Option_1 = __webpack_require__(293);
+function getFilterableComposition(F, G) {
+    var FC = __assign(__assign({}, Compactable_1.getCompactableComposition(F, G)), { partitionMap: function (fga, f) {
+            var left = FC.filterMap(fga, function (a) { return Option_1.getLeft(f(a)); });
+            var right = FC.filterMap(fga, function (a) { return Option_1.getRight(f(a)); });
+            return { left: left, right: right };
+        }, partition: function (fga, p) {
+            var left = FC.filter(fga, function (a) { return !p(a); });
+            var right = FC.filter(fga, p);
+            return { left: left, right: right };
+        }, filterMap: function (fga, f) { return F.map(fga, function (ga) { return G.filterMap(ga, f); }); }, filter: function (fga, f) { return F.map(fga, function (ga) { return G.filter(ga, f); }); } });
+    return FC;
 }
-
-DuplexWrapper.prototype = Object.create(stream.Duplex.prototype, {constructor: {value: DuplexWrapper}});
-
-DuplexWrapper.prototype._write = function _write(input, encoding, done) {
-  this._writable.write(input, encoding, done);
-};
-
-DuplexWrapper.prototype._read = function _read() {
-  var buf;
-  var reads = 0;
-  while ((buf = this._readable.read()) !== null) {
-    this.push(buf);
-    reads++;
-  }
-  if (reads === 0) {
-    this._waiting = true;
-  }
-};
-
-module.exports = function duplex2(options, writable, readable) {
-  return new DuplexWrapper(options, writable, readable);
-};
-
-module.exports.DuplexWrapper = DuplexWrapper;
+exports.getFilterableComposition = getFilterableComposition;
 
 
 /***/ }),
@@ -39498,7 +42955,7 @@ module.exports = bytesToUuid;
 
 var grpc = __webpack_require__(253);
 var Metadata = __webpack_require__(18);
-var constants = __webpack_require__(311);
+var constants = __webpack_require__(724);
 var common = __webpack_require__(159);
 var methodTypes = constants.methodTypes;
 var EventEmitter = __webpack_require__(614).EventEmitter;
@@ -40800,7 +44257,278 @@ exports.getLastListener = getLastListener;
 
 
 /***/ }),
-/* 724 */,
+/* 724 */
+/***/ (function(__unusedmodule, exports) {
+
+/**
+ * @license
+ * Copyright 2017 gRPC authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+/* The comments about status codes are copied verbatim (with some formatting
+ * modifications) from include/grpc/impl/codegen/status.h, for the purpose of
+ * including them in generated documentation.
+ */
+/**
+ * Enum of status codes that gRPC can return
+ * @memberof grpc
+ * @alias grpc.status
+ * @readonly
+ * @enum {number}
+ */
+exports.status = {
+  /** Not an error; returned on success */
+  OK: 0,
+  /** The operation was cancelled (typically by the caller). */
+  CANCELLED: 1,
+  /**
+   * Unknown error.  An example of where this error may be returned is
+   * if a status value received from another address space belongs to
+   * an error-space that is not known in this address space.  Also
+   * errors raised by APIs that do not return enough error information
+   * may be converted to this error.
+   */
+  UNKNOWN: 2,
+  /**
+   * Client specified an invalid argument.  Note that this differs
+   * from FAILED_PRECONDITION.  INVALID_ARGUMENT indicates arguments
+   * that are problematic regardless of the state of the system
+   * (e.g., a malformed file name).
+   */
+  INVALID_ARGUMENT: 3,
+  /**
+   * Deadline expired before operation could complete.  For operations
+   * that change the state of the system, this error may be returned
+   * even if the operation has completed successfully.  For example, a
+   * successful response from a server could have been delayed long
+   * enough for the deadline to expire.
+   */
+  DEADLINE_EXCEEDED: 4,
+  /** Some requested entity (e.g., file or directory) was not found. */
+  NOT_FOUND: 5,
+  /**
+   * Some entity that we attempted to create (e.g., file or directory)
+   * already exists.
+   */
+  ALREADY_EXISTS: 6,
+  /**
+   * The caller does not have permission to execute the specified
+   * operation.  PERMISSION_DENIED must not be used for rejections
+   * caused by exhausting some resource (use RESOURCE_EXHAUSTED
+   * instead for those errors).  PERMISSION_DENIED must not be
+   * used if the caller can not be identified (use UNAUTHENTICATED
+   * instead for those errors).
+   */
+  PERMISSION_DENIED: 7,
+  /**
+   * Some resource has been exhausted, perhaps a per-user quota, or
+   * perhaps the entire file system is out of space.
+   */
+  RESOURCE_EXHAUSTED: 8,
+  /**
+   * Operation was rejected because the system is not in a state
+   * required for the operation's execution.  For example, directory
+   * to be deleted may be non-empty, an rmdir operation is applied to
+   * a non-directory, etc.
+   *
+   * A litmus test that may help a service implementor in deciding
+   * between FAILED_PRECONDITION, ABORTED, and UNAVAILABLE:
+   *
+   *  - Use UNAVAILABLE if the client can retry just the failing call.
+   *  - Use ABORTED if the client should retry at a higher-level
+   *    (e.g., restarting a read-modify-write sequence).
+   *  - Use FAILED_PRECONDITION if the client should not retry until
+   *    the system state has been explicitly fixed.  E.g., if an "rmdir"
+   *    fails because the directory is non-empty, FAILED_PRECONDITION
+   *    should be returned since the client should not retry unless
+   *    they have first fixed up the directory by deleting files from it.
+   *  - Use FAILED_PRECONDITION if the client performs conditional
+   *    REST Get/Update/Delete on a resource and the resource on the
+   *    server does not match the condition. E.g., conflicting
+   *    read-modify-write on the same resource.
+   */
+  FAILED_PRECONDITION: 9,
+  /**
+   * The operation was aborted, typically due to a concurrency issue
+   * like sequencer check failures, transaction aborts, etc.
+   *
+   * See litmus test above for deciding between FAILED_PRECONDITION,
+   * ABORTED, and UNAVAILABLE.
+   */
+  ABORTED: 10,
+  /**
+   * Operation was attempted past the valid range.  E.g., seeking or
+   * reading past end of file.
+   *
+   * Unlike INVALID_ARGUMENT, this error indicates a problem that may
+   * be fixed if the system state changes. For example, a 32-bit file
+   * system will generate INVALID_ARGUMENT if asked to read at an
+   * offset that is not in the range [0,2^32-1], but it will generate
+   * OUT_OF_RANGE if asked to read from an offset past the current
+   * file size.
+   *
+   * There is a fair bit of overlap between FAILED_PRECONDITION and
+   * OUT_OF_RANGE.  We recommend using OUT_OF_RANGE (the more specific
+   * error) when it applies so that callers who are iterating through
+   * a space can easily look for an OUT_OF_RANGE error to detect when
+   * they are done.
+   */
+  OUT_OF_RANGE: 11,
+  /** Operation is not implemented or not supported/enabled in this service. */
+  UNIMPLEMENTED: 12,
+  /**
+   * Internal errors.  Means some invariants expected by underlying
+   * system has been broken.  If you see one of these errors,
+   * something is very broken.
+   */
+  INTERNAL: 13,
+  /**
+   * The service is currently unavailable.  This is a most likely a
+   * transient condition and may be corrected by retrying with
+   * a backoff.
+   *
+   * See litmus test above for deciding between FAILED_PRECONDITION,
+   * ABORTED, and UNAVAILABLE.
+   */
+  UNAVAILABLE: 14,
+  /** Unrecoverable data loss or corruption. */
+  DATA_LOSS: 15,
+  /**
+   * The request does not have valid authentication credentials for the
+   * operation.
+   */
+  UNAUTHENTICATED: 16
+};
+
+/* The comments about propagation bit flags are copied from
+ * include/grpc/impl/codegen/propagation_bits.h for the purpose of including
+ * them in generated documentation.
+ */
+/**
+ * Propagation flags: these can be bitwise or-ed to form the propagation option
+ * for calls.
+ *
+ * Users are encouraged to write propagation masks as deltas from the default.
+ * i.e. write `grpc.propagate.DEFAULTS & ~grpc.propagate.DEADLINE` to disable
+ * deadline propagation.
+ * @memberof grpc
+ * @alias grpc.propagate
+ * @enum {number}
+ */
+exports.propagate = {
+  DEADLINE: 1,
+  CENSUS_STATS_CONTEXT: 2,
+  CENSUS_TRACING_CONTEXT: 4,
+  CANCELLATION: 8,
+  DEFAULTS: 65535
+};
+
+/* Many of the following comments are copied from
+ * include/grpc/impl/codegen/grpc_types.h
+ */
+/**
+ * Call error constants. Call errors almost always indicate bugs in the gRPC
+ * library, and these error codes are mainly useful for finding those bugs.
+ * @memberof grpc
+ * @readonly
+ * @enum {number}
+ */
+const callError = {
+  OK: 0,
+  ERROR: 1,
+  NOT_ON_SERVER: 2,
+  NOT_ON_CLIENT: 3,
+  ALREADY_INVOKED: 5,
+  NOT_INVOKED: 6,
+  ALREADY_FINISHED: 7,
+  TOO_MANY_OPERATIONS: 8,
+  INVALID_FLAGS: 9,
+  INVALID_METADATA: 10,
+  INVALID_MESSAGE: 11,
+  NOT_SERVER_COMPLETION_QUEUE: 12,
+  BATCH_TOO_BIG: 13,
+  PAYLOAD_TYPE_MISMATCH: 14
+};
+
+exports.callError = callError;
+
+/**
+ * Write flags: these can be bitwise or-ed to form write options that modify
+ * how data is written.
+ * @memberof grpc
+ * @alias grpc.writeFlags
+ * @readonly
+ * @enum {number}
+ */
+exports.writeFlags = {
+  /**
+   * Hint that the write may be buffered and need not go out on the wire
+   * immediately. GRPC is free to buffer the message until the next non-buffered
+   * write, or until writes_done, but it need not buffer completely or at all.
+   */
+  BUFFER_HINT: 1,
+  /**
+   * Force compression to be disabled for a particular write
+   */
+  NO_COMPRESS: 2
+};
+
+/**
+ * @memberof grpc
+ * @alias grpc.logVerbosity
+ * @readonly
+ * @enum {number}
+ */
+exports.logVerbosity = {
+  DEBUG: 0,
+  INFO: 1,
+  ERROR: 2
+};
+
+/**
+ * Method types: the supported RPC types
+ * @memberof grpc
+ * @alias grpc.methodTypes
+ * @readonly
+ * @enum {number}
+ */
+exports.methodTypes = {
+  UNARY: 0,
+  CLIENT_STREAMING: 1,
+  SERVER_STREAMING: 2,
+  BIDI_STREAMING: 3
+};
+
+/**
+ * Connectivity state values
+ * @memberof grpc
+ * @alias grpc.connectivityState
+ * @readonly
+ * @enum {number}
+ */
+exports.connectivityState = {
+  IDLE: 0,
+  CONNECTING: 1,
+  READY: 2,
+  TRANSIENT_FAILURE: 3,
+  SHUTDOWN: 4
+};
+
+
+/***/ }),
 /* 725 */,
 /* 726 */,
 /* 727 */
@@ -40872,7 +44600,53 @@ exports.convertToJson = convertToJson;
 /* 734 */,
 /* 735 */,
 /* 736 */,
-/* 737 */,
+/* 737 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __webpack_require__(747);
+const path_1 = __webpack_require__(622);
+const workers_1 = __webpack_require__(78);
+const core = __importStar(__webpack_require__(470));
+const TE = __importStar(__webpack_require__(579));
+function startWorkers(config) {
+    return TE.tryCatch(() => __awaiter(this, void 0, void 0, function* () {
+        const { workerHandlerFile, workerLifetime } = config;
+        if (!fs_1.existsSync(`./${workerHandlerFile}`)) {
+            return Promise.reject(new Error(`Could not find worker handler file ${path_1.resolve('./', workerHandlerFile)}`));
+        }
+        const workerCode = fs_1.readFileSync(`${__dirname}/${workerHandlerFile}`, 'utf8');
+        core.info(`Loading workers with config from ${path_1.resolve('./', workerHandlerFile)}`);
+        const output = [];
+        yield workers_1.bootstrapWorkers(workerCode, workerLifetime);
+        return {
+            info: [JSON.stringify(output, null, 2)],
+            output: JSON.stringify(output)
+        };
+    }), (failure) => ({ message: failure.message }));
+}
+exports.startWorkers = startWorkers;
+
+
+/***/ }),
 /* 738 */,
 /* 739 */,
 /* 740 */,
@@ -41646,7 +45420,33 @@ module.exports = {
 /* 764 */,
 /* 765 */,
 /* 766 */,
-/* 767 */,
+/* 767 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var Functor_1 = __webpack_require__(943);
+function getApplicativeComposition(F, G) {
+    return __assign(__assign({}, Functor_1.getFunctorComposition(F, G)), { of: function (a) { return F.of(G.of(a)); }, ap: function (fgab, fga) {
+            return F.ap(F.map(fgab, function (h) { return function (ga) { return G.ap(h, ga); }; }), fga);
+        } });
+}
+exports.getApplicativeComposition = getApplicativeComposition;
+
+
+/***/ }),
 /* 768 */,
 /* 769 */,
 /* 770 */,
@@ -41731,7 +45531,7 @@ module.exports = object => {
 "use strict";
 
 const {PassThrough} = __webpack_require__(413);
-const duplexer3 = __webpack_require__(718);
+const duplexer3 = __webpack_require__(144);
 const requestAsEventEmitter = __webpack_require__(584);
 const {HTTPError, ReadError} = __webpack_require__(455);
 
@@ -43296,7 +47096,25 @@ module.exports = function (str, pos) {
 
 /***/ }),
 /* 838 */,
-/* 839 */,
+/* 839 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var create_wfi_1 = __webpack_require__(527);
+exports.createWorkflowInstance = create_wfi_1.createWorkflowInstance;
+var create_wfi_result_1 = __webpack_require__(300);
+exports.createWorkflowInstanceWithResult = create_wfi_result_1.createWorkflowInstanceWithResult;
+var deploy_workflow_1 = __webpack_require__(704);
+exports.deployWorkflow = deploy_workflow_1.deployWorkflow;
+var publish_message_1 = __webpack_require__(434);
+exports.publishMessage = publish_message_1.publishMessage;
+var start_workers_1 = __webpack_require__(737);
+exports.startWorkers = start_workers_1.startWorkers;
+
+
+/***/ }),
 /* 840 */,
 /* 841 */
 /***/ (function(module) {
@@ -43760,38 +47578,85 @@ module.exports = {"_args":[["got@9.6.0","/home/runner/work/zeebe-action/zeebe-ac
 /* 859 */,
 /* 860 */,
 /* 861 */
-/***/ (function(module, __unusedexports, __webpack_require__) {
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
-const PassThrough = __webpack_require__(413).PassThrough;
-const zlib = __webpack_require__(761);
-const mimicResponse = __webpack_require__(576);
-
-module.exports = response => {
-	// TODO: Use Array#includes when targeting Node.js 6
-	if (['gzip', 'deflate'].indexOf(response.headers['content-encoding']) === -1) {
-		return response;
-	}
-
-	const unzip = zlib.createUnzip();
-	const stream = new PassThrough();
-
-	mimicResponse(response, stream);
-
-	unzip.on('error', err => {
-		if (err.code === 'Z_BUF_ERROR') {
-			stream.end();
-			return;
-		}
-
-		stream.emit('error', err);
-	});
-
-	response.pipe(unzip).pipe(stream);
-
-	return stream;
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const TE = __importStar(__webpack_require__(579));
+const Operations = __importStar(__webpack_require__(839));
+const setup_env_1 = __webpack_require__(628);
+const operation_config_validation_1 = __webpack_require__(90);
+const pipeable_1 = __webpack_require__(194);
+const Either_1 = __webpack_require__(311);
+const PathReporter_1 = __webpack_require__(306);
+const main_1 = __webpack_require__(198);
+function run(config) {
+    if (config.verbose) {
+        core.info(`Run with configuration:`);
+        core.info(JSON.stringify(config));
+    }
+    const bailWithMessage = (message) => TE.left({
+        message,
+        config
+    });
+    const missingCamundaCloudCredentialsConfig = setup_env_1.setupEnv();
+    if (missingCamundaCloudCredentialsConfig.length > 0) {
+        return bailWithMessage([
+            `Required configuration not found ${JSON.stringify(missingCamundaCloudCredentialsConfig)}`
+        ]);
+    }
+    const operationName = core.getInput('operation', {
+        required: true
+    });
+    if (config.variableParsingError) {
+        return bailWithMessage([
+            `Could not parse supplied variables to JSON: ${core.getInput('variables')}`
+        ]);
+    }
+    // lifts a validation using a specified error handler
+    // https://github.com/gcanti/fp-ts/issues/526
+    const liftWith = (handler) => (fa) => {
+        return TE.fromEither(Either_1.mapLeft(handler)(fa));
+    };
+    const lift = liftWith((errors) => ({
+        message: [
+            `Missing required configuration keys for operation ${operationName}:`,
+            JSON.stringify(PathReporter_1.PathReporter.report(Either_1.left(errors)))
+        ]
+    }));
+    switch (operationName) {
+        case 'publishMessage': {
+            return pipeable_1.pipe(lift(operation_config_validation_1.Config.PublishMessage.decode(config)), TE.chain(Operations.publishMessage));
+        }
+        case 'deployWorkflow': {
+            return pipeable_1.pipe(lift(operation_config_validation_1.Config.DeployWorkflow.decode(config)), TE.chain(Operations.deployWorkflow));
+        }
+        case 'createWorkflowInstance': {
+            return pipeable_1.pipe(lift(operation_config_validation_1.Config.CreateWorkflowInstance.decode(config)), TE.chain(Operations.createWorkflowInstance));
+        }
+        case 'createWorkflowInstanceWithResult': {
+            return pipeable_1.pipe(lift(operation_config_validation_1.Config.CreateWorkflowInstanceWithResult.decode(config)), TE.chain(Operations.createWorkflowInstanceWithResult));
+        }
+        case 'startWorkers': {
+            return pipeable_1.pipe(lift(operation_config_validation_1.Config.StartWorkers.decode(config)), TE.chain(Operations.startWorkers));
+        }
+        default: {
+            return bailWithMessage([
+                `Unknown operation ${operationName}. Valid operations: ${main_1.OperationNames.join(',')}`
+            ]);
+        }
+    }
+}
+exports.run = run;
 
 
 /***/ }),
@@ -44528,7 +48393,7 @@ module.exports = require("tls");
 
 "use strict";
 
-var spin = __webpack_require__(969)
+var spin = __webpack_require__(559)
 var progressBar = __webpack_require__(629)
 
 module.exports = {
@@ -46686,7 +50551,21 @@ Service.prototype.end = function end(endedByRPC) {
 
 
 /***/ }),
-/* 943 */,
+/* 943 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function getFunctorComposition(F, G) {
+    return {
+        map: function (fa, f) { return F.map(fa, function (ga) { return G.map(ga, f); }); }
+    };
+}
+exports.getFunctorComposition = getFunctorComposition;
+
+
+/***/ }),
 /* 944 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -50121,14 +54000,140 @@ module.exports = options => {
 /* 967 */,
 /* 968 */,
 /* 969 */
-/***/ (function(module) {
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
-
-module.exports = function spin (spinstr, spun) {
-  return spinstr[spun % spinstr.length]
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var pipeable_1 = __webpack_require__(194);
+/**
+ * @since 2.0.0
+ */
+exports.URI = 'Task';
+/**
+ * @since 2.0.0
+ */
+exports.never = function () { return new Promise(function (_) { return undefined; }); };
+/**
+ * @since 2.0.0
+ */
+function getSemigroup(S) {
+    return {
+        concat: function (x, y) { return function () { return x().then(function (rx) { return y().then(function (ry) { return S.concat(rx, ry); }); }); }; }
+    };
 }
+exports.getSemigroup = getSemigroup;
+/**
+ * @since 2.0.0
+ */
+function getMonoid(M) {
+    return {
+        concat: getSemigroup(M).concat,
+        empty: exports.task.of(M.empty)
+    };
+}
+exports.getMonoid = getMonoid;
+/**
+ * Note: uses `Promise.race` internally
+ *
+ * @since 2.0.0
+ */
+function getRaceMonoid() {
+    return {
+        concat: function (x, y) { return function () { return Promise.race([x(), y()]); }; },
+        empty: exports.never
+    };
+}
+exports.getRaceMonoid = getRaceMonoid;
+/**
+ * @since 2.0.0
+ */
+function delay(millis) {
+    return function (ma) { return function () {
+        return new Promise(function (resolve) {
+            setTimeout(function () {
+                // tslint:disable-next-line: no-floating-promises
+                ma().then(resolve);
+            }, millis);
+        });
+    }; };
+}
+exports.delay = delay;
+/**
+ * @since 2.0.0
+ */
+function fromIO(ma) {
+    return function () { return Promise.resolve(ma()); };
+}
+exports.fromIO = fromIO;
+var identity = function (a) { return a; };
+/**
+ * @since 2.0.0
+ */
+function of(a) {
+    return function () { return Promise.resolve(a); };
+}
+exports.of = of;
+/**
+ * @since 2.4.0
+ */
+function fromIOK(f) {
+    return function () {
+        var a = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i] = arguments[_i];
+        }
+        return fromIO(f.apply(void 0, a));
+    };
+}
+exports.fromIOK = fromIOK;
+/**
+ * @since 2.4.0
+ */
+function chainIOK(f) {
+    return chain(fromIOK(f));
+}
+exports.chainIOK = chainIOK;
+/**
+ * @since 2.0.0
+ */
+exports.task = {
+    URI: exports.URI,
+    map: function (ma, f) { return function () { return ma().then(f); }; },
+    of: of,
+    ap: function (mab, ma) { return function () { return Promise.all([mab(), ma()]).then(function (_a) {
+        var f = _a[0], a = _a[1];
+        return f(a);
+    }); }; },
+    chain: function (ma, f) { return function () { return ma().then(function (a) { return f(a)(); }); }; },
+    fromIO: fromIO,
+    fromTask: identity
+};
+/**
+ * Like `Task` but `ap` is sequential
+ *
+ * @since 2.0.0
+ */
+exports.taskSeq = __assign(__assign({}, exports.task), { ap: function (mab, ma) { return function () { return mab().then(function (f) { return ma().then(function (a) { return f(a); }); }); }; } });
+var _a = pipeable_1.pipeable(exports.task), ap = _a.ap, apFirst = _a.apFirst, apSecond = _a.apSecond, chain = _a.chain, chainFirst = _a.chainFirst, flatten = _a.flatten, map = _a.map;
+exports.ap = ap;
+exports.apFirst = apFirst;
+exports.apSecond = apSecond;
+exports.chain = chain;
+exports.chainFirst = chainFirst;
+exports.flatten = flatten;
+exports.map = map;
 
 
 /***/ }),

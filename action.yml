@@ -43,7 +43,7 @@ inputs:
     required: false
     description: "The ZEEBE_CLIENT_SECRET from your Camunda Cloud client credentials"
   client_config:
-    required: false
+    required: true
     description: "The client credentials for Camunda Cloud"
   worker_handler_file: 
     required: false
@@ -52,6 +52,12 @@ inputs:
     required: false
     description: "The number of minutes that the workers stay active"
     default: "10"
+  verbose: 
+    required: false
+    description: Set to true for verbose debugging information
+  quiet:
+    required: false
+    description: Set the LOGLEVEL of the Zeebe Client and Worker to NONE
 outputs:
   result: # id of the output
     description: 'The JSON stringified response from the operation, if a createWorkflow operation'

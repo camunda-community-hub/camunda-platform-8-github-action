@@ -30,6 +30,8 @@
     "@actions/core": "^1.2.0",
     "@actions/github": "^2.1.0",
     "@octokit/webhooks": "^7.0.0",
+    "fp-ts": "^2.5.0",
+    "io-ts": "^2.1.1",
     "zeebe-node": "^0.22.1"
   },
   "devDependencies": {
