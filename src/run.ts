@@ -49,12 +49,14 @@ export function run(
   }
 
   const lift = liftWith(
-    (errors: t.Errors): OperationFailure => ({
-      message: [
-        `Missing required configuration keys for operation ${operationName}:`,
-        JSON.stringify(PathReporter.report(left(errors)))
-      ]
-    })
+    (errors: t.Errors): OperationFailure => {
+      return {
+        message: [
+          `Missing required configuration keys for operation ${operationName}:`,
+          JSON.stringify(PathReporter.report(left(errors)))
+        ]
+      }
+    }
   )
 
   switch (operationName) {

@@ -25,6 +25,11 @@ export interface Config {
   workerLifetimeMins: number
 }
 
+const getOrElse = (key: string) => {
+  const value = core.getInput(key)
+  return value === '' ? undefined : value
+}
+
 export function getConfigurationFromEnvironment(): E.Either<
   OperationFailure,
   Config
@@ -38,33 +43,33 @@ export function getConfigurationFromEnvironment(): E.Either<
     return camundaCreds
   }
 
-  const verbose = core.getInput('verbose') === 'true'
-  const quiet = core.getInput('quiet') === 'true'
-  const messageName = core.getInput('messageName')
+  const verbose = getOrElse('verbose') === 'true'
+  const quiet = getOrElse('quiet') === 'true'
+  const messageName = getOrElse('messageName')
   const {variables, variableParsingError} = parseVariables(
-    core.getInput('variables')
+    getOrElse('variables') || '{}'
   )
   if (variableParsingError) {
     return E.left({
-      message: `Could not parse supplied variables to JSON: ${core.getInput(
+      message: `Could not parse supplied variables to JSON: ${getOrElse(
         'variables'
       )}`
     })
   }
-  const correlationKey = core.getInput('correlationKey')
-  const timeToLive = parseInt(
-    (val => (val === '' ? '0' : val))(core.getInput('timeToLive')),
-    10
-  )
-  const bpmnProcessId = core.getInput('bpmnProcessId')
+  const correlationKey = getOrElse('correlationKey')
+  const timeToLive = parseInt(getOrElse('timeToLive') || '0', 10)
+  const bpmnProcessId = getOrElse('bpmnProcessId')
   const requestTimeoutSeconds = (val =>
     !val || val === '' ? 30 : parseInt(val, 10))(
-    core.getInput('requestTimeoutSeconds')
+    getOrElse('requestTimeoutSeconds')
   )
-  const workerHandlerFile = core.getInput('workerHandlerFile')
-  const bpmnFilename = core.getInput('bpmnFilename')
-  const bpmnDirectory = core.getInput('bpmnDirectory')
-  const workerLifetimeMins = parseInt(core.getInput('workerLifetimeMins'), 10)
+  const workerHandlerFile = getOrElse('workerHandlerFile')
+  const bpmnFilename = getOrElse('bpmnFilename')
+  const bpmnDirectory = getOrElse('bpmnDirectory')
+  const workerLifetimeMins = parseInt(
+    getOrElse('workerLifetimeMins') || '2',
+    10
+  )
 
   const config = {
     bpmnProcessId,
@@ -85,6 +90,7 @@ export function getConfigurationFromEnvironment(): E.Either<
     core.info(`Run with configuration:`)
     core.info(JSON.stringify(config))
   }
+
   return E.right(config)
 }
 
