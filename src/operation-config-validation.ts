@@ -1,7 +1,7 @@
 import * as t from 'io-ts'
 
 const PublishMessageRequired = t.type({
-  message_name: t.string,
+  messageName: t.string,
   variables: t.object,
   timeToLive: t.number
 })

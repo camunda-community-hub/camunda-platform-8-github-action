@@ -9,7 +9,7 @@ export async function publishMessage(
   const result = []
   const zbc = new ZBClient()
   const messagePayload = {
-    name: config.message_name,
+    name: config.messageName,
     variables: config.variables,
     timeToLive: config.timeToLive,
     correlationKey: config.correlationKey || ((undefined as unknown) as string)

@@ -3,16 +3,14 @@ import {setupEnv} from './parameters/setup-env'
 import {Config} from './operation-config-validation'
 import * as t from 'io-ts'
 import {pipe} from 'fp-ts/lib/pipeable'
-import {fold, left, Either} from 'fp-ts/lib/Either'
-import {TaskEither} from 'fp-ts/lib/TaskEither'
-
+import {fold, left} from 'fp-ts/lib/Either'
 import * as Operations from './operations'
 import {getConfigurationFromEnvironment} from './parameters/getEnvironment'
 import {PathReporter} from 'io-ts/lib/PathReporter'
 
 export type OperationSuccess = {error: false; info: string[]; output: string}
 export type OperationFailure = {error: true; message: string[]}
-export type OperationOutcome = TaskEither<OperationFailure, OperationSuccess>
+export type OperationOutcome = OperationFailure | OperationSuccess
 
 type OperationName =
   | 'publishMessage'
@@ -45,18 +43,13 @@ async function run(): Promise<void> {
     )
   }
 
-  const onLeft = async (
-    errors: t.Errors
-  ): Promise<Either<OperationFailure, OperationSuccess>> =>
-    Promise.resolve(
-      left({
-        error: true,
-        message: [
-          `Missing required configuration keys for operation ${operationName}:`,
-          JSON.stringify(PathReporter.report(left(errors)))
-        ]
-      })
-    )
+  const onLeft = async (errors: t.Errors): Promise<OperationOutcome> => ({
+    error: true,
+    message: [
+      `Missing required configuration keys for operation ${operationName}:`,
+      JSON.stringify(PathReporter.report(left(errors)))
+    ]
+  })
 
   const operationExecution: {
     [key in OperationName]: () => Promise<OperationOutcome>
@@ -94,23 +87,6 @@ async function run(): Promise<void> {
         operationExecution
       ).join(',')}.`
     )
-  }
-
-  const operationFailed = (outcome: OperationFailure) => {
-    for (const message in outcome.message) {
-      core.info(message)
-    }
-    core.info('Run with configuration:')
-    core.info(JSON.stringify(config))
-    return core.setFailed(
-      'An error occurred. See the previous messages for details.'
-    )
-  }
-  const operationSucceeded = (outcome: OperationSuccess) => {
-    for (const info in outcome.info) {
-      core.info(info)
-    }
-    core.setOutput('result', outcome.output)
   }
 
   const outcome = await operationExecution[operationName]()

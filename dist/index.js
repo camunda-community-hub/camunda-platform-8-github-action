@@ -3469,7 +3469,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const zeebe_node_1 = __webpack_require__(866);
+const zeebe_node_1 = __webpack_require__(94);
 const core = __importStar(__webpack_require__(470));
 function bootstrapWorkers(workerCode, lifetime) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -3776,91 +3776,18 @@ module.exports = Response;
 
 "use strict";
 
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
-const noConfig = {
-    ZEEBE_ADDRESS: undefined,
-    ZEEBE_CLIENT_ID: undefined,
-    ZEEBE_AUTHORIZATION_SERVER_URL: undefined,
-    ZEEBE_CLIENT_SECRET: undefined
-};
-function setupEnv() {
-    const clientConfig = parseClientConfig(core.getInput('client_config'));
-    const ZEEBE_ADDRESS = process.env.ZEEBE_ADDRESS ||
-        clientConfig.ZEEBE_ADDRESS ||
-        core.getInput('zeebe_address');
-    const ZEEBE_CLIENT_ID = process.env.ZEEBE_CLIENT_ID ||
-        clientConfig.ZEEBE_CLIENT_ID ||
-        core.getInput('zeebe_client_id');
-    const ZEEBE_AUTHORIZATION_SERVER_URL = process.env.ZEEBE_AUTHORIZATION_SERVER_URL ||
-        clientConfig.ZEEBE_AUTHORIZATION_SERVER_URL ||
-        core.getInput('zeebe_authorization_server_url');
-    const ZEEBE_CLIENT_SECRET = process.env.ZEEBE_CLIENT_SECRET ||
-        clientConfig.ZEEBE_CLIENT_SECRET ||
-        core.getInput('zeebe_client_secret');
-    const missingConfigValues = [];
-    if (ZEEBE_ADDRESS === '') {
-        missingConfigValues.push('ZEEBE_ADDRESS');
-    }
-    if (ZEEBE_AUTHORIZATION_SERVER_URL === '') {
-        missingConfigValues.push('ZEEBE_AUTHORIZATION_SERVER_URL');
-    }
-    if (ZEEBE_CLIENT_ID === '') {
-        missingConfigValues.push('ZEEBE_CLIENT_ID');
-    }
-    if (ZEEBE_CLIENT_SECRET === '') {
-        missingConfigValues.push('ZEEBE_CLIENT_SECRET');
-    }
-    if (missingConfigValues.length > 0) {
-        return missingConfigValues;
-    }
-    core.exportVariable('ZEEBE_ADDRESS', ZEEBE_ADDRESS);
-    core.exportVariable('ZEEBE_CLIENT_ID', ZEEBE_CLIENT_ID);
-    core.exportVariable('ZEEBE_AUTHORIZATION_SERVER_URL', ZEEBE_AUTHORIZATION_SERVER_URL);
-    core.exportVariable('ZEEBE_CLIENT_SECRET', ZEEBE_CLIENT_SECRET);
-    return [];
-}
-exports.setupEnv = setupEnv;
-function parseClientConfig(clientConfig) {
-    if (!clientConfig) {
-        return noConfig;
-    }
-    try {
-        // Let's see if it is the new JSON config from https://github.com/zeebe-io/zeebe/issues/3544
-        // When it lands we will need to normalise it here
-        return JSON.parse(clientConfig);
-    }
-    catch (e) {
-        try {
-            // Nope, let's parse it as the exported variable block from the console
-            return JSON.parse(`{"${clientConfig
-                .trim()
-                .substring(7)
-                .split("'")
-                .join('')
-                .split('export ')
-                .join('')
-                .split('\n')
-                .map(s => s.trimLeft())
-                .join('","')
-                .split('=')
-                .join('":"')}"}`);
-        }
-        catch (err) {
-            // Couldn't parse it
-            return noConfig;
-        }
-    }
-}
-exports.parseClientConfig = parseClientConfig;
-
+var BpmnParser_1 = __webpack_require__(932);
+exports.BpmnParser = BpmnParser_1.BpmnParser;
+__export(__webpack_require__(419));
+__export(__webpack_require__(375));
+__export(__webpack_require__(422));
+var ZBLogger_1 = __webpack_require__(137);
+exports.ZBLogger = ZBLogger_1.ZBLogger;
+//# sourceMappingURL=index.js.map
 
 /***/ }),
 /* 95 */,
@@ -4892,7 +4819,7 @@ module.exports = require("child_process");
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 var concatMap = __webpack_require__(403);
-var balanced = __webpack_require__(527);
+var balanced = __webpack_require__(406);
 
 module.exports = expandTop;
 
@@ -9906,72 +9833,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
-const setup_env_1 = __webpack_require__(94);
+const setup_env_1 = __webpack_require__(628);
 const operation_config_validation_1 = __webpack_require__(291);
-const publish_message_1 = __webpack_require__(434);
 const pipeable_1 = __webpack_require__(194);
 const Either_1 = __webpack_require__(311);
-const create_wfi_1 = __webpack_require__(987);
-const create_wfi_result_1 = __webpack_require__(300);
-const deploy_workflow_1 = __webpack_require__(704);
-const start_workers_1 = __webpack_require__(737);
-function getVariables() {
-    let variables;
-    const vars = core.getInput('variables');
-    try {
-        variables = JSON.parse(vars || '{}');
-    }
-    catch (e) {
-        return {
-            variableParsingError: true,
-            message: `Could not parse supplied variables to JSON: ${vars}`,
-            variables: undefined
-        };
-    }
-    return {
-        variableParsingError: false,
-        variables
-    };
-}
-function getEnvironment() {
-    const verbose = core.getInput('verbose') === 'true';
-    const quiet = core.getInput('quiet') === 'true';
-    const message_name = core.getInput('message_name', { required: true });
-    const { variables, variableParsingError } = getVariables();
-    const correlationKey = core.getInput('correlationKey');
-    const timeToLive = parseInt((val => (val === '' ? '0' : val))(core.getInput('ttl')), 10);
-    const bpmnProcessId = core.getInput('bpmn_process_id', { required: true });
-    const requestTimeout = (val => (!val || val === '' ? 30 : parseInt(val, 10)))(core.getInput('requestTimeout'));
-    const workerHandlerFile = core.getInput('worker_handler_file');
-    const bpmnFilename = core.getInput('bpmn_filename');
-    const bpmnDir = core.getInput('bpmn_directory');
-    const workerLifetime = parseInt(core.getInput('worker_lifetime_mins'), 10);
-    return {
-        bpmnProcessId,
-        requestTimeout,
-        timeToLive,
-        correlationKey,
-        variables,
-        variableParsingError,
-        message_name,
-        quiet,
-        verbose,
-        workerHandlerFile,
-        bpmnFilename,
-        bpmnDir,
-        workerLifetime
-    };
-}
+const Operations = __importStar(__webpack_require__(839));
+const getEnvironment_1 = __webpack_require__(683);
+const PathReporter_1 = __webpack_require__(306);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const missingConfigKeys = setup_env_1.setupEnv();
-        if (missingConfigKeys.length > 0) {
-            return core.setFailed(`Required configuration not found ${JSON.stringify(missingConfigKeys)}`);
+        const missingCamundaCloudCredentialsConfig = setup_env_1.setupEnv();
+        if (missingCamundaCloudCredentialsConfig.length > 0) {
+            return core.setFailed(`Required configuration not found ${JSON.stringify(missingCamundaCloudCredentialsConfig)}`);
         }
         const operationName = core.getInput('operation', {
             required: true
         });
-        const config = getEnvironment();
+        const config = getEnvironment_1.getConfigurationFromEnvironment();
         if (config.variableParsingError) {
             return core.setFailed(`Could not parse supplied variables to JSON: ${core.getInput('variables')}`);
         }
@@ -9980,16 +9858,16 @@ function run() {
                 error: true,
                 message: [
                     `Missing required configuration keys for operation ${operationName}:`,
-                    JSON.stringify(errors)
+                    JSON.stringify(PathReporter_1.PathReporter.report(Either_1.left(errors)))
                 ]
             });
         });
         const operationExecution = {
-            publishMessage: () => pipeable_1.pipe(operation_config_validation_1.PublishMessage.decode(config), Either_1.fold(onLeft, publish_message_1.publishMessage)),
-            createWorkflowInstance: () => pipeable_1.pipe(operation_config_validation_1.CreateWorkflowInstance.decode(config), Either_1.fold(onLeft, create_wfi_1.createWorkflowInstance)),
-            createWorkflowInstanceWithResult: () => pipeable_1.pipe(operation_config_validation_1.CreateWorkflowInstanceWithResult.decode(config), Either_1.fold(onLeft, create_wfi_result_1.createWorkflowInstanceWithResult)),
-            deployWorkflow: () => pipeable_1.pipe(operation_config_validation_1.DeployWorkflow.decode(config), Either_1.fold(onLeft, deploy_workflow_1.deployWorkflow)),
-            startWorkers: () => pipeable_1.pipe(operation_config_validation_1.StartWorkers.decode(config), Either_1.fold(onLeft, start_workers_1.startWorkers))
+            publishMessage: () => pipeable_1.pipe(operation_config_validation_1.Config.PublishMessage.decode(config), Either_1.fold(onLeft, Operations.publishMessage)),
+            createWorkflowInstance: () => pipeable_1.pipe(operation_config_validation_1.Config.CreateWorkflowInstance.decode(config), Either_1.fold(onLeft, Operations.createWorkflowInstance)),
+            createWorkflowInstanceWithResult: () => pipeable_1.pipe(operation_config_validation_1.Config.CreateWorkflowInstanceWithResult.decode(config), Either_1.fold(onLeft, Operations.createWorkflowInstanceWithResult)),
+            deployWorkflow: () => pipeable_1.pipe(operation_config_validation_1.Config.DeployWorkflow.decode(config), Either_1.fold(onLeft, Operations.deployWorkflow)),
+            startWorkers: () => pipeable_1.pipe(operation_config_validation_1.Config.StartWorkers.decode(config), Either_1.fold(onLeft, Operations.startWorkers))
         };
         if (!operationExecution[operationName]) {
             return core.setFailed(`Unknown operation ${operationName}. Valid operations are: ${Object.keys(operationExecution).join(',')}.`);
@@ -9999,6 +9877,8 @@ function run() {
             for (const message in outcome.message) {
                 core.info(message);
             }
+            core.info('Run with configuration:');
+            core.info(JSON.stringify(config));
             return core.setFailed('An error occurred. See the previous messages for details.');
         }
         for (const info in outcome.info) {
@@ -17579,7 +17459,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const t = __importStar(__webpack_require__(338));
 const PublishMessageRequired = t.type({
-    message_name: t.string,
+    messageName: t.string,
     variables: t.object,
     timeToLive: t.number
 });
@@ -17610,6 +17490,13 @@ exports.StartWorkers = t.type({
     workerHandlerFile: t.string,
     workerLifetime: t.number
 });
+exports.Config = {
+    PublishMessage: exports.PublishMessage,
+    CreateWorkflowInstance: exports.CreateWorkflowInstance,
+    CreateWorkflowInstanceWithResult: exports.CreateWorkflowInstanceWithResult,
+    DeployWorkflow: exports.DeployWorkflow,
+    StartWorkers: exports.StartWorkers
+};
 
 
 /***/ }),
@@ -19129,7 +19016,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const zeebe_node_1 = __webpack_require__(866);
+const zeebe_node_1 = __webpack_require__(94);
 function createWorkflowInstanceWithResult(config) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -19170,7 +19057,60 @@ module.exports = {"nested":{"google":{"nested":{"protobuf":{"nested":{"FileDescr
 /***/ }),
 /* 304 */,
 /* 305 */,
-/* 306 */,
+/* 306 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var _1 = __webpack_require__(338);
+var Either_1 = __webpack_require__(311);
+function stringify(v) {
+    if (typeof v === 'function') {
+        return _1.getFunctionName(v);
+    }
+    if (typeof v === 'number' && !isFinite(v)) {
+        if (isNaN(v)) {
+            return 'NaN';
+        }
+        return v > 0 ? 'Infinity' : '-Infinity';
+    }
+    return JSON.stringify(v);
+}
+function getContextPath(context) {
+    return context.map(function (_a) {
+        var key = _a.key, type = _a.type;
+        return key + ": " + type.name;
+    }).join('/');
+}
+function getMessage(e) {
+    return e.message !== undefined
+        ? e.message
+        : "Invalid value " + stringify(e.value) + " supplied to " + getContextPath(e.context);
+}
+/**
+ * @since 1.0.0
+ */
+function failure(es) {
+    return es.map(getMessage);
+}
+exports.failure = failure;
+/**
+ * @since 1.0.0
+ */
+function success() {
+    return ['No errors!'];
+}
+exports.success = success;
+/**
+ * @since 1.0.0
+ */
+exports.PathReporter = {
+    report: Either_1.fold(failure, success)
+};
+
+
+/***/ }),
 /* 307 */,
 /* 308 */,
 /* 309 */,
@@ -30958,7 +30898,72 @@ var isArray = Array.isArray || function (xs) {
 /***/ }),
 /* 404 */,
 /* 405 */,
-/* 406 */,
+/* 406 */
+/***/ (function(module) {
+
+"use strict";
+
+module.exports = balanced;
+function balanced(a, b, str) {
+  if (a instanceof RegExp) a = maybeMatch(a, str);
+  if (b instanceof RegExp) b = maybeMatch(b, str);
+
+  var r = range(a, b, str);
+
+  return r && {
+    start: r[0],
+    end: r[1],
+    pre: str.slice(0, r[0]),
+    body: str.slice(r[0] + a.length, r[1]),
+    post: str.slice(r[1] + b.length)
+  };
+}
+
+function maybeMatch(reg, str) {
+  var m = str.match(reg);
+  return m ? m[0] : null;
+}
+
+balanced.range = range;
+function range(a, b, str) {
+  var begs, beg, left, right, result;
+  var ai = str.indexOf(a);
+  var bi = str.indexOf(b, ai + 1);
+  var i = ai;
+
+  if (ai >= 0 && bi > 0) {
+    begs = [];
+    left = str.length;
+
+    while (i >= 0 && !result) {
+      if (i == ai) {
+        begs.push(i);
+        ai = str.indexOf(a, i + 1);
+      } else if (begs.length == 1) {
+        result = [ begs.pop(), bi ];
+      } else {
+        beg = begs.pop();
+        if (beg < left) {
+          left = beg;
+          right = bi;
+        }
+
+        bi = str.indexOf(b, i + 1);
+      }
+
+      i = ai < bi && ai >= 0 ? ai : bi;
+    }
+
+    if (begs.length) {
+      result = [ left, right ];
+    }
+  }
+
+  return result;
+}
+
+
+/***/ }),
 /* 407 */,
 /* 408 */,
 /* 409 */,
@@ -32059,13 +32064,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const zeebe_node_1 = __webpack_require__(866);
+const zeebe_node_1 = __webpack_require__(94);
 function publishMessage(config) {
     return __awaiter(this, void 0, void 0, function* () {
         const result = [];
         const zbc = new zeebe_node_1.ZBClient();
         const messagePayload = {
-            name: config.message_name,
+            name: config.messageName,
             variables: config.variables,
             timeToLive: config.timeToLive,
             correlationKey: config.correlationKey || undefined
@@ -36997,68 +37002,42 @@ Delegator.prototype.fluent = function (name) {
 /* 525 */,
 /* 526 */,
 /* 527 */
-/***/ (function(module) {
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
-module.exports = balanced;
-function balanced(a, b, str) {
-  if (a instanceof RegExp) a = maybeMatch(a, str);
-  if (b instanceof RegExp) b = maybeMatch(b, str);
-
-  var r = range(a, b, str);
-
-  return r && {
-    start: r[0],
-    end: r[1],
-    pre: str.slice(0, r[0]),
-    body: str.slice(r[0] + a.length, r[1]),
-    post: str.slice(r[1] + b.length)
-  };
-}
-
-function maybeMatch(reg, str) {
-  var m = str.match(reg);
-  return m ? m[0] : null;
-}
-
-balanced.range = range;
-function range(a, b, str) {
-  var begs, beg, left, right, result;
-  var ai = str.indexOf(a);
-  var bi = str.indexOf(b, ai + 1);
-  var i = ai;
-
-  if (ai >= 0 && bi > 0) {
-    begs = [];
-    left = str.length;
-
-    while (i >= 0 && !result) {
-      if (i == ai) {
-        begs.push(i);
-        ai = str.indexOf(a, i + 1);
-      } else if (begs.length == 1) {
-        result = [ begs.pop(), bi ];
-      } else {
-        beg = begs.pop();
-        if (beg < left) {
-          left = beg;
-          right = bi;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const zeebe_node_1 = __webpack_require__(94);
+function createWorkflowInstance(config) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const zbc = new zeebe_node_1.ZBClient();
+        try {
+            const res = JSON.stringify(yield zbc.createWorkflowInstance(config.bpmnProcessId, config.variables), null, 2);
+            yield zbc.close();
+            return {
+                error: false,
+                info: [res],
+                output: res
+            };
         }
-
-        bi = str.indexOf(b, i + 1);
-      }
-
-      i = ai < bi && ai >= 0 ? ai : bi;
-    }
-
-    if (begs.length) {
-      result = [ left, right ];
-    }
-  }
-
-  return result;
+        catch (e) {
+            return {
+                error: true,
+                message: e.message
+            };
+        }
+    });
 }
+exports.createWorkflowInstance = createWorkflowInstance;
 
 
 /***/ }),
@@ -40417,7 +40396,98 @@ module.exports = require("path");
 /* 625 */,
 /* 626 */,
 /* 627 */,
-/* 628 */,
+/* 628 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const noConfig = {
+    ZEEBE_ADDRESS: undefined,
+    ZEEBE_CLIENT_ID: undefined,
+    ZEEBE_AUTHORIZATION_SERVER_URL: undefined,
+    ZEEBE_CLIENT_SECRET: undefined
+};
+function setupEnv() {
+    const clientConfig = parseClientConfig(core.getInput('client_config'));
+    const ZEEBE_ADDRESS = process.env.ZEEBE_ADDRESS ||
+        clientConfig.ZEEBE_ADDRESS ||
+        core.getInput('zeebe_address');
+    const ZEEBE_CLIENT_ID = process.env.ZEEBE_CLIENT_ID ||
+        clientConfig.ZEEBE_CLIENT_ID ||
+        core.getInput('zeebe_client_id');
+    const ZEEBE_AUTHORIZATION_SERVER_URL = process.env.ZEEBE_AUTHORIZATION_SERVER_URL ||
+        clientConfig.ZEEBE_AUTHORIZATION_SERVER_URL ||
+        core.getInput('zeebe_authorization_server_url');
+    const ZEEBE_CLIENT_SECRET = process.env.ZEEBE_CLIENT_SECRET ||
+        clientConfig.ZEEBE_CLIENT_SECRET ||
+        core.getInput('zeebe_client_secret');
+    const missingConfigValues = [];
+    if (ZEEBE_ADDRESS === '') {
+        missingConfigValues.push('ZEEBE_ADDRESS');
+    }
+    if (ZEEBE_AUTHORIZATION_SERVER_URL === '') {
+        missingConfigValues.push('ZEEBE_AUTHORIZATION_SERVER_URL');
+    }
+    if (ZEEBE_CLIENT_ID === '') {
+        missingConfigValues.push('ZEEBE_CLIENT_ID');
+    }
+    if (ZEEBE_CLIENT_SECRET === '') {
+        missingConfigValues.push('ZEEBE_CLIENT_SECRET');
+    }
+    if (missingConfigValues.length > 0) {
+        return missingConfigValues;
+    }
+    core.exportVariable('ZEEBE_ADDRESS', ZEEBE_ADDRESS);
+    core.exportVariable('ZEEBE_CLIENT_ID', ZEEBE_CLIENT_ID);
+    core.exportVariable('ZEEBE_AUTHORIZATION_SERVER_URL', ZEEBE_AUTHORIZATION_SERVER_URL);
+    core.exportVariable('ZEEBE_CLIENT_SECRET', ZEEBE_CLIENT_SECRET);
+    return [];
+}
+exports.setupEnv = setupEnv;
+function parseClientConfig(clientConfig) {
+    if (!clientConfig) {
+        return noConfig;
+    }
+    try {
+        // Let's see if it is the new JSON config from https://github.com/zeebe-io/zeebe/issues/3544
+        // When it lands we will need to normalise it here
+        return JSON.parse(clientConfig);
+    }
+    catch (e) {
+        try {
+            // Nope, let's parse it as the exported variable block from the console
+            return JSON.parse(`{"${clientConfig
+                .trim()
+                .substring(7)
+                .split("'")
+                .join('')
+                .split('export ')
+                .join('')
+                .split('\n')
+                .map(s => s.trimLeft())
+                .join('","')
+                .split('=')
+                .join('":"')}"}`);
+        }
+        catch (err) {
+            // Couldn't parse it
+            return noConfig;
+        }
+    }
+}
+exports.parseClientConfig = parseClientConfig;
+
+
+/***/ }),
 /* 629 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -41262,7 +41332,71 @@ module.exports = (input, options) => {
 /* 680 */,
 /* 681 */,
 /* 682 */,
-/* 683 */,
+/* 683 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+function getConfigurationFromEnvironment() {
+    const verbose = core.getInput('verbose') === 'true';
+    const quiet = core.getInput('quiet') === 'true';
+    const messageName = core.getInput('message_name', { required: true });
+    const { variables, variableParsingError } = parseVariables(core.getInput('variables'));
+    const correlationKey = core.getInput('correlationKey');
+    const timeToLive = parseInt((val => (val === '' ? '0' : val))(core.getInput('ttl')), 10);
+    const bpmnProcessId = core.getInput('bpmn_process_id', { required: true });
+    const requestTimeout = (val => (!val || val === '' ? 30 : parseInt(val, 10)))(core.getInput('requestTimeout'));
+    const workerHandlerFile = core.getInput('worker_handler_file');
+    const bpmnFilename = core.getInput('bpmn_filename');
+    const bpmnDir = core.getInput('bpmn_directory');
+    const workerLifetime = parseInt(core.getInput('worker_lifetime_mins'), 10);
+    return {
+        bpmnProcessId,
+        requestTimeout,
+        timeToLive,
+        correlationKey,
+        variables,
+        variableParsingError,
+        messageName,
+        quiet,
+        verbose,
+        workerHandlerFile,
+        bpmnFilename,
+        bpmnDir,
+        workerLifetime
+    };
+}
+exports.getConfigurationFromEnvironment = getConfigurationFromEnvironment;
+function parseVariables(vars) {
+    let variables;
+    try {
+        variables = JSON.parse(vars || '{}');
+    }
+    catch (e) {
+        return {
+            variableParsingError: true,
+            message: `Could not parse supplied variables to JSON: ${vars}`,
+            variables: undefined
+        };
+    }
+    return {
+        variableParsingError: false,
+        variables
+    };
+}
+exports.parseVariables = parseVariables;
+
+
+/***/ }),
 /* 684 */,
 /* 685 */,
 /* 686 */,
@@ -41395,7 +41529,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const zeebe_node_1 = __webpack_require__(866);
+const zeebe_node_1 = __webpack_require__(94);
 const fs_1 = __webpack_require__(747);
 function isDeployFile(config) {
     return !!config.bpmnFilename;
@@ -45900,7 +46034,25 @@ module.exports = function (str, pos) {
 
 /***/ }),
 /* 838 */,
-/* 839 */,
+/* 839 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var create_wfi_1 = __webpack_require__(527);
+exports.createWorkflowInstance = create_wfi_1.createWorkflowInstance;
+var create_wfi_result_1 = __webpack_require__(300);
+exports.createWorkflowInstanceWithResult = create_wfi_result_1.createWorkflowInstanceWithResult;
+var deploy_workflow_1 = __webpack_require__(704);
+exports.deployWorkflow = deploy_workflow_1.deployWorkflow;
+var publish_message_1 = __webpack_require__(434);
+exports.publishMessage = publish_message_1.publishMessage;
+var start_workers_1 = __webpack_require__(737);
+exports.startWorkers = start_workers_1.startWorkers;
+
+
+/***/ }),
 /* 840 */,
 /* 841 */
 /***/ (function(module) {
@@ -46403,25 +46555,7 @@ module.exports = response => {
 /* 863 */,
 /* 864 */,
 /* 865 */,
-/* 866 */
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-var BpmnParser_1 = __webpack_require__(932);
-exports.BpmnParser = BpmnParser_1.BpmnParser;
-__export(__webpack_require__(419));
-__export(__webpack_require__(375));
-__export(__webpack_require__(422));
-var ZBLogger_1 = __webpack_require__(137);
-exports.ZBLogger = ZBLogger_1.ZBLogger;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
+/* 866 */,
 /* 867 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -53226,46 +53360,7 @@ BufferReader.prototype.string = function read_string_buffer() {
 /* 984 */,
 /* 985 */,
 /* 986 */,
-/* 987 */
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const zeebe_node_1 = __webpack_require__(866);
-function createWorkflowInstance(config) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const zbc = new zeebe_node_1.ZBClient();
-        try {
-            const res = JSON.stringify(yield zbc.createWorkflowInstance(config.bpmnProcessId, config.variables), null, 2);
-            yield zbc.close();
-            return {
-                error: false,
-                info: [res],
-                output: res
-            };
-        }
-        catch (e) {
-            return {
-                error: true,
-                message: e.message
-            };
-        }
-    });
-}
-exports.createWorkflowInstance = createWorkflowInstance;
-
-
-/***/ }),
+/* 987 */,
 /* 988 */
 /***/ (function(module) {
 

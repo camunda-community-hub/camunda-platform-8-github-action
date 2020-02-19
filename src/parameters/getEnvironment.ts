@@ -13,7 +13,7 @@ export interface Config {
   correlationKey?: string
   variables?: JSONDoc | JSONDoc[]
   variableParsingError: boolean
-  message_name?: string
+  messageName?: string
   quiet: boolean
   verbose: boolean
   workerHandlerFile?: string
@@ -25,7 +25,7 @@ export interface Config {
 export function getConfigurationFromEnvironment(): Config {
   const verbose = core.getInput('verbose') === 'true'
   const quiet = core.getInput('quiet') === 'true'
-  const message_name = core.getInput('message_name', {required: true})
+  const messageName = core.getInput('message_name', {required: true})
   const {variables, variableParsingError} = parseVariables(
     core.getInput('variables')
   )
@@ -49,7 +49,7 @@ export function getConfigurationFromEnvironment(): Config {
     correlationKey,
     variables,
     variableParsingError,
-    message_name,
+    messageName,
     quiet,
     verbose,
     workerHandlerFile,
