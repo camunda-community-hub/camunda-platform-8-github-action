@@ -25,7 +25,7 @@ export interface Config {
   workerLifetimeMins: number
 }
 
-const getOrElse = (key: string) => {
+const getOrElse = (key: string): string | undefined => {
   const value = core.getInput(key)
   return value === '' ? undefined : value
 }
