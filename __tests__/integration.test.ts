@@ -157,7 +157,7 @@ test('Publish Message', done => {
     }),
     TE.map(success => {
       expect(called).toBe(false)
-      expect(success.info[0]).toBe('Published message to Zeebe')
+      expect(success.info[0]).toBe('Published message to Zeebe.')
       done()
     })
   )()
@@ -168,7 +168,7 @@ test('Start Worker', done => {
   pipe(
     run(({
       workerHandlerFile: '__tests__/worker.js',
-      workerLifetimeMins: 0.5,
+      workerLifetimeMins: 0.2,
       operation: 'startWorkers',
       quiet: true
     } as unknown) as Config),
@@ -178,7 +178,6 @@ test('Start Worker', done => {
     }),
     TE.map(success => {
       expect(called).toBe(false)
-      expect(success.info[0]).toBe('Published message to Zeebe')
       done()
     })
   )()
