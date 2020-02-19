@@ -32523,7 +32523,7 @@ class ZBClient extends events_1.EventEmitter {
             onReady,
             options: { longPoll: this.options.longPoll },
             packageName: 'gateway_protocol',
-            protoPath: path.join(__dirname, '../../proto/zeebe.proto'),
+            protoPath: path.join(__dirname, '../proto/zeebe.proto'),
             service: 'Gateway',
             stdout: this.stdout,
             tasktype,
