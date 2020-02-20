@@ -1,8 +1,8 @@
-import {ZBClient} from 'zeebe-node'
 import {PublishMessage} from '../operation-config-validation'
 import * as t from 'io-ts'
 import * as TE from 'fp-ts/lib/TaskEither'
 import {OperationOutcome} from '../run'
+import {getZBC} from './zbc'
 
 export function publishMessage(
   config: t.TypeOf<typeof PublishMessage>
@@ -10,9 +10,7 @@ export function publishMessage(
   return TE.tryCatch(
     async () => {
       const result: string[] = []
-      const zbc = new ZBClient({
-        loglevel: config.quiet ? 'ERROR' : 'INFO'
-      })
+      const zbc = getZBC(config)
       const messagePayload = {
         name: config.messageName,
         variables: config.variables,

@@ -1,17 +1,15 @@
-import {ZBClient} from 'zeebe-node'
 import {CreateWorkflowInstanceWithResult} from '../operation-config-validation'
 import * as t from 'io-ts'
 import * as TE from 'fp-ts/lib/TaskEither'
 import {OperationOutcome} from '../run'
+import {getZBC} from './zbc'
 
 export function createWorkflowInstanceWithResult(
   config: t.TypeOf<typeof CreateWorkflowInstanceWithResult>
 ): OperationOutcome {
   return TE.tryCatch(
     async () => {
-      const zbc = new ZBClient({
-        loglevel: config.quiet ? 'ERROR' : 'INFO'
-      })
+      const zbc = getZBC(config)
       const res = await zbc.createWorkflowInstanceWithResult({
         bpmnProcessId: config.bpmnProcessId,
         variables: config.variables,

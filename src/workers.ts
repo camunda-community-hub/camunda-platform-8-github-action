@@ -3,13 +3,13 @@ import * as core from '@actions/core'
 
 export async function bootstrapWorkers(
   workerCode: string,
-  lifetime: number
+  lifetime: number,
+  zbc: ZBClient
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
     const __module: {
       exports?: {tasks?: {[key: string]: ZBWorkerTaskHandler}}
     } = {}
-    const zbc = new ZBClient()
     eval(`(function(module){${workerCode}})(__module)`)
     const tasks = __module.exports?.tasks
     if (tasks) {

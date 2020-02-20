@@ -7,6 +7,7 @@ import * as core from '@actions/core'
 import {JSONDoc} from '../parameters/getEnvironment'
 import * as TE from 'fp-ts/lib/TaskEither'
 import {OperationOutcome} from '../run'
+import {getZBC} from './zbc'
 
 export function startWorkers(
   config: t.TypeOf<typeof StartWorkers>
@@ -31,7 +32,8 @@ export function startWorkers(
       )
       const output: JSONDoc[] = []
 
-      await bootstrapWorkers(workerCode, workerLifetimeMins)
+      const zbc = getZBC(config)
+      await bootstrapWorkers(workerCode, workerLifetimeMins, zbc)
 
       return {
         info: [JSON.stringify(output, null, 2)],

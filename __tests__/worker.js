@@ -1,10 +1,10 @@
-console.log('Worker code running')
-console.log('Will shut down shortly...')
+core.info('Worker code successfully loaded')
+core.info('A worker will start, then shut down shortly...')
 
 module.exports = {
   tasks: {
     'get-some-yo': (job, complete) => {
-      console.log('You should never see this...')
+      core.error('You should never see this...')
       complete.success()
     }
   }

@@ -1,4 +1,3 @@
-import {ZBClient} from 'zeebe-node'
 import {
   DeployWorkflow,
   DeployWorkflowFile
@@ -8,6 +7,7 @@ import * as TE from 'fp-ts/lib/TaskEither'
 
 import {readdirSync} from 'fs'
 import {OperationOutcome} from '../run'
+import {getZBC} from './zbc'
 
 type DeployFile = t.TypeOf<typeof DeployWorkflowFile>
 
@@ -22,9 +22,7 @@ export function deployWorkflow(
 ): OperationOutcome {
   return TE.tryCatch(
     async () => {
-      const zbc = new ZBClient({
-        loglevel: config.quiet ? 'ERROR' : 'INFO'
-      })
+      const zbc = getZBC(config)
       const toDeploy = isDeployFile(config)
         ? `./${config.bpmnFilename}`
         : readdirSync(config.bpmnDirectory)

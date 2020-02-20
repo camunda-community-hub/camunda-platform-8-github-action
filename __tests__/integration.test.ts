@@ -5,6 +5,7 @@ import * as TE from 'fp-ts/lib/TaskEither'
 import {parseClientConfig} from '../src/parameters/getCamundaCloudCredentials'
 
 jest.setTimeout(60000)
+const quiet = false // Set to true to suppress log messages
 
 // The GitHub secrets for the repo have a ZEEBE_CLIENT_CONFIG in them
 // For local testing, you can either comment out these tests,
@@ -26,7 +27,7 @@ test('Deploy Workflow using Filename', done => {
     run(({
       bpmnFilename: '__tests__/demo-get-time.bpmn',
       operation: 'deployWorkflow',
-      quiet: true
+      quiet
     } as unknown) as Config),
     TE.mapLeft(failure => {
       called = true
@@ -45,7 +46,7 @@ test('Deploy Workflow using directory', done => {
     run(({
       bpmnDirectory: '__tests__',
       operation: 'deployWorkflow',
-      quiet: true
+      quiet
     } as unknown) as Config),
     TE.mapLeft(failure => {
       called = true
@@ -64,7 +65,7 @@ test('Create Workflow Instance', done => {
     run(({
       bpmnProcessId: 'demo-get-time-int-test',
       operation: 'createWorkflowInstance',
-      quiet: true
+      quiet
     } as unknown) as Config),
     TE.mapLeft(failure => {
       called = true
@@ -92,7 +93,7 @@ test('Create Workflow Instance with variables', done => {
       bpmnProcessId: 'demo-get-time-int-test',
       operation: 'createWorkflowInstance',
       variables: {name: 'Noddy'}, // these get parsed from a string in hydration
-      quiet: true
+      quiet
     } as unknown) as Config),
     TE.mapLeft(failure => {
       console.log(failure)
@@ -121,7 +122,7 @@ test('Create Workflow Instance and Await with variables', done => {
       operation: 'createWorkflowInstanceWithResult',
       variables: {name: 'Noddy'}, // these get parsed from a string in hydration
       requestTimeoutSeconds: 10,
-      quiet: true
+      quiet
     } as unknown) as Config),
     TE.mapLeft(failure => {
       console.log(failure)
@@ -149,7 +150,7 @@ test('Publish Message', done => {
     run(({
       messageName: 'demo-get-time-int-test',
       operation: 'publishMessage',
-      quiet: true
+      quiet
     } as unknown) as Config),
     TE.mapLeft(failure => {
       console.log(failure)
@@ -168,7 +169,7 @@ test('Publish Message', done => {
     run(({
       messageName: 'demo-get-time-int-test',
       operation: 'publishMessage',
-      quiet: true
+      quiet
     } as unknown) as Config),
     TE.mapLeft(failure => {
       console.log(failure)
