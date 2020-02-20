@@ -3,11 +3,11 @@ import * as t from 'io-ts'
 import {existsSync, readFileSync} from 'fs'
 import {resolve} from 'path'
 import {bootstrapWorkers} from '../workers'
-import * as core from '@actions/core'
 import {JSONDoc} from '../parameters/getEnvironment'
 import * as TE from 'fp-ts/lib/TaskEither'
 import {OperationOutcome} from '../run'
 import {getZBC} from './zbc'
+import {getActionLogger} from '../log/logger'
 
 export function startWorkers(
   config: t.TypeOf<typeof StartWorkers>
@@ -25,15 +25,17 @@ export function startWorkers(
           )
         )
       }
-      const workerCode = readFileSync(`./${workerHandlerFile}`, 'utf8')
-      // This is here, otherwise the user won't see it until the workers exit
-      core.info(
+
+      const log = getActionLogger('StartWorkers', config.quiet ?? false)
+      log.info(
         `Loading workers with config from ${resolve('./', workerHandlerFile)}`
       )
+      const workerCode = readFileSync(`./${workerHandlerFile}`, 'utf8')
+
       const output: JSONDoc[] = []
 
       const zbc = getZBC(config)
-      await bootstrapWorkers(workerCode, workerLifetimeMins, zbc)
+      await bootstrapWorkers(workerCode, workerLifetimeMins, zbc, log)
 
       return {
         info: [JSON.stringify(output, null, 2)],

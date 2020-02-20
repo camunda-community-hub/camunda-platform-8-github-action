@@ -65,6 +65,7 @@ test('Create Workflow Instance', done => {
     run(({
       bpmnProcessId: 'demo-get-time-int-test',
       operation: 'createWorkflowInstance',
+      clusterId: '2fbb7f8f-1f4c-4f6d-bb7c-3bec17819f0a',
       quiet
     } as unknown) as Config),
     TE.mapLeft(failure => {
@@ -93,7 +94,8 @@ test('Create Workflow Instance with variables', done => {
       bpmnProcessId: 'demo-get-time-int-test',
       operation: 'createWorkflowInstance',
       variables: {name: 'Noddy'}, // these get parsed from a string in hydration
-      quiet
+      quiet,
+      clusterId: '2fbb7f8f-1f4c-4f6d-bb7c-3bec17819f0a'
     } as unknown) as Config),
     TE.mapLeft(failure => {
       console.log(failure)
@@ -190,7 +192,7 @@ test('Start Worker', done => {
       workerHandlerFile: '__tests__/worker.js',
       workerLifetimeMins: 0.2,
       operation: 'startWorkers',
-      quiet: true
+      quiet
     } as unknown) as Config),
     TE.mapLeft(failure => {
       console.log(failure)

@@ -22,7 +22,8 @@ export const PublishMessage = t.intersection([
 ])
 
 export const CreateWorkflowInstanceRequired = t.type({
-  bpmnProcessId: t.string
+  bpmnProcessId: t.string,
+  clusterId: t.string
 })
 
 export const CreateWorkflowInstanceOptional = t.partial({

@@ -70,9 +70,11 @@ export function getConfigurationFromEnvironment(): E.Either<
     getOrElse('workerLifetimeMins') || '2',
     10
   )
+  const clusterId = process.env.ZEEBE_ADDRESS || ''.split('.')?.[0]
 
   const config = {
     bpmnProcessId,
+    clusterId,
     requestTimeoutSeconds,
     timeToLive,
     correlationKey,

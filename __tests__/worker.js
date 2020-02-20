@@ -1,10 +1,10 @@
-core.info('Worker code successfully loaded')
-core.info('A worker will start, then shut down shortly...')
+log.info('The test worker handler file was successfully loaded')
+log.info('A worker will start, then shut down shortly...')
 
 module.exports = {
   tasks: {
     'get-some-yo': (job, complete) => {
-      core.error('You should never see this...')
+      log.error('You should never see this...')
       complete.success()
     }
   }

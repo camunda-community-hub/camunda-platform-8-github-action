@@ -10976,21 +10976,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __webpack_require__(747);
 const path_1 = __webpack_require__(622);
 const workers_1 = __webpack_require__(598);
-const core = __importStar(__webpack_require__(961));
 const TE = __importStar(__webpack_require__(581));
 const zbc_1 = __webpack_require__(635);
+const logger_1 = __webpack_require__(618);
 function startWorkers(config) {
     return TE.tryCatch(() => __awaiter(this, void 0, void 0, function* () {
+        var _a;
         const { workerHandlerFile, workerLifetimeMins } = config;
         if (!fs_1.existsSync(`./${workerHandlerFile}`)) {
             return Promise.reject(new Error(`Could not find worker handler file ${path_1.resolve('./', workerHandlerFile)}`));
         }
+        const log = logger_1.getActionLogger('StartWorkers', (_a = config.quiet, (_a !== null && _a !== void 0 ? _a : false)));
+        log.info(`Loading workers with config from ${path_1.resolve('./', workerHandlerFile)}`);
         const workerCode = fs_1.readFileSync(`./${workerHandlerFile}`, 'utf8');
-        // This is here, otherwise the user won't see it until the workers exit
-        core.info(`Loading workers with config from ${path_1.resolve('./', workerHandlerFile)}`);
         const output = [];
         const zbc = zbc_1.getZBC(config);
-        yield workers_1.bootstrapWorkers(workerCode, workerLifetimeMins, zbc);
+        yield workers_1.bootstrapWorkers(workerCode, workerLifetimeMins, zbc, log);
         return {
             info: [JSON.stringify(output, null, 2)],
             output: JSON.stringify(output)
@@ -15478,7 +15479,8 @@ exports.PublishMessage = t.intersection([
     GlobalOptional
 ]);
 exports.CreateWorkflowInstanceRequired = t.type({
-    bpmnProcessId: t.string
+    bpmnProcessId: t.string,
+    clusterId: t.string
 });
 exports.CreateWorkflowInstanceOptional = t.partial({
     variables: t.object
@@ -15574,8 +15576,10 @@ function getConfigurationFromEnvironment() {
     const bpmnFilename = getOrElse('bpmnFilename');
     const bpmnDirectory = getOrElse('bpmnDirectory');
     const workerLifetimeMins = parseInt(getOrElse('workerLifetimeMins') || '2', 10);
+    const clusterId = process.env.ZEEBE_ADDRESS.split('.')[0];
     const config = {
         bpmnProcessId,
+        clusterId,
         requestTimeoutSeconds,
         timeToLive,
         correlationKey,
@@ -32786,29 +32790,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(961));
-function bootstrapWorkers(workerCode, lifetime, zbc) {
+const logger_1 = __webpack_require__(618);
+function bootstrapWorkers(workerCode, lifetime, zbc, logger) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             var _a;
             const __module = {};
-            eval(`(function(module){${workerCode}})(__module)`);
+            const log = logger_1.getActionLogger('WorkerHandler', false);
+            try {
+                eval(`(function(module){${workerCode}})(__module)`);
+            }
+            catch (e) {
+                reject(new Error(`Error in handler file: ${e.message}`));
+            }
             const tasks = (_a = __module.exports) === null || _a === void 0 ? void 0 : _a.tasks;
             if (tasks) {
                 for (const tasktype of Object.keys(tasks)) {
-                    core.info(`Starting worker for task type ${tasktype}...`);
+                    logger.info(`Starting worker for task type ${tasktype}...`);
                     zbc.createWorker(null, tasktype, tasks[tasktype]);
                 }
                 setTimeout(() => __awaiter(this, void 0, void 0, function* () {
-                    core.info('Shutting down workers...');
+                    logger.info('Shutting down workers...');
                     yield zbc.close();
                     resolve();
                 }), lifetime * 60 * 1000);
@@ -34901,7 +34904,7 @@ const dayjs_1 = __importDefault(__webpack_require__(117));
 /**
  * Custom logger for ZBClient
  */
-const logger = (loglevel, quiet) => (logMessage) => {
+const logger = (loglevel, actor, quiet) => (logMessage) => {
     if (loglevel === 'INFO' && quiet) {
         return;
     }
@@ -34918,12 +34921,22 @@ const logger = (loglevel, quiet) => (logMessage) => {
         message = logMessage;
     }
     const time = dayjs_1.default().format('HH:mm:ss.SSS');
-    core.info(`${time} [zbc] ${message}`);
+    const logMethod = loglevel === 'INFO' ? core.info : core.error;
+    logMethod(`${time} [${actor}] ${message}`);
 };
-exports.githubLogger = (quiet) => ({
-    error: logger('ERROR', quiet),
-    info: logger('INFO', quiet)
+exports.ZBLogger = (quiet) => ({
+    error: logger('ERROR', 'zbc', quiet),
+    info: logger('INFO', 'zbc', quiet)
 });
+exports.getActionLogger = (namespace, quiet = false) => {
+    const logInfo = logger('INFO', 'ZBA', quiet);
+    const logError = logger('ERROR', 'ZBA', quiet);
+    const transform = (msg) => JSON.stringify({ message: `[${namespace}]: ${msg}` });
+    return {
+        info: (message) => logInfo(transform(message)),
+        error: (message) => logError(transform(message))
+    };
+};
 
 
 /***/ }),
@@ -35609,7 +35622,7 @@ const logger_1 = __webpack_require__(618);
 const zeebe_node_1 = __webpack_require__(106);
 exports.getZBC = (config) => {
     var _a, _b;
-    const logger = logger_1.githubLogger((_b = (_a = config) === null || _a === void 0 ? void 0 : _a.quiet, (_b !== null && _b !== void 0 ? _b : false)));
+    const logger = logger_1.ZBLogger((_b = (_a = config) === null || _a === void 0 ? void 0 : _a.quiet, (_b !== null && _b !== void 0 ? _b : false)));
     return new zeebe_node_1.ZBClient({
         stdout: logger
     });
@@ -53226,10 +53239,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const TE = __importStar(__webpack_require__(581));
 const zbc_1 = __webpack_require__(635);
+const logger_1 = __webpack_require__(618);
 function createWorkflowInstance(config) {
     return TE.tryCatch(() => __awaiter(this, void 0, void 0, function* () {
         const zbc = zbc_1.getZBC(config);
         const res = yield zbc.createWorkflowInstance(config.bpmnProcessId, config.variables);
+        const log = logger_1.getActionLogger('CreateWorkflowInstance', config.quiet);
+        log.info(`View this workflow instance in Operate: https://${config.clusterId}.operate.camunda.io/#/instances/${res.workflowInstanceKey}`);
         yield zbc.close();
         return {
             info: [JSON.stringify(res, null, 2)],

@@ -1,25 +1,31 @@
 import {ZBClient, ZBWorkerTaskHandler} from 'zeebe-node'
-import * as core from '@actions/core'
+import {getActionLogger, Logger} from './log/logger'
 
 export async function bootstrapWorkers(
   workerCode: string,
   lifetime: number,
-  zbc: ZBClient
+  zbc: ZBClient,
+  logger: Logger
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
     const __module: {
       exports?: {tasks?: {[key: string]: ZBWorkerTaskHandler}}
     } = {}
-    eval(`(function(module){${workerCode}})(__module)`)
+    const log = getActionLogger('WorkerHandler', false)
+    try {
+      eval(`(function(module){${workerCode}})(__module)`)
+    } catch (e) {
+      reject(new Error(`Error in handler file: ${e.message}`))
+    }
     const tasks = __module.exports?.tasks
     if (tasks) {
       for (const tasktype of Object.keys(tasks)) {
-        core.info(`Starting worker for task type ${tasktype}...`)
+        logger.info(`Starting worker for task type ${tasktype}...`)
         zbc.createWorker(null, tasktype, tasks[tasktype])
       }
 
       setTimeout(async () => {
-        core.info('Shutting down workers...')
+        logger.info('Shutting down workers...')
         await zbc.close()
         resolve()
       }, lifetime * 60 * 1000)
