@@ -17,8 +17,9 @@ export function createWorkflowInstance(
         config.variables
       )
       const log = getActionLogger('CreateWorkflowInstance', config.quiet)
+      log.info(`View this workflow instance in Operate:`)
       log.info(
-        `View this workflow instance in Operate: https://${config.clusterId}.operate.camunda.io/#/instances/${res.workflowInstanceKey}`
+        `https://${config.clusterId}.operate.camunda.io/#/instances/${res.workflowInstanceKey}`
       )
       await zbc.close()
       return {
