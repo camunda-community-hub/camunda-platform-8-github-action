@@ -198,7 +198,7 @@ jobs:
           githubToken: ${{ secrets.GITHUB_TOKEN }} 
           operation: startWorkers
           workerHandlerFile: workers.js
-          workerLifetime: 10
+          workerLifetimeMins: 10
 ```
 
 The `workers.js` file should look like this: 
