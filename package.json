@@ -10,7 +10,7 @@
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
     "pack": "ncc build",
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "rebuild": "docker-compose up --build",
     "_rebuild": "npm install --rebuild && npm rebuild && npm run build && npm run format && npm run lint && npm run pack && npm test && ./build.sh",
     "all": "npm run build && npm run format && npm run lint && npm run pack && npm test && ./build.sh"
