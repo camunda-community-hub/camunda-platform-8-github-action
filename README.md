@@ -14,7 +14,7 @@ See this article: "[Complex multi-repo builds with GitHub Actions and Camunda Cl
 | `createWorkflowInstance` | `bpmnProcessId` |  `variables`, `verbose`, `quiet` |
 |`createWorkflowInstanceWithResult` | `bpmnProcessId`, `requestTimeoutSeconds` | `variables`, `verbose`, `quiet` |
 | `publishMessage` | `messageName` | `timetoLive`, `variables`, `correlationKey`, `verbose`, `quiet` |
-| `startWorkers` | `workerHandlerFile`, `workerLifetimeMins` | `verbose`, `quiet` |
+| `startWorkers` | `workerHandlerFile`, `workerLifetimeMins` | `githubToken`, `verbose`, `quiet` |
 
 ## Configure Camunda Cloud credentials
 
@@ -194,6 +194,8 @@ jobs:
         uses: jwulf/zeebe-action@master
         with:
           clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
+          # If you want to access the GitHub API in your worker:
+          githubToken: ${{ secrets.GITHUB_TOKEN }} 
           operation: startWorkers
           workerHandlerFile: workers.js
           workerLifetime: 10
@@ -221,6 +223,10 @@ module.exports = {
   }
 }
 ```
+
+If you want to make GitHub API calls in your worker, then set the `gitHubToken` parameter as `githubToken: ${{ secrets.GITHUB_TOKEN }}`.
+
+Then your worker code will have a hydrated [Octokit](https://github.com/actions/toolkit/tree/master/packages/github) reference in scope as `octokit`. 
 
 ## Development
 

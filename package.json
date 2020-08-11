@@ -1,6 +1,6 @@
 {
   "name": "zeebe-action",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Interact with Camunda Cloud in a GitHub Action",
   "main": "lib/main.js",
@@ -12,7 +12,7 @@
     "pack": "ncc build",
     "test": "jest",
     "rebuild": "docker-compose up --build",
-    "_rebuild": "npm install --rebuild && npm run build && npm run format && npm run lint && npm run pack && npm test && ./build.sh",
+    "_rebuild": "npm install --rebuild && npm rebuild && npm run build && npm run format && npm run lint && npm run pack && npm test && ./build.sh",
     "all": "npm run build && npm run format && npm run lint && npm run pack && npm test && ./build.sh"
   },
   "repository": {
@@ -27,8 +27,8 @@
   "author": "Josh Wulf <josh@magikcraft.io>",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.0",
-    "@actions/github": "^2.1.0",
+    "@actions/core": "^1.2.4",
+    "@actions/github": "^4.0.0",
     "@octokit/webhooks": "^7.0.0",
     "dayjs": "^1.8.20",
     "fp-ts": "^2.5.0",

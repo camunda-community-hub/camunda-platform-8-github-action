@@ -116,7 +116,8 @@ test('Create Workflow Instance with variables', done => {
   )()
 })
 
-test('Create Workflow Instance and Await with variables', done => {
+// Disabled, because the CAMUNDA_HTTP Worker is no longer available
+xtest('Create Workflow Instance and Await with variables', done => {
   let called = false
   pipe(
     run(({

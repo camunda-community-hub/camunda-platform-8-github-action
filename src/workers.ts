@@ -1,5 +1,8 @@
 import {ZBClient, ZBWorkerTaskHandler} from 'zeebe-node'
 import {getActionLogger, Logger} from './log/logger'
+// @ts-ignore
+import github from '@actions/github'
+import * as core from '@actions/core'
 
 export async function bootstrapWorkers(
   workerCode: string,
@@ -8,12 +11,18 @@ export async function bootstrapWorkers(
   logger: Logger
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
+    const githubToken = core.getInput('githubToken')
+    // @ts-ignore
+    const _octokit =
+      githubToken === '' ? undefined : github.getOctokit(githubToken)
     const __module: {
       exports?: {tasks?: {[key: string]: ZBWorkerTaskHandler}}
     } = {}
     const log = getActionLogger('WorkerHandler', false)
     try {
-      eval(`(function(module){${workerCode}})(__module)`)
+      eval(
+        `(function(module){var octokit = _octokit; ${workerCode}})(__module)`
+      )
     } catch (e) {
       reject(new Error(`Error in handler file: ${e.message}`))
     }

@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0imt8sg" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Zeebe Modeler" exporterVersion="0.8.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0imt8sg" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Zeebe Modeler" exporterVersion="0.9.1">
   <bpmn:process id="demo-get-time-int-test" name="demo-get-time-int-test" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1" name="Start">
       <bpmn:outgoing>SequenceFlow_0028b9j</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_0028b9j" sourceRef="StartEvent_1" targetRef="Task_0fx82uc" />
+    <bpmn:sequenceFlow id="SequenceFlow_0028b9j" sourceRef="StartEvent_1" targetRef="get_json_time" />
     <bpmn:endEvent id="EndEvent_0rz1yn9" name="End">
       <bpmn:incoming>SequenceFlow_0nm7n03</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_0nm7n03" sourceRef="Task_0fx82uc" targetRef="EndEvent_0rz1yn9" />
-    <bpmn:serviceTask id="Task_0fx82uc" name="Get JSON time">
+    <bpmn:sequenceFlow id="SequenceFlow_0nm7n03" sourceRef="get_json_time" targetRef="EndEvent_0rz1yn9" />
+    <bpmn:serviceTask id="get_json_time" name="Get JSON time">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="CAMUNDA-HTTP" />
+        <zeebe:taskDefinition type="get-some-yo" />
         <zeebe:taskHeaders>
           <zeebe:header key="url" value="https://json-api.joshwulf.com/time" />
-          <zeebe:header key="get" />
         </zeebe:taskHeaders>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0028b9j</bpmn:incoming>
@@ -23,27 +22,27 @@
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="demo-get-time-int-test">
+      <bpmndi:BPMNEdge id="SequenceFlow_0nm7n03_di" bpmnElement="SequenceFlow_0nm7n03">
+        <di:waypoint x="370" y="117" />
+        <di:waypoint x="432" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0028b9j_di" bpmnElement="SequenceFlow_0028b9j">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="270" y="117" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="179" y="99" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="185" y="142" width="24" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_0028b9j_di" bpmnElement="SequenceFlow_0028b9j">
-        <di:waypoint x="215" y="117" />
-        <di:waypoint x="270" y="117" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_0rz1yn9_di" bpmnElement="EndEvent_0rz1yn9">
         <dc:Bounds x="432" y="99" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="440" y="142" width="20" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_0nm7n03_di" bpmnElement="SequenceFlow_0nm7n03">
-        <di:waypoint x="370" y="117" />
-        <di:waypoint x="432" y="117" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_0hvs57r_di" bpmnElement="Task_0fx82uc">
+      <bpmndi:BPMNShape id="ServiceTask_0hvs57r_di" bpmnElement="get_json_time">
         <dc:Bounds x="270" y="77" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
