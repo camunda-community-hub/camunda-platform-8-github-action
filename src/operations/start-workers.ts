@@ -30,7 +30,9 @@ export function startWorkers(
       const log = getActionLogger('StartWorkers', config.quiet ?? false)
       const packageFile = resolve('./', 'package.json')
       if (existsSync(packageFile)) {
-        execSync('npm i')
+        execSync('npm i', {
+          cwd: `${process.env.GITHUB_WORKSPACE}/.github/workflows`
+        })
       }
       log.info(
         `Loading workers with config from ${resolve('./', workerHandlerFile)}`

@@ -1,6 +1,6 @@
 {
   "name": "zeebe-action",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "private": true,
   "description": "Interact with Camunda Cloud in a GitHub Action",
   "main": "lib/main.js",
