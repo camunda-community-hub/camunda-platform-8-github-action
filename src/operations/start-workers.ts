@@ -8,6 +8,7 @@ import * as TE from 'fp-ts/lib/TaskEither'
 import {OperationOutcome} from '../run'
 import {getZBC} from './zbc'
 import {getActionLogger} from '../log/logger'
+import {execSync} from 'child_process'
 
 export function startWorkers(
   config: t.TypeOf<typeof StartWorkers>
@@ -27,6 +28,10 @@ export function startWorkers(
       }
 
       const log = getActionLogger('StartWorkers', config.quiet ?? false)
+      const packageFile = resolve('./', 'package.json')
+      if (existsSync(packageFile)) {
+        execSync('npm i')
+      }
       log.info(
         `Loading workers with config from ${resolve('./', workerHandlerFile)}`
       )
