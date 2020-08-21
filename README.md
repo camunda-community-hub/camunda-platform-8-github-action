@@ -234,6 +234,8 @@ Then your worker code will have a hydrated [Octokit](https://github.com/actions/
 
 Run the `npm run rebuild` task before checking the code in.
 
+For this, you need Docker running.
+
 The action is rebuilt on GitHub by the build.yaml workflow, to ensure that it has the correct binaries for gRPC in the GitHub runner environment.
 
 To create a new release, tag the master branch, then use the GitHub "Create a Release" feature.
