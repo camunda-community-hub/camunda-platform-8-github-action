@@ -173,6 +173,8 @@ Variables can be provided in a `publishMessage` operation. They should be string
 
 You can start Zeebe task workers in a GitHub Workflow, using handler code loaded from your repo.
 
+Dependencies in a `package.json` file in the `.github/workflows` folder are installed when workers are started.
+
 For example, to start workers based on a `workers.js` file in the root of your repo, and shut them down after 10 minutes:
 
 ```
@@ -233,6 +235,8 @@ Then your worker code will have a hydrated [Octokit](https://github.com/actions/
 Run the `npm run rebuild` task before checking the code in.
 
 The action is rebuilt on GitHub by the build.yaml workflow, to ensure that it has the correct binaries for gRPC in the GitHub runner environment.
+
+To create a new release, tag the master branch, then use the GitHub "Create a Release" feature.
 
 ## A note on configuration
 
