@@ -13,15 +13,21 @@ export async function bootstrapWorkers(
   return new Promise(async (resolve, reject) => {
     const githubToken = core.getInput('githubToken')
     // @ts-ignore
-    const _octokit =
-      githubToken === '' ? undefined : github.getOctokit(githubToken)
+
     const __module: {
       exports?: {tasks?: {[key: string]: ZBWorkerTaskHandler}}
     } = {}
     const log = getActionLogger('WorkerHandler', false)
     try {
       eval(
-        `(function(module){var octokit = _octokit; ${workerCode}})(__module)`
+        `(function(module){
+            const octokit = githubToken === '' ? 
+              undefined : github.getOctokit(githubToken)
+            const { createRequireFromPath } = require("module");
+            const __workerNodeModules = process.cwd() + "/.github/workflows/node_modules";
+            require = createRequireFromPath(__workerNodeModules);
+            ${workerCode}
+          })(__module)`
       )
     } catch (e) {
       reject(new Error(`Error in handler file: ${e.message}`))
