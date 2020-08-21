@@ -48472,7 +48472,9 @@ function startWorkers(config) {
         const log = logger_1.getActionLogger('StartWorkers', (_a = config.quiet, (_a !== null && _a !== void 0 ? _a : false)));
         const packageFile = __webpack_require__.ab + "package.json";
         if (fs_1.existsSync(__webpack_require__.ab + "package.json")) {
-            child_process_1.execSync('npm i');
+            child_process_1.execSync('npm i', {
+                cwd: `${process.env.GITHUB_WORKSPACE}/.github/workflows`
+            });
         }
         log.info(`Loading workers with config from ${path_1.resolve('./', workerHandlerFile)}`);
         const workerCode = fs_1.readFileSync(`./${workerHandlerFile}`, 'utf8');
