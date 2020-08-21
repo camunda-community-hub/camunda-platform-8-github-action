@@ -18,7 +18,6 @@ if (process.env.ZEEBE_CLIENT_CONFIG) {
     creds.ZEEBE_AUTHORIZATION_SERVER_URL
   process.env.ZEEBE_CLIENT_ID = creds.ZEEBE_CLIENT_ID
   process.env.ZEEBE_CLIENT_SECRET = creds.ZEEBE_CLIENT_SECRET
-  console.log(creds)
 }
 
 test('Deploy Workflow using Filename', done => {
