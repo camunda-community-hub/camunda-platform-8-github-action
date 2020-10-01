@@ -27,7 +27,7 @@
   "author": "Josh Wulf <josh@magikcraft.io>",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.4",
+    "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
     "@octokit/webhooks": "^7.0.0",
     "dayjs": "^1.8.20",
