@@ -1,5 +1,9 @@
 # Integrate GitHub Actions with Zeebe on Camunda Cloud
 
+![Community Extension](https://img.shields.io/badge/Community%20Extension-An%20open%20source%20community%20maintained%20project-FF4700)
+
+![Lifecycle](https://img.shields.io/badge/Lifecycle-Stable-brightgreen)
+
 This GitHub Action allows you to integrate GitHub Actions into workflows orchestrated by [Zeebe](https://zeebe.io) on [Camunda Cloud](https://camunda.io).
 
 You can deploy a workflow definition to Camunda Cloud, create a Camunda Cloud workflow instance from a GitHub Action, start and run an entire workflow on Camunda Cloud and act on the outcome in a GitHub Action, or publish a message from a GitHub Action to a workflow instance running in Camunda Cloud.
