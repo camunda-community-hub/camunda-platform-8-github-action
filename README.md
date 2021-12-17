@@ -10,6 +10,10 @@ You can deploy a workflow definition to Camunda Cloud, create a Camunda Cloud wo
 
 See this article: "[Complex multi-repo builds with GitHub Actions and Camunda Cloud](https://zeebe.io/blog/2020/02/camunda-cloud-github-actions/)" for some ideas on orchestrating multi-repo build workflows using Camunda Cloud.
 
+## Node version compatibility
+
+This GitHub Action uses a version of the Zeebe Node client that requires Node versions 12.22.5+, 14.17.5+, or 16.6.1+.
+
 ## Operations
 
 | Operation | Required Parameters | Optional Parameters |

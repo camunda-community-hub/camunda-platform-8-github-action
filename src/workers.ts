@@ -1,7 +1,9 @@
 import {ZBClient, ZBWorkerTaskHandler} from 'zeebe-node'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {getActionLogger, Logger} from './log/logger'
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import github from '@actions/github'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as core from '@actions/core'
 
 export async function bootstrapWorkers(
@@ -11,26 +13,26 @@ export async function bootstrapWorkers(
   logger: Logger
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
-    const githubToken = core.getInput('githubToken')
-    // @ts-ignore
-
     const __module: {
       exports?: {tasks?: {[key: string]: ZBWorkerTaskHandler}}
     } = {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const githubToken = core.getInput('githubToken')
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const log = getActionLogger('WorkerHandler', false)
     try {
       eval(
         `(function(module){
             const octokit = githubToken === '' ? 
               undefined : github.getOctokit(githubToken)
-            const { createRequireFromPath } = require("module");
+            const { createRequire } = require("module");
             const __workerNodeModules = process.cwd() + "/.github/workflows/node_modules";
-            require = createRequireFromPath(__workerNodeModules);
+            require = createRequire(__workerNodeModules);
             ${workerCode}
           })(__module)`
       )
     } catch (e) {
-      reject(new Error(`Error in handler file: ${e.message}`))
+      reject(new Error(`Error in handler file: ${(e as Error).message}`))
     }
     const tasks = __module.exports?.tasks
     if (tasks) {

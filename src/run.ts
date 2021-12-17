@@ -1,14 +1,17 @@
-import * as TE from 'fp-ts/lib/TaskEither'
+import * as TE from 'fp-ts/TaskEither'
 import * as t from 'io-ts'
 import * as Operations from './operations'
 import {ConfigValidator} from './operation-config-validation'
-import {pipe} from 'fp-ts/lib/pipeable'
+import {pipe} from 'fp-ts/function'
 import {left, mapLeft} from 'fp-ts/lib/Either'
 import {Config as Configuration} from './parameters/getEnvironment'
 import {PathReporter} from 'io-ts/lib/PathReporter'
 
-export type OperationSuccess = {info: string[]; output: string}
-export type OperationFailure = {
+export interface OperationSuccess {
+  info: string[]
+  output: string
+}
+export interface OperationFailure {
   message: string[] | string
 }
 export type OperationOutcome = TE.TaskEither<OperationFailure, OperationSuccess>
@@ -38,15 +41,14 @@ export const bailWithMessage = (
 export function run(
   config: Configuration
 ): TE.TaskEither<OperationFailure, OperationSuccess> {
-  const operationName: OperationName = config.operation as OperationName
+  const operationName: OperationName = config.operation
 
   // lifts a validation using a specified error handler
   // https://github.com/gcanti/fp-ts/issues/526
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const liftWith = <L>(handler: (errors: t.Errors) => L) => <A>(
     fa: t.Validation<A>
-  ): TE.TaskEither<L, A> => {
-    return TE.fromEither(mapLeft(handler)(fa))
-  }
+  ): TE.TaskEither<L, A> => TE.fromEither(mapLeft(handler)(fa))
 
   const lift = liftWith(
     (errors: t.Errors): OperationFailure => {

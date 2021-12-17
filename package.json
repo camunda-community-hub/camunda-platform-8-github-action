@@ -1,6 +1,6 @@
 {
   "name": "zeebe-action",
-  "version": "0.7.3",
+  "version": "1.0.0",
   "private": true,
   "description": "Interact with Camunda Cloud in a GitHub Action",
   "main": "lib/main.js",
@@ -11,8 +11,7 @@
     "lint": "eslint src/**/*.ts",
     "pack": "ncc build",
     "test": "jest --detectOpenHandles",
-    "rebuild": "docker-compose up --build",
-    "_rebuild": "npm install --rebuild && npm rebuild && npm run build && npm run format && npm run lint && npm run pack && npm test && ./build.sh",
+    "rebuild": "npm install --rebuild && npm rebuild && npm run build && npm run format && npm run lint && npm run pack && npm test && ./build.sh",
     "all": "npm run build && npm run format && npm run lint && npm run pack && npm test && ./build.sh"
   },
   "repository": {
@@ -31,9 +30,9 @@
     "@actions/github": "^4.0.0",
     "@octokit/webhooks": "^7.0.0",
     "dayjs": "^1.8.20",
-    "fp-ts": "^2.5.0",
+    "fp-ts": "^2.11.5",
     "io-ts": "^2.1.1",
-    "zeebe-node": "^0.22.1"
+    "zeebe-node": "^2.4.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
@@ -49,6 +48,6 @@
     "js-yaml": "^3.13.1",
     "prettier": "^1.19.1",
     "ts-jest": "^24.2.0",
-    "typescript": "^3.6.4"
+    "typescript": "^4.4.0"
   }
 }

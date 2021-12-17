@@ -5,6 +5,7 @@ type ZBLogLevel = 'INFO' | 'DEBUG' | 'NONE' | 'ERROR'
 export interface Logger {
   error: LogFn
   info: LogFn
+  debug: LogFn
 }
 type LogFn = (logMessage: string) => void
 
@@ -35,7 +36,8 @@ const logger = (loglevel: ZBLogLevel, actor: string, quiet: boolean): LogFn => (
 
 export const ZBLogger = (quiet: boolean): Logger => ({
   error: logger('ERROR', 'zbc', quiet),
-  info: logger('INFO', 'zbc', quiet)
+  info: logger('INFO', 'zbc', quiet),
+  debug: logger('DEBUG', 'zbc', quiet)
 })
 
 export const getActionLogger = (
@@ -48,6 +50,7 @@ export const getActionLogger = (
     JSON.stringify({message: `[${namespace}]: ${msg}`})
   return {
     info: (message: string) => logInfo(transform(message)),
-    error: (message: string) => logError(transform(message))
+    error: (message: string) => logError(transform(message)),
+    debug: (message: string) => logError(transform(message))
   }
 }

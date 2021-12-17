@@ -1,9 +1,10 @@
 import {run} from '../src/run'
-import {pipe} from 'fp-ts/lib/pipeable'
+import {pipe} from 'fp-ts/function'
 import {Config} from '../src/parameters/getEnvironment'
 import * as TE from 'fp-ts/lib/TaskEither'
 import {parseClientConfig} from '../src/parameters/getCamundaCloudCredentials'
 
+const clusterId = '231bb36a-1588-4f1e-b4f6-e09944d7efd6'
 jest.setTimeout(60000)
 const quiet = false // Set to true to suppress log messages
 
@@ -64,7 +65,7 @@ test('Create Workflow Instance', done => {
     run(({
       bpmnProcessId: 'demo-get-time-int-test',
       operation: 'createWorkflowInstance',
-      clusterId: '2fbb7f8f-1f4c-4f6d-bb7c-3bec17819f0a',
+      clusterId,
       quiet
     } as unknown) as Config),
     TE.mapLeft(failure => {
@@ -94,7 +95,7 @@ test('Create Workflow Instance with variables', done => {
       operation: 'createWorkflowInstance',
       variables: {name: 'Noddy'}, // these get parsed from a string in hydration
       quiet,
-      clusterId: '2fbb7f8f-1f4c-4f6d-bb7c-3bec17819f0a'
+      clusterId
     } as unknown) as Config),
     TE.mapLeft(failure => {
       console.log(failure)
@@ -195,6 +196,7 @@ test('Start Worker', done => {
       quiet
     } as unknown) as Config),
     TE.mapLeft(failure => {
+      console.log('dir', __dirname)
       console.log(failure)
       called = true
     }),
