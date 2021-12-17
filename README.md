@@ -105,10 +105,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js 12.x
+      - name: Use Node.js 16.x
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 16.x
       - run: echo github.event.action: ${{ github.event.action }}
       - name: Create Zeebe Workflow
         uses: jwulf/zeebe-action@master
