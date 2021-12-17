@@ -1,0 +1,1 @@
+{"version":"1.0.0","name":"zeebe-action","dependencies":{"@actions/core":{"version":"1.2.6"},"@actions/github":{"version":"4.0.0"},"@octokit/webhooks":{"version":"7.0.0"},"@vercel/ncc":{"version":"0.33.0"},"dayjs":{"version":"1.8.20"},"fp-ts":{"version":"2.11.5"},"io-ts":{"version":"2.1.1"},"zeebe-node":{"version":"2.4.0"}}}
