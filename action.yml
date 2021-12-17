@@ -42,6 +42,9 @@ inputs:
   zeebeClientSecret: 
     required: false
     description: "The ZEEBE_CLIENT_SECRET from your Camunda Cloud client credentials"
+  zeebeAuthorizationServerUrl: 
+    required: false
+    description: "The ZEEBE_AUTHORIZATION_SERVER_URL from your Camunda Cloud client credentials"
   clientConfig:
     required: true
     description: "The client credentials for Camunda Cloud"
