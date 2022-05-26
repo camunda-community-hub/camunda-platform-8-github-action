@@ -18,15 +18,15 @@ export type OperationOutcome = TE.TaskEither<OperationFailure, OperationSuccess>
 
 export type OperationName =
   | 'publishMessage'
-  | 'createWorkflowInstance'
-  | 'createWorkflowInstanceWithResult'
-  | 'deployWorkflow'
+  | 'createProcessInstance'
+  | 'createProcessInstanceWithResult'
+  | 'deployProcess'
   | 'startWorkers'
 
 export const OperationNames: OperationName[] = [
-  'createWorkflowInstance',
-  'createWorkflowInstanceWithResult',
-  'deployWorkflow',
+  'createProcessInstance',
+  'createProcessInstanceWithResult',
+  'deployProcess',
   'publishMessage',
   'startWorkers'
 ]
@@ -68,22 +68,22 @@ export function run(
         TE.chain(Operations.publishMessage)
       )
     }
-    case 'deployWorkflow': {
+    case 'deployProcess': {
       return pipe(
-        lift(ConfigValidator.DeployWorkflow.decode(config)),
-        TE.chain(Operations.deployWorkflow)
+        lift(ConfigValidator.DeployProcess.decode(config)),
+        TE.chain(Operations.deployProcess)
       )
     }
-    case 'createWorkflowInstance': {
+    case 'createProcessInstance': {
       return pipe(
-        lift(ConfigValidator.CreateWorkflowInstance.decode(config)),
-        TE.chain(Operations.createWorkflowInstance)
+        lift(ConfigValidator.CreateProcessInstance.decode(config)),
+        TE.chain(Operations.createProcessInstance)
       )
     }
-    case 'createWorkflowInstanceWithResult': {
+    case 'createProcessInstanceWithResult': {
       return pipe(
-        lift(ConfigValidator.CreateWorkflowInstanceWithResult.decode(config)),
-        TE.chain(Operations.createWorkflowInstanceWithResult)
+        lift(ConfigValidator.CreateProcessInstanceWithResult.decode(config)),
+        TE.chain(Operations.createProcessInstanceWithResult)
       )
     }
     case 'startWorkers': {

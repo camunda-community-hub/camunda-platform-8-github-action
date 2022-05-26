@@ -125,8 +125,8 @@ const success = (outcome) => {
 };
 const g = getEnvironment_1.getConfigurationFromEnvironment;
 const h = run_1.run;
-function program(g, h, failure, success) {
-    return (0, pipeable_1.pipe)(g(), TE.fromEither, TE.chain(h), TE.fold(failure, success));
+function program(g_, h_, failure_, success_) {
+    return (0, pipeable_1.pipe)(g_(), TE.fromEither, TE.chain(h_), TE.fold(failure_, success_));
 }
 program(g, h, failure, success)();
 
@@ -158,7 +158,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ConfigValidator = exports.StartWorkers = exports.StartWorkersRequired = exports.DeployWorkflow = exports.DeployWorkflowDir = exports.DeployWorkflowFile = exports.CreateWorkflowInstanceWithResult = exports.CreateWorkflowInstanceWithResultRequired = exports.CreateWorkflowInstance = exports.CreateWorkflowInstanceOptional = exports.CreateWorkflowInstanceRequired = exports.PublishMessage = void 0;
+exports.ConfigValidator = exports.StartWorkers = exports.StartWorkersRequired = exports.DeployProcess = exports.DeployProcessDir = exports.DeployProcessFile = exports.CreateProcessInstanceWithResult = exports.CreateProcessInstanceWithResultRequired = exports.CreateProcessInstance = exports.CreateProcessInstanceOptional = exports.CreateProcessInstanceRequired = exports.PublishMessage = void 0;
 const t = __importStar(__nccwpck_require__(5428));
 const GlobalOptional = t.partial({
     quiet: t.boolean,
@@ -169,7 +169,7 @@ const PublishMessageRequired = t.type({
 });
 const PublishMessageOptional = t.partial({
     correlationKey: t.string,
-    variables: t.object,
+    variables: t.UnknownRecord,
     timeToLive: t.number
 });
 exports.PublishMessage = t.intersection([
@@ -177,36 +177,36 @@ exports.PublishMessage = t.intersection([
     PublishMessageOptional,
     GlobalOptional
 ]);
-exports.CreateWorkflowInstanceRequired = t.type({
+exports.CreateProcessInstanceRequired = t.type({
     bpmnProcessId: t.string,
     clusterId: t.string
 });
-exports.CreateWorkflowInstanceOptional = t.partial({
-    variables: t.object
+exports.CreateProcessInstanceOptional = t.partial({
+    variables: t.UnknownRecord
 });
-exports.CreateWorkflowInstance = t.intersection([
-    exports.CreateWorkflowInstanceRequired,
-    exports.CreateWorkflowInstanceOptional,
+exports.CreateProcessInstance = t.intersection([
+    exports.CreateProcessInstanceRequired,
+    exports.CreateProcessInstanceOptional,
     GlobalOptional
 ]);
-exports.CreateWorkflowInstanceWithResultRequired = t.type({
+exports.CreateProcessInstanceWithResultRequired = t.type({
     bpmnProcessId: t.string,
     requestTimeoutSeconds: t.number
 });
-exports.CreateWorkflowInstanceWithResult = t.intersection([
-    exports.CreateWorkflowInstanceWithResultRequired,
-    exports.CreateWorkflowInstanceOptional,
+exports.CreateProcessInstanceWithResult = t.intersection([
+    exports.CreateProcessInstanceWithResultRequired,
+    exports.CreateProcessInstanceOptional,
     GlobalOptional
 ]);
-exports.DeployWorkflowFile = t.type({
+exports.DeployProcessFile = t.type({
     bpmnFilename: t.string
 });
-exports.DeployWorkflowDir = t.type({
+exports.DeployProcessDir = t.type({
     bpmnDirectory: t.string
 });
-exports.DeployWorkflow = t.intersection([
+exports.DeployProcess = t.intersection([
     GlobalOptional,
-    t.union([exports.DeployWorkflowFile, exports.DeployWorkflowDir])
+    t.union([exports.DeployProcessFile, exports.DeployProcessDir])
 ]);
 exports.StartWorkersRequired = t.type({
     workerHandlerFile: t.string,
@@ -218,9 +218,9 @@ exports.StartWorkers = t.intersection([
 ]);
 exports.ConfigValidator = {
     PublishMessage: exports.PublishMessage,
-    CreateWorkflowInstance: exports.CreateWorkflowInstance,
-    CreateWorkflowInstanceWithResult: exports.CreateWorkflowInstanceWithResult,
-    DeployWorkflow: exports.DeployWorkflow,
+    CreateProcessInstance: exports.CreateProcessInstance,
+    CreateProcessInstanceWithResult: exports.CreateProcessInstanceWithResult,
+    DeployProcess: exports.DeployProcess,
     StartWorkers: exports.StartWorkers
 };
 
@@ -261,13 +261,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createWorkflowInstanceWithResult = void 0;
+exports.createProcessInstanceWithResult = void 0;
 const TE = __importStar(__nccwpck_require__(437));
 const zbc_1 = __nccwpck_require__(6130);
-function createWorkflowInstanceWithResult(config) {
+function createProcessInstanceWithResult(config) {
     return TE.tryCatch(() => __awaiter(this, void 0, void 0, function* () {
         const zbc = (0, zbc_1.getZBC)(config);
-        const res = yield zbc.createWorkflowInstanceWithResult({
+        const res = yield zbc.createProcessInstanceWithResult({
             bpmnProcessId: config.bpmnProcessId,
             variables: config.variables,
             requestTimeout: config.requestTimeoutSeconds * 1000
@@ -281,7 +281,7 @@ function createWorkflowInstanceWithResult(config) {
         };
     }), (failure) => ({ message: failure.message }));
 }
-exports.createWorkflowInstanceWithResult = createWorkflowInstanceWithResult;
+exports.createProcessInstanceWithResult = createProcessInstanceWithResult;
 
 
 /***/ }),
@@ -320,17 +320,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createWorkflowInstance = void 0;
+exports.createProcessInstance = void 0;
 const TE = __importStar(__nccwpck_require__(437));
 const zbc_1 = __nccwpck_require__(6130);
 const logger_1 = __nccwpck_require__(4336);
-function createWorkflowInstance(config) {
+function createProcessInstance(config) {
     return TE.tryCatch(() => __awaiter(this, void 0, void 0, function* () {
         const zbc = (0, zbc_1.getZBC)(config);
-        const res = yield zbc.createWorkflowInstance(config.bpmnProcessId, config.variables);
-        const log = (0, logger_1.getActionLogger)('CreateWorkflowInstance', config.quiet);
-        log.info(`View this workflow instance in Operate:`);
-        log.info(`https://${config.clusterId}.operate.camunda.io/#/instances/${res.workflowInstanceKey}`);
+        const res = yield zbc.createProcessInstance(config.bpmnProcessId, config.variables);
+        const log = (0, logger_1.getActionLogger)('CreateProcessInstance', config.quiet);
+        log.info(`View this process instance in Operate:`);
+        log.info(`https://${config.clusterId}.operate.camunda.io/#/instances/${res.processInstanceKey}`);
         yield zbc.close();
         return {
             info: [JSON.stringify(res, null, 2)],
@@ -338,12 +338,12 @@ function createWorkflowInstance(config) {
         };
     }), (failure) => ({ message: failure.message }));
 }
-exports.createWorkflowInstance = createWorkflowInstance;
+exports.createProcessInstance = createProcessInstance;
 
 
 /***/ }),
 
-/***/ 4843:
+/***/ 9262:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -377,14 +377,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deployWorkflow = void 0;
+exports.deployProcess = void 0;
 const TE = __importStar(__nccwpck_require__(437));
 const fs_1 = __nccwpck_require__(7147);
 const zbc_1 = __nccwpck_require__(6130);
 function isDeployFile(config) {
     return !!config.bpmnFilename;
 }
-function deployWorkflow(config) {
+function deployProcess(config) {
     return TE.tryCatch(() => __awaiter(this, void 0, void 0, function* () {
         const zbc = (0, zbc_1.getZBC)(config);
         const toDeploy = isDeployFile(config)
@@ -392,7 +392,7 @@ function deployWorkflow(config) {
             : (0, fs_1.readdirSync)(config.bpmnDirectory)
                 .filter(f => f.endsWith('.bpmn'))
                 .map(f => `${config.bpmnDirectory}/${f}`);
-        const res = yield zbc.deployWorkflow(toDeploy);
+        const res = yield zbc.deployProcess(toDeploy);
         yield zbc.close();
         return {
             info: [JSON.stringify(res, null, 2)],
@@ -400,7 +400,7 @@ function deployWorkflow(config) {
         };
     }), (failure) => ({ message: failure.message }));
 }
-exports.deployWorkflow = deployWorkflow;
+exports.deployProcess = deployProcess;
 
 
 /***/ }),
@@ -411,13 +411,13 @@ exports.deployWorkflow = deployWorkflow;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.startWorkers = exports.publishMessage = exports.deployWorkflow = exports.createWorkflowInstanceWithResult = exports.createWorkflowInstance = void 0;
+exports.startWorkers = exports.publishMessage = exports.deployProcess = exports.createProcessInstanceWithResult = exports.createProcessInstance = void 0;
 var create_wfi_1 = __nccwpck_require__(3821);
-Object.defineProperty(exports, "createWorkflowInstance", ({ enumerable: true, get: function () { return create_wfi_1.createWorkflowInstance; } }));
+Object.defineProperty(exports, "createProcessInstance", ({ enumerable: true, get: function () { return create_wfi_1.createProcessInstance; } }));
 var create_wfi_result_1 = __nccwpck_require__(9455);
-Object.defineProperty(exports, "createWorkflowInstanceWithResult", ({ enumerable: true, get: function () { return create_wfi_result_1.createWorkflowInstanceWithResult; } }));
-var deploy_workflow_1 = __nccwpck_require__(4843);
-Object.defineProperty(exports, "deployWorkflow", ({ enumerable: true, get: function () { return deploy_workflow_1.deployWorkflow; } }));
+Object.defineProperty(exports, "createProcessInstanceWithResult", ({ enumerable: true, get: function () { return create_wfi_result_1.createProcessInstanceWithResult; } }));
+var deploy_process_1 = __nccwpck_require__(9262);
+Object.defineProperty(exports, "deployProcess", ({ enumerable: true, get: function () { return deploy_process_1.deployProcess; } }));
 var publish_message_1 = __nccwpck_require__(5343);
 Object.defineProperty(exports, "publishMessage", ({ enumerable: true, get: function () { return publish_message_1.publishMessage; } }));
 var start_workers_1 = __nccwpck_require__(7146);
@@ -827,9 +827,9 @@ const function_1 = __nccwpck_require__(6985);
 const Either_1 = __nccwpck_require__(7534);
 const PathReporter_1 = __nccwpck_require__(2985);
 exports.OperationNames = [
-    'createWorkflowInstance',
-    'createWorkflowInstanceWithResult',
-    'deployWorkflow',
+    'createProcessInstance',
+    'createProcessInstanceWithResult',
+    'deployProcess',
     'publishMessage',
     'startWorkers'
 ];
@@ -855,14 +855,14 @@ function run(config) {
         case 'publishMessage': {
             return (0, function_1.pipe)(lift(operation_config_validation_1.ConfigValidator.PublishMessage.decode(config)), TE.chain(Operations.publishMessage));
         }
-        case 'deployWorkflow': {
-            return (0, function_1.pipe)(lift(operation_config_validation_1.ConfigValidator.DeployWorkflow.decode(config)), TE.chain(Operations.deployWorkflow));
+        case 'deployProcess': {
+            return (0, function_1.pipe)(lift(operation_config_validation_1.ConfigValidator.DeployProcess.decode(config)), TE.chain(Operations.deployProcess));
         }
-        case 'createWorkflowInstance': {
-            return (0, function_1.pipe)(lift(operation_config_validation_1.ConfigValidator.CreateWorkflowInstance.decode(config)), TE.chain(Operations.createWorkflowInstance));
+        case 'createProcessInstance': {
+            return (0, function_1.pipe)(lift(operation_config_validation_1.ConfigValidator.CreateProcessInstance.decode(config)), TE.chain(Operations.createProcessInstance));
         }
-        case 'createWorkflowInstanceWithResult': {
-            return (0, function_1.pipe)(lift(operation_config_validation_1.ConfigValidator.CreateWorkflowInstanceWithResult.decode(config)), TE.chain(Operations.createWorkflowInstanceWithResult));
+        case 'createProcessInstanceWithResult': {
+            return (0, function_1.pipe)(lift(operation_config_validation_1.ConfigValidator.CreateProcessInstanceWithResult.decode(config)), TE.chain(Operations.createProcessInstanceWithResult));
         }
         case 'startWorkers': {
             return (0, function_1.pipe)(lift(operation_config_validation_1.ConfigValidator.StartWorkers.decode(config)), TE.chain(Operations.startWorkers));
@@ -912,15 +912,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.bootstrapWorkers = void 0;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const logger_1 = __nccwpck_require__(4336);
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const core = __importStar(__nccwpck_require__(2186));
 function bootstrapWorkers(workerCode, lifetime, zbc, logger) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             var _a;
             const __module = {};
+            // We do this to get the githubToken and log in scope in the eval below.
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const githubToken = core.getInput('githubToken');
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1431,12 +1430,37 @@ function uniformRandom(min, max) {
 class BackoffTimeout {
     constructor(callback, options) {
         this.callback = callback;
+        /**
+         * The delay time at the start, and after each reset.
+         */
         this.initialDelay = INITIAL_BACKOFF_MS;
+        /**
+         * The exponential backoff multiplier.
+         */
         this.multiplier = BACKOFF_MULTIPLIER;
+        /**
+         * The maximum delay time
+         */
         this.maxDelay = MAX_BACKOFF_MS;
+        /**
+         * The maximum fraction by which the delay time can randomly vary after
+         * applying the multiplier.
+         */
         this.jitter = BACKOFF_JITTER;
+        /**
+         * Indicates whether the timer is currently running.
+         */
         this.running = false;
+        /**
+         * Indicates whether the timer should keep the Node process running if no
+         * other async operation is doing so.
+         */
         this.hasRef = true;
+        /**
+         * The time that the currently running timer was started. Only valid if
+         * running is true.
+         */
+        this.startTime = new Date();
         if (options) {
             if (options.initialDelay) {
                 this.initialDelay = options.initialDelay;
@@ -1455,19 +1479,24 @@ class BackoffTimeout {
         this.timerId = setTimeout(() => { }, 0);
         clearTimeout(this.timerId);
     }
+    runTimer(delay) {
+        var _a, _b;
+        clearTimeout(this.timerId);
+        this.timerId = setTimeout(() => {
+            this.callback();
+            this.running = false;
+        }, delay);
+        if (!this.hasRef) {
+            (_b = (_a = this.timerId).unref) === null || _b === void 0 ? void 0 : _b.call(_a);
+        }
+    }
     /**
      * Call the callback after the current amount of delay time
      */
     runOnce() {
-        var _a, _b;
         this.running = true;
-        this.timerId = setTimeout(() => {
-            this.callback();
-            this.running = false;
-        }, this.nextDelay);
-        if (!this.hasRef) {
-            (_b = (_a = this.timerId).unref) === null || _b === void 0 ? void 0 : _b.call(_a);
-        }
+        this.startTime = new Date();
+        this.runTimer(this.nextDelay);
         const nextBackoff = Math.min(this.nextDelay * this.multiplier, this.maxDelay);
         const jitterMagnitude = nextBackoff * this.jitter;
         this.nextDelay =
@@ -1482,19 +1511,43 @@ class BackoffTimeout {
         this.running = false;
     }
     /**
-     * Reset the delay time to its initial value.
+     * Reset the delay time to its initial value. If the timer is still running,
+     * retroactively apply that reset to the current timer.
      */
     reset() {
         this.nextDelay = this.initialDelay;
+        if (this.running) {
+            const now = new Date();
+            const newEndTime = this.startTime;
+            newEndTime.setMilliseconds(newEndTime.getMilliseconds() + this.nextDelay);
+            clearTimeout(this.timerId);
+            if (now < newEndTime) {
+                this.runTimer(newEndTime.getTime() - now.getTime());
+            }
+            else {
+                this.running = false;
+            }
+        }
     }
+    /**
+     * Check whether the timer is currently running.
+     */
     isRunning() {
         return this.running;
     }
+    /**
+     * Set that while the timer is running, it should keep the Node process
+     * running.
+     */
     ref() {
         var _a, _b;
         this.hasRef = true;
         (_b = (_a = this.timerId).ref) === null || _b === void 0 ? void 0 : _b.call(_a);
     }
+    /**
+     * Set that while the timer is running, it should not keep the Node process
+     * running.
+     */
     unref() {
         var _a, _b;
         this.hasRef = false;
@@ -1920,6 +1973,11 @@ class Http2CallStream {
         if (this.listener && !this.statusOutput) {
             this.statusOutput = true;
             const filteredStatus = this.filterStack.receiveTrailers(this.finalStatus);
+            this.trace('ended with status: code=' +
+                filteredStatus.code +
+                ' details="' +
+                filteredStatus.details +
+                '"');
             this.statusWatchers.forEach(watcher => watcher(filteredStatus));
             /* We delay the actual action of bubbling up the status to insulate the
              * cleanup code in this class from any errors that may be thrown in the
@@ -1949,11 +2007,6 @@ class Http2CallStream {
         /* If the status is OK and a new status comes in (e.g. from a
          * deserialization failure), that new status takes priority */
         if (this.finalStatus === null || this.finalStatus.code === constants_1.Status.OK) {
-            this.trace('ended with status: code=' +
-                status.code +
-                ' details="' +
-                status.details +
-                '"');
             this.finalStatus = status;
             this.maybeOutputStatus();
         }
@@ -2203,7 +2256,7 @@ class Http2CallStream {
                             break;
                         case http2.constants.NGHTTP2_ENHANCE_YOUR_CALM:
                             code = constants_1.Status.RESOURCE_EXHAUSTED;
-                            details = 'Bandwidth exhausted';
+                            details = 'Bandwidth exhausted or memory limit exceeded';
                             break;
                         case http2.constants.NGHTTP2_INADEQUATE_SECURITY:
                             code = constants_1.Status.PERMISSION_DENIED;
@@ -2359,6 +2412,9 @@ class Http2CallStream {
     addFilters(extraFilters) {
         this.filterStack.push(extraFilters);
     }
+    getCallNumber() {
+        return this.callNumber;
+    }
     startRead() {
         /* If the stream has ended with an error, we should not emit any more
          * messages and we should communicate that the stream has ended */
@@ -2391,13 +2447,22 @@ class Http2CallStream {
         }
     }
     sendMessageWithContext(context, message) {
-        var _a;
         this.trace('write() called with message of length ' + message.length);
         const writeObj = {
             message,
             flags: context.flags,
         };
-        const cb = (_a = context.callback) !== null && _a !== void 0 ? _a : (() => { });
+        const cb = (error) => {
+            var _a, _b;
+            let code = constants_1.Status.UNAVAILABLE;
+            if (((_a = error) === null || _a === void 0 ? void 0 : _a.code) === 'ERR_STREAM_WRITE_AFTER_END') {
+                code = constants_1.Status.INTERNAL;
+            }
+            if (error) {
+                this.cancelWithStatus(code, `Write error: ${error.message}`);
+            }
+            (_b = context.callback) === null || _b === void 0 ? void 0 : _b.call(context);
+        };
         this.isWriteFilterPending = true;
         this.filterStack.sendMessage(Promise.resolve(writeObj)).then((message) => {
             this.isWriteFilterPending = false;
@@ -2636,8 +2701,10 @@ class ChannelCredentials {
      * @param rootCerts The root certificate data.
      * @param privateKey The client certificate private key, if available.
      * @param certChain The client certificate key chain, if available.
+     * @param verifyOptions Additional options to modify certificate verification
      */
     static createSsl(rootCerts, privateKey, certChain, verifyOptions) {
+        var _a;
         verifyIsBufferOrNull(rootCerts, 'Root certificate');
         verifyIsBufferOrNull(privateKey, 'Private key');
         verifyIsBufferOrNull(certChain, 'Certificate chain');
@@ -2647,7 +2714,26 @@ class ChannelCredentials {
         if (!privateKey && certChain) {
             throw new Error('Certificate chain must be given with accompanying private key');
         }
-        return new SecureChannelCredentialsImpl(rootCerts || tls_helpers_1.getDefaultRootsData(), privateKey || null, certChain || null, verifyOptions || {});
+        const secureContext = tls_1.createSecureContext({
+            ca: (_a = rootCerts !== null && rootCerts !== void 0 ? rootCerts : tls_helpers_1.getDefaultRootsData()) !== null && _a !== void 0 ? _a : undefined,
+            key: privateKey !== null && privateKey !== void 0 ? privateKey : undefined,
+            cert: certChain !== null && certChain !== void 0 ? certChain : undefined,
+            ciphers: tls_helpers_1.CIPHER_SUITES,
+        });
+        return new SecureChannelCredentialsImpl(secureContext, verifyOptions !== null && verifyOptions !== void 0 ? verifyOptions : {});
+    }
+    /**
+     * Return a new ChannelCredentials instance with credentials created using
+     * the provided secureContext. The resulting instances can be used to
+     * construct a Channel that communicates over TLS. gRPC will not override
+     * anything in the provided secureContext, so the environment variables
+     * GRPC_SSL_CIPHER_SUITES and GRPC_DEFAULT_SSL_ROOTS_FILE_PATH will
+     * not be applied.
+     * @param secureContext The return value of tls.createSecureContext()
+     * @param verifyOptions Additional options to modify certificate verification
+     */
+    static createFromSecureContext(secureContext, verifyOptions) {
+        return new SecureChannelCredentialsImpl(secureContext, verifyOptions !== null && verifyOptions !== void 0 ? verifyOptions : {});
     }
     /**
      * Return a new ChannelCredentials instance with no credentials.
@@ -2675,23 +2761,16 @@ class InsecureChannelCredentialsImpl extends ChannelCredentials {
     }
 }
 class SecureChannelCredentialsImpl extends ChannelCredentials {
-    constructor(rootCerts, privateKey, certChain, verifyOptions) {
+    constructor(secureContext, verifyOptions) {
         super();
-        this.rootCerts = rootCerts;
-        this.privateKey = privateKey;
-        this.certChain = certChain;
+        this.secureContext = secureContext;
         this.verifyOptions = verifyOptions;
-        const secureContext = tls_1.createSecureContext({
-            ca: rootCerts || undefined,
-            key: privateKey || undefined,
-            cert: certChain || undefined,
-            ciphers: tls_helpers_1.CIPHER_SUITES,
-        });
-        this.connectionOptions = { secureContext };
-        if (verifyOptions && verifyOptions.checkServerIdentity) {
-            this.connectionOptions.checkServerIdentity = (host, cert) => {
-                return verifyOptions.checkServerIdentity(host, { raw: cert.raw });
-            };
+        this.connectionOptions = {
+            secureContext
+        };
+        // Node asserts that this option is a function, so we cannot pass undefined
+        if (verifyOptions === null || verifyOptions === void 0 ? void 0 : verifyOptions.checkServerIdentity) {
+            this.connectionOptions.checkServerIdentity = verifyOptions.checkServerIdentity;
         }
     }
     compose(callCredentials) {
@@ -2710,17 +2789,8 @@ class SecureChannelCredentialsImpl extends ChannelCredentials {
             return true;
         }
         if (other instanceof SecureChannelCredentialsImpl) {
-            if (!bufferOrNullEqual(this.rootCerts, other.rootCerts)) {
-                return false;
-            }
-            if (!bufferOrNullEqual(this.privateKey, other.privateKey)) {
-                return false;
-            }
-            if (!bufferOrNullEqual(this.certChain, other.certChain)) {
-                return false;
-            }
-            return (this.verifyOptions.checkServerIdentity ===
-                other.verifyOptions.checkServerIdentity);
+            return (this.secureContext === other.secureContext &&
+                this.verifyOptions.checkServerIdentity === other.verifyOptions.checkServerIdentity);
         }
         else {
             return false;
@@ -2803,6 +2873,7 @@ exports.recognizedOptions = {
     'grpc.max_receive_message_length': true,
     'grpc.enable_http_proxy': true,
     'grpc.enable_channelz': true,
+    'grpc.dns_min_time_between_resolutions_ms': true,
     'grpc-node.max_session_memory': true,
 };
 function channelOptionsEqual(options1, options2) {
@@ -2881,7 +2952,7 @@ function getNewCallNumber() {
 }
 class ChannelImplementation {
     constructor(target, credentials, options) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         this.credentials = credentials;
         this.options = options;
         this.connectivityState = connectivity_state_1.ConnectivityState.IDLE;
@@ -2894,6 +2965,14 @@ class ChannelImplementation {
         this.pickQueue = [];
         this.connectivityStateWatchers = [];
         this.configSelector = null;
+        /**
+         * This is the error from the name resolver if it failed most recently. It
+         * is only used to end calls that start while there is no config selector
+         * and the name resolver is in backoff, so it should be nulled if
+         * configSelector becomes set or the channel state becomes anything other
+         * than TRANSIENT_FAILURE.
+         */
+        this.currentResolutionError = null;
         // Channelz info
         this.channelzEnabled = true;
         this.callTracker = new channelz_1.ChannelzCallTracker();
@@ -2926,17 +3005,9 @@ class ChannelImplementation {
             this.channelzEnabled = false;
         }
         this.channelzTrace = new channelz_1.ChannelzTrace();
+        this.channelzRef = channelz_1.registerChannelzChannel(target, () => this.getChannelzInfo(), this.channelzEnabled);
         if (this.channelzEnabled) {
-            this.channelzRef = channelz_1.registerChannelzChannel(target, () => this.getChannelzInfo());
             this.channelzTrace.addTrace('CT_INFO', 'Channel created');
-        }
-        else {
-            // Dummy channelz ref that will never be used
-            this.channelzRef = {
-                kind: 'channel',
-                id: -1,
-                name: ''
-            };
         }
         if (this.options['grpc.default_authority']) {
             this.defaultAuthority = this.options['grpc.default_authority'];
@@ -2988,6 +3059,7 @@ class ChannelImplementation {
                 this.channelzTrace.addTrace('CT_INFO', 'Address resolution succeeded');
             }
             this.configSelector = configSelector;
+            this.currentResolutionError = null;
             /* We process the queue asynchronously to ensure that the corresponding
              * load balancer update has completed. */
             process.nextTick(() => {
@@ -3006,6 +3078,9 @@ class ChannelImplementation {
             if (this.configSelectionQueue.length > 0) {
                 this.trace('Name resolution failed with calls queued for config selection');
             }
+            if (this.configSelector === null) {
+                this.currentResolutionError = status;
+            }
             const localQueue = this.configSelectionQueue;
             this.configSelectionQueue = [];
             this.callRefTimerUnref();
@@ -3023,9 +3098,11 @@ class ChannelImplementation {
             new call_credentials_filter_1.CallCredentialsFilterFactory(this),
             new deadline_filter_1.DeadlineFilterFactory(this),
             new max_message_size_filter_1.MaxMessageSizeFilterFactory(this.options),
-            new compression_filter_1.CompressionFilterFactory(this),
+            new compression_filter_1.CompressionFilterFactory(this, this.options),
         ]);
         this.trace('Channel constructed with options ' + JSON.stringify(options, undefined, 2));
+        const error = new Error();
+        logging_1.trace(constants_1.LogVerbosity.DEBUG, 'channel_stacktrace', '(' + this.channelzRef.id + ') ' + 'Channel constructed \n' + ((_d = error.stack) === null || _d === void 0 ? void 0 : _d.substring(error.stack.indexOf('\n') + 1)));
     }
     getChannelzInfo() {
         return {
@@ -3073,16 +3150,22 @@ class ChannelImplementation {
      * @param callMetadata
      */
     tryPick(callStream, callMetadata, callConfig, dynamicFilters) {
-        var _a, _b, _c;
+        var _a, _b;
         const pickResult = this.currentPicker.pick({
             metadata: callMetadata,
             extraPickInfo: callConfig.pickInformation,
         });
-        this.trace('Pick result: ' +
+        const subchannelString = pickResult.subchannel ?
+            '(' + pickResult.subchannel.getChannelzRef().id + ') ' + pickResult.subchannel.getAddress() :
+            '' + pickResult.subchannel;
+        this.trace('Pick result for call [' +
+            callStream.getCallNumber() +
+            ']: ' +
             picker_1.PickResultType[pickResult.pickResultType] +
-            ' subchannel: ' + ((_a = pickResult.subchannel) === null || _a === void 0 ? void 0 : _a.getAddress()) +
-            ' status: ' + ((_b = pickResult.status) === null || _b === void 0 ? void 0 : _b.code) +
-            ' ' + ((_c = pickResult.status) === null || _c === void 0 ? void 0 : _c.details));
+            ' subchannel: ' +
+            subchannelString +
+            ' status: ' + ((_a = pickResult.status) === null || _a === void 0 ? void 0 : _a.code) +
+            ' ' + ((_b = pickResult.status) === null || _b === void 0 ? void 0 : _b.details));
         switch (pickResult.pickResultType) {
             case picker_1.PickResultType.COMPLETE:
                 if (pickResult.subchannel === null) {
@@ -3096,7 +3179,7 @@ class ChannelImplementation {
                     if (pickResult.subchannel.getConnectivityState() !==
                         connectivity_state_1.ConnectivityState.READY) {
                         logging_1.log(constants_1.LogVerbosity.ERROR, 'Error: COMPLETE pick result subchannel ' +
-                            pickResult.subchannel.getAddress() +
+                            subchannelString +
                             ' has state ' +
                             connectivity_state_1.ConnectivityState[pickResult.subchannel.getConnectivityState()]);
                         this.pushPick(callStream, callMetadata, callConfig, dynamicFilters);
@@ -3108,20 +3191,21 @@ class ChannelImplementation {
                     callStream.filterStack
                         .sendMetadata(Promise.resolve(callMetadata.clone()))
                         .then((finalMetadata) => {
-                        var _a, _b;
+                        var _a, _b, _c;
                         const subchannelState = pickResult.subchannel.getConnectivityState();
                         if (subchannelState === connectivity_state_1.ConnectivityState.READY) {
                             try {
                                 const pickExtraFilters = pickResult.extraFilterFactories.map(factory => factory.createFilter(callStream));
-                                pickResult.subchannel.startCallStream(finalMetadata, callStream, [...dynamicFilters, ...pickExtraFilters]);
+                                (_a = pickResult.subchannel) === null || _a === void 0 ? void 0 : _a.getRealSubchannel().startCallStream(finalMetadata, callStream, [...dynamicFilters, ...pickExtraFilters]);
                                 /* If we reach this point, the call stream has started
                                  * successfully */
-                                (_a = callConfig.onCommitted) === null || _a === void 0 ? void 0 : _a.call(callConfig);
-                                (_b = pickResult.onCallStarted) === null || _b === void 0 ? void 0 : _b.call(pickResult);
+                                (_b = callConfig.onCommitted) === null || _b === void 0 ? void 0 : _b.call(callConfig);
+                                (_c = pickResult.onCallStarted) === null || _c === void 0 ? void 0 : _c.call(pickResult);
                             }
                             catch (error) {
-                                if (error.code ===
-                                    'ERR_HTTP2_GOAWAY_SESSION') {
+                                const errorCode = error.code;
+                                if (errorCode === 'ERR_HTTP2_GOAWAY_SESSION' ||
+                                    errorCode === 'ERR_HTTP2_INVALID_SESSION') {
                                     /* An error here indicates that something went wrong with
                                      * the picked subchannel's http2 stream right before we
                                      * tried to start the stream. We are handling a promise
@@ -3136,7 +3220,7 @@ class ChannelImplementation {
                                      * re-queueing instead, based on the logic in the rest of
                                      * tryPick */
                                     this.trace('Failed to start call on picked subchannel ' +
-                                        pickResult.subchannel.getAddress() +
+                                        subchannelString +
                                         ' with error ' +
                                         error.message +
                                         '. Retrying pick', constants_1.LogVerbosity.INFO);
@@ -3144,7 +3228,7 @@ class ChannelImplementation {
                                 }
                                 else {
                                     this.trace('Failed to start call on picked subchanel ' +
-                                        pickResult.subchannel.getAddress() +
+                                        subchannelString +
                                         ' with error ' +
                                         error.message +
                                         '. Ending call', constants_1.LogVerbosity.INFO);
@@ -3156,7 +3240,7 @@ class ChannelImplementation {
                             /* The logic for doing this here is the same as in the catch
                              * block above */
                             this.trace('Picked subchannel ' +
-                                pickResult.subchannel.getAddress() +
+                                subchannelString +
                                 ' has state ' +
                                 connectivity_state_1.ConnectivityState[subchannelState] +
                                 ' after metadata filters. Retrying pick', constants_1.LogVerbosity.INFO);
@@ -3213,6 +3297,9 @@ class ChannelImplementation {
                 watcherObject.callback();
             }
         }
+        if (newState !== connectivity_state_1.ConnectivityState.TRANSIENT_FAILURE) {
+            this.currentResolutionError = null;
+        }
     }
     tryGetConfig(stream, metadata) {
         if (stream.getStatus() !== null) {
@@ -3226,11 +3313,16 @@ class ChannelImplementation {
              * ResolvingLoadBalancer may be idle and if so it needs to be kicked
              * because it now has a pending request. */
             this.resolvingLoadBalancer.exitIdle();
-            this.configSelectionQueue.push({
-                callStream: stream,
-                callMetadata: metadata,
-            });
-            this.callRefTimerRef();
+            if (this.currentResolutionError && !metadata.getOptions().waitForReady) {
+                stream.cancelWithStatus(this.currentResolutionError.code, this.currentResolutionError.details);
+            }
+            else {
+                this.configSelectionQueue.push({
+                    callStream: stream,
+                    callMetadata: metadata,
+                });
+                this.callRefTimerRef();
+            }
         }
         else {
             const callConfig = this.configSelector(stream.getMethod(), metadata);
@@ -3582,31 +3674,39 @@ const channels = [];
 const subchannels = [];
 const servers = [];
 const sockets = [];
-function registerChannelzChannel(name, getInfo) {
+function registerChannelzChannel(name, getInfo, channelzEnabled) {
     const id = getNextId();
     const ref = { id, name, kind: 'channel' };
-    channels[id] = { ref, getInfo };
+    if (channelzEnabled) {
+        channels[id] = { ref, getInfo };
+    }
     return ref;
 }
 exports.registerChannelzChannel = registerChannelzChannel;
-function registerChannelzSubchannel(name, getInfo) {
+function registerChannelzSubchannel(name, getInfo, channelzEnabled) {
     const id = getNextId();
     const ref = { id, name, kind: 'subchannel' };
-    subchannels[id] = { ref, getInfo };
+    if (channelzEnabled) {
+        subchannels[id] = { ref, getInfo };
+    }
     return ref;
 }
 exports.registerChannelzSubchannel = registerChannelzSubchannel;
-function registerChannelzServer(getInfo) {
+function registerChannelzServer(getInfo, channelzEnabled) {
     const id = getNextId();
     const ref = { id, kind: 'server' };
-    servers[id] = { ref, getInfo };
+    if (channelzEnabled) {
+        servers[id] = { ref, getInfo };
+    }
     return ref;
 }
 exports.registerChannelzServer = registerChannelzServer;
-function registerChannelzSocket(name, getInfo) {
+function registerChannelzSocket(name, getInfo, channelzEnabled) {
     const id = getNextId();
     const ref = { id, name, kind: 'socket' };
-    sockets[id] = { ref, getInfo };
+    if (channelzEnabled) {
+        sockets[id] = { ref, getInfo };
+    }
     return ref;
 }
 exports.registerChannelzSocket = registerChannelzSocket;
@@ -4598,7 +4698,16 @@ class Client {
                 }
                 receivedStatus = true;
                 if (status.code === constants_1.Status.OK) {
-                    callProperties.callback(null, responseMessage);
+                    if (responseMessage === null) {
+                        callProperties.callback(call_1.callErrorFromStatus({
+                            code: constants_1.Status.INTERNAL,
+                            details: 'No message received',
+                            metadata: status.metadata
+                        }));
+                    }
+                    else {
+                        callProperties.callback(null, responseMessage);
+                    }
                 }
                 else {
                     callProperties.callback(call_1.callErrorFromStatus(status));
@@ -4666,7 +4775,16 @@ class Client {
                 }
                 receivedStatus = true;
                 if (status.code === constants_1.Status.OK) {
-                    callProperties.callback(null, responseMessage);
+                    if (responseMessage === null) {
+                        callProperties.callback(call_1.callErrorFromStatus({
+                            code: constants_1.Status.INTERNAL,
+                            details: 'No message received',
+                            metadata: status.metadata
+                        }));
+                    }
+                    else {
+                        callProperties.callback(null, responseMessage);
+                    }
                 }
                 else {
                     callProperties.callback(call_1.callErrorFromStatus(status));
@@ -4825,6 +4943,40 @@ exports.Client = Client;
 
 /***/ }),
 
+/***/ 4789:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright 2021 gRPC authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CompressionAlgorithms = void 0;
+var CompressionAlgorithms;
+(function (CompressionAlgorithms) {
+    CompressionAlgorithms[CompressionAlgorithms["identity"] = 0] = "identity";
+    CompressionAlgorithms[CompressionAlgorithms["deflate"] = 1] = "deflate";
+    CompressionAlgorithms[CompressionAlgorithms["gzip"] = 2] = "gzip";
+})(CompressionAlgorithms = exports.CompressionAlgorithms || (exports.CompressionAlgorithms = {}));
+;
+//# sourceMappingURL=compression-algorithms.js.map
+
+/***/ }),
+
 /***/ 7616:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -4849,7 +5001,13 @@ exports.Client = Client;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CompressionFilterFactory = exports.CompressionFilter = void 0;
 const zlib = __nccwpck_require__(9796);
+const compression_algorithms_1 = __nccwpck_require__(4789);
+const constants_1 = __nccwpck_require__(634);
 const filter_1 = __nccwpck_require__(3392);
+const logging = __nccwpck_require__(5993);
+const isCompressionAlgorithmKey = (key) => {
+    return typeof key === 'number' && typeof compression_algorithms_1.CompressionAlgorithms[key] === 'string';
+};
 class CompressionHandler {
     /**
      * @param message Raw uncompressed message bytes
@@ -4975,15 +5133,46 @@ function getCompressionHandler(compressionName) {
     }
 }
 class CompressionFilter extends filter_1.BaseFilter {
-    constructor() {
-        super(...arguments);
+    constructor(channelOptions, sharedFilterConfig) {
+        var _a;
+        super();
+        this.sharedFilterConfig = sharedFilterConfig;
         this.sendCompression = new IdentityHandler();
         this.receiveCompression = new IdentityHandler();
+        this.currentCompressionAlgorithm = 'identity';
+        const compressionAlgorithmKey = channelOptions['grpc.default_compression_algorithm'];
+        if (compressionAlgorithmKey !== undefined) {
+            if (isCompressionAlgorithmKey(compressionAlgorithmKey)) {
+                const clientSelectedEncoding = compression_algorithms_1.CompressionAlgorithms[compressionAlgorithmKey];
+                const serverSupportedEncodings = (_a = sharedFilterConfig.serverSupportedEncodingHeader) === null || _a === void 0 ? void 0 : _a.split(',');
+                /**
+                 * There are two possible situations here:
+                 * 1) We don't have any info yet from the server about what compression it supports
+                 *    In that case we should just use what the client tells us to use
+                 * 2) We've previously received a response from the server including a grpc-accept-encoding header
+                 *    In that case we only want to use the encoding chosen by the client if the server supports it
+                 */
+                if (!serverSupportedEncodings || serverSupportedEncodings.includes(clientSelectedEncoding)) {
+                    this.currentCompressionAlgorithm = clientSelectedEncoding;
+                    this.sendCompression = getCompressionHandler(this.currentCompressionAlgorithm);
+                }
+            }
+            else {
+                logging.log(constants_1.LogVerbosity.ERROR, `Invalid value provided for grpc.default_compression_algorithm option: ${compressionAlgorithmKey}`);
+            }
+        }
     }
     async sendMetadata(metadata) {
         const headers = await metadata;
         headers.set('grpc-accept-encoding', 'identity,deflate,gzip');
         headers.set('accept-encoding', 'identity');
+        // No need to send the header if it's "identity" -  behavior is identical; save the bandwidth
+        if (this.currentCompressionAlgorithm === 'identity') {
+            headers.remove('grpc-encoding');
+        }
+        else {
+            headers.set('grpc-encoding', this.currentCompressionAlgorithm);
+        }
         return headers;
     }
     receiveMetadata(metadata) {
@@ -4995,17 +5184,33 @@ class CompressionFilter extends filter_1.BaseFilter {
             }
         }
         metadata.remove('grpc-encoding');
+        /* Check to see if the compression we're using to send messages is supported by the server
+         * If not, reset the sendCompression filter and have it use the default IdentityHandler */
+        const serverSupportedEncodingsHeader = metadata.get('grpc-accept-encoding')[0];
+        if (serverSupportedEncodingsHeader) {
+            this.sharedFilterConfig.serverSupportedEncodingHeader = serverSupportedEncodingsHeader;
+            const serverSupportedEncodings = serverSupportedEncodingsHeader.split(',');
+            if (!serverSupportedEncodings.includes(this.currentCompressionAlgorithm)) {
+                this.sendCompression = new IdentityHandler();
+                this.currentCompressionAlgorithm = 'identity';
+            }
+        }
         metadata.remove('grpc-accept-encoding');
         return metadata;
     }
     async sendMessage(message) {
+        var _a;
         /* This filter is special. The input message is the bare message bytes,
          * and the output is a framed and possibly compressed message. For this
          * reason, this filter should be at the bottom of the filter stack */
         const resolvedMessage = await message;
-        const compress = resolvedMessage.flags === undefined
-            ? false
-            : (resolvedMessage.flags & 2 /* NoCompress */) === 0;
+        let compress;
+        if (this.sendCompression instanceof IdentityHandler) {
+            compress = false;
+        }
+        else {
+            compress = (((_a = resolvedMessage.flags) !== null && _a !== void 0 ? _a : 0) & 2 /* NoCompress */) === 0;
+        }
         return {
             message: await this.sendCompression.writeMessage(resolvedMessage.message, compress),
             flags: resolvedMessage.flags,
@@ -5021,11 +5226,13 @@ class CompressionFilter extends filter_1.BaseFilter {
 }
 exports.CompressionFilter = CompressionFilter;
 class CompressionFilterFactory {
-    constructor(channel) {
+    constructor(channel, options) {
         this.channel = channel;
+        this.options = options;
+        this.sharedFilterConfig = {};
     }
     createFilter(callStream) {
-        return new CompressionFilter();
+        return new CompressionFilter(this.options, this.sharedFilterConfig);
     }
 }
 exports.CompressionFilterFactory = CompressionFilterFactory;
@@ -5256,6 +5463,48 @@ exports.DeadlineFilterFactory = DeadlineFilterFactory;
 
 /***/ }),
 
+/***/ 2668:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright 2022 gRPC authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.isDuration = exports.durationToMs = exports.msToDuration = void 0;
+function msToDuration(millis) {
+    return {
+        seconds: (millis / 1000) | 0,
+        nanos: (millis % 1000) * 1000000 | 0
+    };
+}
+exports.msToDuration = msToDuration;
+function durationToMs(duration) {
+    return (duration.seconds * 1000 + duration.nanos / 1000000) | 0;
+}
+exports.durationToMs = durationToMs;
+function isDuration(value) {
+    return (typeof value.seconds === 'number') && (typeof value.nanos === 'number');
+}
+exports.isDuration = isDuration;
+//# sourceMappingURL=duration.js.map
+
+/***/ }),
+
 /***/ 7626:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -5268,6 +5517,8 @@ var resolver_1 = __nccwpck_require__(1594);
 Object.defineProperty(exports, "registerResolver", ({ enumerable: true, get: function () { return resolver_1.registerResolver; } }));
 var uri_parser_1 = __nccwpck_require__(5974);
 Object.defineProperty(exports, "uriToString", ({ enumerable: true, get: function () { return uri_parser_1.uriToString; } }));
+var duration_1 = __nccwpck_require__(2668);
+Object.defineProperty(exports, "durationToMs", ({ enumerable: true, get: function () { return duration_1.durationToMs; } }));
 var backoff_timeout_1 = __nccwpck_require__(4186);
 Object.defineProperty(exports, "BackoffTimeout", ({ enumerable: true, get: function () { return backoff_timeout_1.BackoffTimeout; } }));
 var load_balancer_1 = __nccwpck_require__(2680);
@@ -5289,6 +5540,10 @@ var filter_stack_1 = __nccwpck_require__(6450);
 Object.defineProperty(exports, "FilterStackFactory", ({ enumerable: true, get: function () { return filter_stack_1.FilterStackFactory; } }));
 var admin_1 = __nccwpck_require__(8258);
 Object.defineProperty(exports, "registerAdminService", ({ enumerable: true, get: function () { return admin_1.registerAdminService; } }));
+var subchannel_interface_1 = __nccwpck_require__(2258);
+Object.defineProperty(exports, "BaseSubchannelWrapper", ({ enumerable: true, get: function () { return subchannel_interface_1.BaseSubchannelWrapper; } }));
+var load_balancer_outlier_detection_1 = __nccwpck_require__(6828);
+Object.defineProperty(exports, "OutlierDetectionLoadBalancingConfig", ({ enumerable: true, get: function () { return load_balancer_outlier_detection_1.OutlierDetectionLoadBalancingConfig; } }));
 //# sourceMappingURL=experimental.js.map
 
 /***/ }),
@@ -5552,6 +5807,9 @@ function mapProxyName(target, options) {
     if (((_a = options['grpc.enable_http_proxy']) !== null && _a !== void 0 ? _a : 1) === 0) {
         return noProxyResult;
     }
+    if (target.scheme === 'unix') {
+        return noProxyResult;
+    }
     const proxyInfo = getProxyInfo();
     if (!proxyInfo.address) {
         return noProxyResult;
@@ -5709,11 +5967,13 @@ exports.getProxiedConnection = getProxiedConnection;
  *
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.experimental = exports.StatusBuilder = exports.getClientChannel = exports.ServerCredentials = exports.Server = exports.setLogVerbosity = exports.setLogger = exports.load = exports.loadObject = exports.CallCredentials = exports.ChannelCredentials = exports.waitForClientReady = exports.closeClient = exports.Channel = exports.makeGenericClientConstructor = exports.makeClientConstructor = exports.loadPackageDefinition = exports.Client = exports.propagate = exports.connectivityState = exports.status = exports.logVerbosity = exports.Metadata = exports.credentials = void 0;
+exports.experimental = exports.StatusBuilder = exports.getClientChannel = exports.ServerCredentials = exports.Server = exports.setLogVerbosity = exports.setLogger = exports.load = exports.loadObject = exports.CallCredentials = exports.ChannelCredentials = exports.waitForClientReady = exports.closeClient = exports.Channel = exports.makeGenericClientConstructor = exports.makeClientConstructor = exports.loadPackageDefinition = exports.Client = exports.compressionAlgorithms = exports.propagate = exports.connectivityState = exports.status = exports.logVerbosity = exports.Metadata = exports.credentials = void 0;
 const call_credentials_1 = __nccwpck_require__(1426);
 Object.defineProperty(exports, "CallCredentials", ({ enumerable: true, get: function () { return call_credentials_1.CallCredentials; } }));
 const channel_1 = __nccwpck_require__(3860);
 Object.defineProperty(exports, "Channel", ({ enumerable: true, get: function () { return channel_1.ChannelImplementation; } }));
+const compression_algorithms_1 = __nccwpck_require__(4789);
+Object.defineProperty(exports, "compressionAlgorithms", ({ enumerable: true, get: function () { return compression_algorithms_1.CompressionAlgorithms; } }));
 const connectivity_state_1 = __nccwpck_require__(878);
 Object.defineProperty(exports, "connectivityState", ({ enumerable: true, get: function () { return connectivity_state_1.ConnectivityState; } }));
 const channel_credentials_1 = __nccwpck_require__(4030);
@@ -5763,6 +6023,7 @@ exports.credentials = {
     // from channel-credentials.ts
     createInsecure: channel_credentials_1.ChannelCredentials.createInsecure,
     createSsl: channel_credentials_1.ChannelCredentials.createSsl,
+    createFromSecureContext: channel_credentials_1.ChannelCredentials.createFromSecureContext,
     // from call-credentials.ts
     createFromMetadataGenerator: call_credentials_1.CallCredentials.createFromMetadataGenerator,
     createFromGoogleCredential: call_credentials_1.CallCredentials.createFromGoogleCredential,
@@ -5809,6 +6070,7 @@ const resolver_uds = __nccwpck_require__(5252);
 const resolver_ip = __nccwpck_require__(7902);
 const load_balancer_pick_first = __nccwpck_require__(8977);
 const load_balancer_round_robin = __nccwpck_require__(2787);
+const load_balancer_outlier_detection = __nccwpck_require__(6828);
 const channelz = __nccwpck_require__(9975);
 const clientVersion = (__nccwpck_require__(6569)/* .version */ .i8);
 (() => {
@@ -5818,6 +6080,7 @@ const clientVersion = (__nccwpck_require__(6569)/* .version */ .i8);
     resolver_ip.setup();
     load_balancer_pick_first.setup();
     load_balancer_round_robin.setup();
+    load_balancer_outlier_detection.setup();
     channelz.setup();
 })();
 //# sourceMappingURL=index.js.map
@@ -5939,9 +6202,9 @@ class ChildLoadBalancerHandler {
     }
     exitIdle() {
         if (this.currentChild) {
-            this.currentChild.resetBackoff();
+            this.currentChild.exitIdle();
             if (this.pendingChild) {
-                this.pendingChild.resetBackoff();
+                this.pendingChild.exitIdle();
             }
         }
     }
@@ -5969,6 +6232,512 @@ class ChildLoadBalancerHandler {
 }
 exports.ChildLoadBalancerHandler = ChildLoadBalancerHandler;
 //# sourceMappingURL=load-balancer-child-handler.js.map
+
+/***/ }),
+
+/***/ 6828:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+/*
+ * Copyright 2022 gRPC authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.setup = exports.OutlierDetectionLoadBalancer = exports.OutlierDetectionLoadBalancingConfig = void 0;
+const connectivity_state_1 = __nccwpck_require__(878);
+const constants_1 = __nccwpck_require__(634);
+const duration_1 = __nccwpck_require__(2668);
+const experimental_1 = __nccwpck_require__(7626);
+const filter_1 = __nccwpck_require__(3392);
+const load_balancer_1 = __nccwpck_require__(2680);
+const load_balancer_child_handler_1 = __nccwpck_require__(7559);
+const picker_1 = __nccwpck_require__(1611);
+const subchannel_address_1 = __nccwpck_require__(9905);
+const subchannel_interface_1 = __nccwpck_require__(2258);
+const TYPE_NAME = 'outlier_detection';
+const OUTLIER_DETECTION_ENABLED = process.env.GRPC_EXPERIMENTAL_ENABLE_OUTLIER_DETECTION === 'true';
+const defaultSuccessRateEjectionConfig = {
+    stdev_factor: 1900,
+    enforcement_percentage: 100,
+    minimum_hosts: 5,
+    request_volume: 100
+};
+const defaultFailurePercentageEjectionConfig = {
+    threshold: 85,
+    enforcement_percentage: 100,
+    minimum_hosts: 5,
+    request_volume: 50
+};
+function validateFieldType(obj, fieldName, expectedType, objectName) {
+    if (fieldName in obj && typeof obj[fieldName] !== expectedType) {
+        const fullFieldName = objectName ? `${objectName}.${fieldName}` : fieldName;
+        throw new Error(`outlier detection config ${fullFieldName} parse error: expected ${expectedType}, got ${typeof obj[fieldName]}`);
+    }
+}
+function validatePositiveDuration(obj, fieldName, objectName) {
+    const fullFieldName = objectName ? `${objectName}.${fieldName}` : fieldName;
+    if (fieldName in obj) {
+        if (!duration_1.isDuration(obj[fieldName])) {
+            throw new Error(`outlier detection config ${fullFieldName} parse error: expected Duration, got ${typeof obj[fieldName]}`);
+        }
+        if (!(obj[fieldName].seconds >= 0 && obj[fieldName].seconds <= 315576000000 && obj[fieldName].nanos >= 0 && obj[fieldName].nanos <= 999999999)) {
+            throw new Error(`outlier detection config ${fullFieldName} parse error: values out of range for non-negative Duaration`);
+        }
+    }
+}
+function validatePercentage(obj, fieldName, objectName) {
+    const fullFieldName = objectName ? `${objectName}.${fieldName}` : fieldName;
+    validateFieldType(obj, fieldName, 'number', objectName);
+    if (fieldName in obj && !(obj[fieldName] >= 0 && obj[fieldName] <= 100)) {
+        throw new Error(`outlier detection config ${fullFieldName} parse error: value out of range for percentage (0-100)`);
+    }
+}
+class OutlierDetectionLoadBalancingConfig {
+    constructor(intervalMs, baseEjectionTimeMs, maxEjectionTimeMs, maxEjectionPercent, successRateEjection, failurePercentageEjection, childPolicy) {
+        this.childPolicy = childPolicy;
+        this.intervalMs = intervalMs !== null && intervalMs !== void 0 ? intervalMs : 10000;
+        this.baseEjectionTimeMs = baseEjectionTimeMs !== null && baseEjectionTimeMs !== void 0 ? baseEjectionTimeMs : 30000;
+        this.maxEjectionTimeMs = maxEjectionTimeMs !== null && maxEjectionTimeMs !== void 0 ? maxEjectionTimeMs : 300000;
+        this.maxEjectionPercent = maxEjectionPercent !== null && maxEjectionPercent !== void 0 ? maxEjectionPercent : 10;
+        this.successRateEjection = successRateEjection ? Object.assign(Object.assign({}, defaultSuccessRateEjectionConfig), successRateEjection) : null;
+        this.failurePercentageEjection = failurePercentageEjection ? Object.assign(Object.assign({}, defaultFailurePercentageEjectionConfig), failurePercentageEjection) : null;
+    }
+    getLoadBalancerName() {
+        return TYPE_NAME;
+    }
+    toJsonObject() {
+        return {
+            interval: duration_1.msToDuration(this.intervalMs),
+            base_ejection_time: duration_1.msToDuration(this.baseEjectionTimeMs),
+            max_ejection_time: duration_1.msToDuration(this.maxEjectionTimeMs),
+            max_ejection_percent: this.maxEjectionPercent,
+            success_rate_ejection: this.successRateEjection,
+            failure_percentage_ejection: this.failurePercentageEjection,
+            child_policy: this.childPolicy.map(policy => policy.toJsonObject())
+        };
+    }
+    getIntervalMs() {
+        return this.intervalMs;
+    }
+    getBaseEjectionTimeMs() {
+        return this.baseEjectionTimeMs;
+    }
+    getMaxEjectionTimeMs() {
+        return this.maxEjectionTimeMs;
+    }
+    getMaxEjectionPercent() {
+        return this.maxEjectionPercent;
+    }
+    getSuccessRateEjectionConfig() {
+        return this.successRateEjection;
+    }
+    getFailurePercentageEjectionConfig() {
+        return this.failurePercentageEjection;
+    }
+    getChildPolicy() {
+        return this.childPolicy;
+    }
+    copyWithChildPolicy(childPolicy) {
+        return new OutlierDetectionLoadBalancingConfig(this.intervalMs, this.baseEjectionTimeMs, this.maxEjectionTimeMs, this.maxEjectionPercent, this.successRateEjection, this.failurePercentageEjection, childPolicy);
+    }
+    static createFromJson(obj) {
+        var _a;
+        validatePositiveDuration(obj, 'interval');
+        validatePositiveDuration(obj, 'base_ejection_time');
+        validatePositiveDuration(obj, 'max_ejection_time');
+        validatePercentage(obj, 'max_ejection_percent');
+        if ('success_rate_ejection' in obj) {
+            if (typeof obj.success_rate_ejection !== 'object') {
+                throw new Error('outlier detection config success_rate_ejection must be an object');
+            }
+            validateFieldType(obj.success_rate_ejection, 'stdev_factor', 'number', 'success_rate_ejection');
+            validatePercentage(obj.success_rate_ejection, 'enforcement_percentage', 'success_rate_ejection');
+            validateFieldType(obj.success_rate_ejection, 'minimum_hosts', 'number', 'success_rate_ejection');
+            validateFieldType(obj.success_rate_ejection, 'request_volume', 'number', 'success_rate_ejection');
+        }
+        if ('failure_percentage_ejection' in obj) {
+            if (typeof obj.failure_percentage_ejection !== 'object') {
+                throw new Error('outlier detection config failure_percentage_ejection must be an object');
+            }
+            validatePercentage(obj.failure_percentage_ejection, 'threshold', 'failure_percentage_ejection');
+            validatePercentage(obj.failure_percentage_ejection, 'enforcement_percentage', 'failure_percentage_ejection');
+            validateFieldType(obj.failure_percentage_ejection, 'minimum_hosts', 'number', 'failure_percentage_ejection');
+            validateFieldType(obj.failure_percentage_ejection, 'request_volume', 'number', 'failure_percentage_ejection');
+        }
+        return new OutlierDetectionLoadBalancingConfig(obj.interval ? duration_1.durationToMs(obj.interval) : null, obj.base_ejection_time ? duration_1.durationToMs(obj.base_ejection_time) : null, obj.max_ejection_time ? duration_1.durationToMs(obj.max_ejection_time) : null, (_a = obj.max_ejection_percent) !== null && _a !== void 0 ? _a : null, obj.success_rate_ejection, obj.failure_percentage_ejection, obj.child_policy.map(load_balancer_1.validateLoadBalancingConfig));
+    }
+}
+exports.OutlierDetectionLoadBalancingConfig = OutlierDetectionLoadBalancingConfig;
+class OutlierDetectionSubchannelWrapper extends subchannel_interface_1.BaseSubchannelWrapper {
+    constructor(childSubchannel, mapEntry) {
+        super(childSubchannel);
+        this.mapEntry = mapEntry;
+        this.childSubchannelState = connectivity_state_1.ConnectivityState.IDLE;
+        this.stateListeners = [];
+        this.ejected = false;
+        this.refCount = 0;
+        childSubchannel.addConnectivityStateListener((subchannel, previousState, newState) => {
+            this.childSubchannelState = newState;
+            if (!this.ejected) {
+                for (const listener of this.stateListeners) {
+                    listener(this, previousState, newState);
+                }
+            }
+        });
+    }
+    /**
+     * Add a listener function to be called whenever the wrapper's
+     * connectivity state changes.
+     * @param listener
+     */
+    addConnectivityStateListener(listener) {
+        this.stateListeners.push(listener);
+    }
+    /**
+     * Remove a listener previously added with `addConnectivityStateListener`
+     * @param listener A reference to a function previously passed to
+     *     `addConnectivityStateListener`
+     */
+    removeConnectivityStateListener(listener) {
+        const listenerIndex = this.stateListeners.indexOf(listener);
+        if (listenerIndex > -1) {
+            this.stateListeners.splice(listenerIndex, 1);
+        }
+    }
+    ref() {
+        this.child.ref();
+        this.refCount += 1;
+    }
+    unref() {
+        this.child.unref();
+        this.refCount -= 1;
+        if (this.refCount <= 0) {
+            if (this.mapEntry) {
+                const index = this.mapEntry.subchannelWrappers.indexOf(this);
+                if (index >= 0) {
+                    this.mapEntry.subchannelWrappers.splice(index, 1);
+                }
+            }
+        }
+    }
+    eject() {
+        this.ejected = true;
+        for (const listener of this.stateListeners) {
+            listener(this, this.childSubchannelState, connectivity_state_1.ConnectivityState.TRANSIENT_FAILURE);
+        }
+    }
+    uneject() {
+        this.ejected = false;
+        for (const listener of this.stateListeners) {
+            listener(this, connectivity_state_1.ConnectivityState.TRANSIENT_FAILURE, this.childSubchannelState);
+        }
+    }
+    getMapEntry() {
+        return this.mapEntry;
+    }
+    getWrappedSubchannel() {
+        return this.child;
+    }
+}
+function createEmptyBucket() {
+    return {
+        success: 0,
+        failure: 0
+    };
+}
+class CallCounter {
+    constructor() {
+        this.activeBucket = createEmptyBucket();
+        this.inactiveBucket = createEmptyBucket();
+    }
+    addSuccess() {
+        this.activeBucket.success += 1;
+    }
+    addFailure() {
+        this.activeBucket.failure += 1;
+    }
+    switchBuckets() {
+        this.inactiveBucket = this.activeBucket;
+        this.activeBucket = createEmptyBucket();
+    }
+    getLastSuccesses() {
+        return this.inactiveBucket.success;
+    }
+    getLastFailures() {
+        return this.inactiveBucket.failure;
+    }
+}
+class OutlierDetectionCounterFilter extends filter_1.BaseFilter {
+    constructor(callCounter) {
+        super();
+        this.callCounter = callCounter;
+    }
+    receiveTrailers(status) {
+        if (status.code === constants_1.Status.OK) {
+            this.callCounter.addSuccess();
+        }
+        else {
+            this.callCounter.addFailure();
+        }
+        return status;
+    }
+}
+class OutlierDetectionCounterFilterFactory {
+    constructor(callCounter) {
+        this.callCounter = callCounter;
+    }
+    createFilter(callStream) {
+        return new OutlierDetectionCounterFilter(this.callCounter);
+    }
+}
+class OutlierDetectionPicker {
+    constructor(wrappedPicker) {
+        this.wrappedPicker = wrappedPicker;
+    }
+    pick(pickArgs) {
+        const wrappedPick = this.wrappedPicker.pick(pickArgs);
+        if (wrappedPick.pickResultType === picker_1.PickResultType.COMPLETE) {
+            const subchannelWrapper = wrappedPick.subchannel;
+            const mapEntry = subchannelWrapper.getMapEntry();
+            if (mapEntry) {
+                return Object.assign(Object.assign({}, wrappedPick), { subchannel: subchannelWrapper.getWrappedSubchannel(), extraFilterFactories: [...wrappedPick.extraFilterFactories, new OutlierDetectionCounterFilterFactory(mapEntry.counter)] });
+            }
+            else {
+                return wrappedPick;
+            }
+        }
+        else {
+            return wrappedPick;
+        }
+    }
+}
+class OutlierDetectionLoadBalancer {
+    constructor(channelControlHelper) {
+        this.addressMap = new Map();
+        this.latestConfig = null;
+        this.childBalancer = new load_balancer_child_handler_1.ChildLoadBalancerHandler(experimental_1.createChildChannelControlHelper(channelControlHelper, {
+            createSubchannel: (subchannelAddress, subchannelArgs) => {
+                const originalSubchannel = channelControlHelper.createSubchannel(subchannelAddress, subchannelArgs);
+                const mapEntry = this.addressMap.get(subchannel_address_1.subchannelAddressToString(subchannelAddress));
+                const subchannelWrapper = new OutlierDetectionSubchannelWrapper(originalSubchannel, mapEntry);
+                mapEntry === null || mapEntry === void 0 ? void 0 : mapEntry.subchannelWrappers.push(subchannelWrapper);
+                return subchannelWrapper;
+            },
+            updateState: (connectivityState, picker) => {
+                if (connectivityState === connectivity_state_1.ConnectivityState.READY) {
+                    channelControlHelper.updateState(connectivityState, new OutlierDetectionPicker(picker));
+                }
+                else {
+                    channelControlHelper.updateState(connectivityState, picker);
+                }
+            }
+        }));
+        this.ejectionTimer = setInterval(() => { }, 0);
+        clearInterval(this.ejectionTimer);
+    }
+    getCurrentEjectionPercent() {
+        let ejectionCount = 0;
+        for (const mapEntry of this.addressMap.values()) {
+            if (mapEntry.currentEjectionTimestamp !== null) {
+                ejectionCount += 1;
+            }
+        }
+        return (ejectionCount * 100) / this.addressMap.size;
+    }
+    runSuccessRateCheck(ejectionTimestamp) {
+        if (!this.latestConfig) {
+            return;
+        }
+        const successRateConfig = this.latestConfig.getSuccessRateEjectionConfig();
+        if (!successRateConfig) {
+            return;
+        }
+        // Step 1
+        const targetRequestVolume = successRateConfig.request_volume;
+        let addresesWithTargetVolume = 0;
+        const successRates = [];
+        for (const mapEntry of this.addressMap.values()) {
+            const successes = mapEntry.counter.getLastSuccesses();
+            const failures = mapEntry.counter.getLastFailures();
+            if (successes + failures >= targetRequestVolume) {
+                addresesWithTargetVolume += 1;
+                successRates.push(successes / (successes + failures));
+            }
+        }
+        if (addresesWithTargetVolume < successRateConfig.minimum_hosts) {
+            return;
+        }
+        // Step 2
+        const successRateMean = successRates.reduce((a, b) => a + b);
+        let successRateVariance = 0;
+        for (const rate of successRates) {
+            const deviation = rate - successRateMean;
+            successRateVariance += deviation * deviation;
+        }
+        const successRateStdev = Math.sqrt(successRateVariance);
+        const ejectionThreshold = successRateMean - successRateStdev * (successRateConfig.stdev_factor / 1000);
+        // Step 3
+        for (const mapEntry of this.addressMap.values()) {
+            // Step 3.i
+            if (this.getCurrentEjectionPercent() > this.latestConfig.getMaxEjectionPercent()) {
+                break;
+            }
+            // Step 3.ii
+            const successes = mapEntry.counter.getLastSuccesses();
+            const failures = mapEntry.counter.getLastFailures();
+            if (successes + failures < targetRequestVolume) {
+                continue;
+            }
+            // Step 3.iii
+            const successRate = successes / (successes + failures);
+            if (successRate < ejectionThreshold) {
+                const randomNumber = Math.random() * 100;
+                if (randomNumber < successRateConfig.enforcement_percentage) {
+                    this.eject(mapEntry, ejectionTimestamp);
+                }
+            }
+        }
+    }
+    runFailurePercentageCheck(ejectionTimestamp) {
+        if (!this.latestConfig) {
+            return;
+        }
+        const failurePercentageConfig = this.latestConfig.getFailurePercentageEjectionConfig();
+        if (!failurePercentageConfig) {
+            return;
+        }
+        // Step 1
+        if (this.addressMap.size < failurePercentageConfig.minimum_hosts) {
+            return;
+        }
+        // Step 2
+        for (const mapEntry of this.addressMap.values()) {
+            // Step 2.i
+            if (this.getCurrentEjectionPercent() > this.latestConfig.getMaxEjectionPercent()) {
+                break;
+            }
+            // Step 2.ii
+            const successes = mapEntry.counter.getLastSuccesses();
+            const failures = mapEntry.counter.getLastFailures();
+            if (successes + failures < failurePercentageConfig.request_volume) {
+                continue;
+            }
+            // Step 2.iii
+            const failurePercentage = (failures * 100) / (failures + successes);
+            if (failurePercentage > failurePercentageConfig.threshold) {
+                const randomNumber = Math.random() * 100;
+                if (randomNumber < failurePercentageConfig.enforcement_percentage) {
+                    this.eject(mapEntry, ejectionTimestamp);
+                }
+            }
+        }
+    }
+    eject(mapEntry, ejectionTimestamp) {
+        mapEntry.currentEjectionTimestamp = new Date();
+        mapEntry.ejectionTimeMultiplier += 1;
+        for (const subchannelWrapper of mapEntry.subchannelWrappers) {
+            subchannelWrapper.eject();
+        }
+    }
+    uneject(mapEntry) {
+        mapEntry.currentEjectionTimestamp = null;
+        for (const subchannelWrapper of mapEntry.subchannelWrappers) {
+            subchannelWrapper.uneject();
+        }
+    }
+    runChecks() {
+        const ejectionTimestamp = new Date();
+        for (const mapEntry of this.addressMap.values()) {
+            mapEntry.counter.switchBuckets();
+        }
+        if (!this.latestConfig) {
+            return;
+        }
+        this.runSuccessRateCheck(ejectionTimestamp);
+        this.runFailurePercentageCheck(ejectionTimestamp);
+        for (const mapEntry of this.addressMap.values()) {
+            if (mapEntry.currentEjectionTimestamp === null) {
+                if (mapEntry.ejectionTimeMultiplier > 0) {
+                    mapEntry.ejectionTimeMultiplier -= 1;
+                }
+            }
+            else {
+                const baseEjectionTimeMs = this.latestConfig.getBaseEjectionTimeMs();
+                const maxEjectionTimeMs = this.latestConfig.getMaxEjectionTimeMs();
+                const returnTime = new Date(mapEntry.currentEjectionTimestamp.getTime());
+                returnTime.setMilliseconds(returnTime.getMilliseconds() + Math.min(baseEjectionTimeMs * mapEntry.ejectionTimeMultiplier, Math.max(baseEjectionTimeMs, maxEjectionTimeMs)));
+                if (returnTime < new Date()) {
+                    this.uneject(mapEntry);
+                }
+            }
+        }
+    }
+    updateAddressList(addressList, lbConfig, attributes) {
+        if (!(lbConfig instanceof OutlierDetectionLoadBalancingConfig)) {
+            return;
+        }
+        const subchannelAddresses = new Set();
+        for (const address of addressList) {
+            subchannelAddresses.add(subchannel_address_1.subchannelAddressToString(address));
+        }
+        for (const address of subchannelAddresses) {
+            if (!this.addressMap.has(address)) {
+                this.addressMap.set(address, {
+                    counter: new CallCounter(),
+                    currentEjectionTimestamp: null,
+                    ejectionTimeMultiplier: 0,
+                    subchannelWrappers: []
+                });
+            }
+        }
+        for (const key of this.addressMap.keys()) {
+            if (!subchannelAddresses.has(key)) {
+                this.addressMap.delete(key);
+            }
+        }
+        const childPolicy = load_balancer_1.getFirstUsableConfig(lbConfig.getChildPolicy(), true);
+        this.childBalancer.updateAddressList(addressList, childPolicy, attributes);
+        if (this.latestConfig === null || this.latestConfig.getIntervalMs() !== lbConfig.getIntervalMs()) {
+            clearInterval(this.ejectionTimer);
+            this.ejectionTimer = setInterval(() => this.runChecks(), lbConfig.getIntervalMs());
+        }
+        this.latestConfig = lbConfig;
+    }
+    exitIdle() {
+        this.childBalancer.exitIdle();
+    }
+    resetBackoff() {
+        this.childBalancer.resetBackoff();
+    }
+    destroy() {
+        this.childBalancer.destroy();
+    }
+    getTypeName() {
+        return TYPE_NAME;
+    }
+}
+exports.OutlierDetectionLoadBalancer = OutlierDetectionLoadBalancer;
+function setup() {
+    if (OUTLIER_DETECTION_ENABLED) {
+        experimental_1.registerLoadBalancerType(TYPE_NAME, OutlierDetectionLoadBalancer, OutlierDetectionLoadBalancingConfig);
+    }
+}
+exports.setup = setup;
+//# sourceMappingURL=load-balancer-outlier-detection.js.map
 
 /***/ }),
 
@@ -6108,8 +6877,10 @@ class PickFirstLoadBalancer {
                         this.subchannels.length) {
                     /* If all of the subchannels are IDLE we should go back to a
                      * basic IDLE state where there is no subchannel list to avoid
-                     * holding unused resources */
-                    this.resetSubchannelList();
+                     * holding unused resources. We do not reset triedAllSubchannels
+                     * because that is a reminder to request reresolution the next time
+                     * this LB policy needs to connect. */
+                    this.resetSubchannelList(false);
                     this.updateState(connectivity_state_1.ConnectivityState.IDLE, new picker_1.QueuePicker(this));
                     return;
                 }
@@ -6239,7 +7010,7 @@ class PickFirstLoadBalancer {
         this.currentState = newState;
         this.channelControlHelper.updateState(newState, picker);
     }
-    resetSubchannelList() {
+    resetSubchannelList(resetTriedAllSubchannels = true) {
         for (const subchannel of this.subchannels) {
             subchannel.removeConnectivityStateListener(this.subchannelStateListener);
             subchannel.unref();
@@ -6254,7 +7025,9 @@ class PickFirstLoadBalancer {
             [connectivity_state_1.ConnectivityState.TRANSIENT_FAILURE]: 0,
         };
         this.subchannels = [];
-        this.triedAllSubchannels = false;
+        if (resetTriedAllSubchannels) {
+            this.triedAllSubchannels = false;
+        }
     }
     /**
      * Start connecting to the address list most recently passed to
@@ -6306,6 +7079,10 @@ class PickFirstLoadBalancer {
         }
     }
     exitIdle() {
+        if (this.currentState === connectivity_state_1.ConnectivityState.IDLE ||
+            this.triedAllSubchannels) {
+            this.channelControlHelper.requestReresolution();
+        }
         for (const subchannel of this.subchannels) {
             subchannel.startConnecting();
         }
@@ -6313,10 +7090,6 @@ class PickFirstLoadBalancer {
             if (this.latestAddressList.length > 0) {
                 this.connectToAddressList();
             }
-        }
-        if (this.currentState === connectivity_state_1.ConnectivityState.IDLE ||
-            this.triedAllSubchannels) {
-            this.channelControlHelper.requestReresolution();
         }
     }
     resetBackoff() {
@@ -6326,9 +7099,13 @@ class PickFirstLoadBalancer {
     destroy() {
         this.resetSubchannelList();
         if (this.currentPick !== null) {
-            this.currentPick.unref();
-            this.currentPick.removeConnectivityStateListener(this.pickedSubchannelStateListener);
-            this.channelControlHelper.removeChannelzChild(this.currentPick.getChannelzRef());
+            /* Unref can cause a state change, which can cause a change in the value
+             * of this.currentPick, so we hold a local reference to make sure that
+             * does not impact this function. */
+            const currentPick = this.currentPick;
+            currentPick.unref();
+            currentPick.removeConnectivityStateListener(this.pickedSubchannelStateListener);
+            this.channelControlHelper.removeChannelzChild(currentPick.getChannelzRef());
         }
     }
     getTypeName() {
@@ -6669,7 +7446,7 @@ exports.validateLoadBalancingConfig = validateLoadBalancingConfig;
  */
 var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.trace = exports.log = exports.setLoggerVerbosity = exports.setLogger = exports.getLogger = void 0;
+exports.isTracerEnabled = exports.trace = exports.log = exports.setLoggerVerbosity = exports.setLogger = exports.getLogger = void 0;
 const constants_1 = __nccwpck_require__(634);
 const DEFAULT_LOGGER = {
     error: (message, ...optionalParams) => {
@@ -6748,12 +7525,16 @@ for (const tracerName of tracersString.split(',')) {
 }
 const allEnabled = enabledTracers.has('all');
 function trace(severity, tracer, text) {
-    if (!disabledTracers.has(tracer) &&
-        (allEnabled || enabledTracers.has(tracer))) {
+    if (isTracerEnabled(tracer)) {
         exports.log(severity, new Date().toISOString() + ' | ' + tracer + ' | ' + text);
     }
 }
 exports.trace = trace;
+function isTracerEnabled(tracer) {
+    return !disabledTracers.has(tracer) &&
+        (allEnabled || enabledTracers.has(tracer));
+}
+exports.isTracerEnabled = isTracerEnabled;
 //# sourceMappingURL=logging.js.map
 
 /***/ }),
@@ -6859,6 +7640,7 @@ function makeClientConstructor(methods, serviceName, classOptions) {
         }
     });
     ServiceClientImpl.service = methods;
+    ServiceClientImpl.serviceName = serviceName;
     return ServiceClientImpl;
 }
 exports.makeClientConstructor = makeClientConstructor;
@@ -7390,6 +8172,7 @@ const logging = __nccwpck_require__(5993);
 const constants_2 = __nccwpck_require__(634);
 const uri_parser_1 = __nccwpck_require__(5974);
 const net_1 = __nccwpck_require__(1808);
+const backoff_timeout_1 = __nccwpck_require__(4186);
 const TRACER_NAME = 'dns_resolver';
 function trace(text) {
     logging.trace(constants_2.LogVerbosity.DEBUG, TRACER_NAME, text);
@@ -7398,6 +8181,7 @@ function trace(text) {
  * The default TCP port to connect to if not explicitly specified in the target.
  */
 const DEFAULT_PORT = 443;
+const DEFAULT_MIN_TIME_BETWEEN_RESOLUTIONS_MS = 30000;
 const resolveTxtPromise = util.promisify(dns.resolveTxt);
 const dnsLookupPromise = util.promisify(dns.lookup);
 /**
@@ -7421,7 +8205,7 @@ function mergeArrays(...arrays) {
  */
 class DnsResolver {
     constructor(target, listener, channelOptions) {
-        var _a, _b;
+        var _a, _b, _c;
         this.target = target;
         this.listener = listener;
         this.pendingLookupPromise = null;
@@ -7429,6 +8213,8 @@ class DnsResolver {
         this.latestLookupResult = null;
         this.latestServiceConfig = null;
         this.latestServiceConfigError = null;
+        this.continueResolving = false;
+        this.isNextResolutionTimerRunning = false;
         trace('Resolver constructed for target ' + uri_parser_1.uriToString(target));
         const hostPort = uri_parser_1.splitHostPort(target.path);
         if (hostPort === null) {
@@ -7459,6 +8245,19 @@ class DnsResolver {
             details: `Name resolution failed for target ${uri_parser_1.uriToString(this.target)}`,
             metadata: new metadata_1.Metadata(),
         };
+        const backoffOptions = {
+            initialDelay: channelOptions['grpc.initial_reconnect_backoff_ms'],
+            maxDelay: channelOptions['grpc.max_reconnect_backoff_ms'],
+        };
+        this.backoff = new backoff_timeout_1.BackoffTimeout(() => {
+            if (this.continueResolving) {
+                this.startResolutionWithBackoff();
+            }
+        }, backoffOptions);
+        this.backoff.unref();
+        this.minTimeBetweenResolutionsMs = (_c = channelOptions['grpc.dns_min_time_between_resolutions_ms']) !== null && _c !== void 0 ? _c : DEFAULT_MIN_TIME_BETWEEN_RESOLUTIONS_MS;
+        this.nextResolutionTimer = setTimeout(() => { }, 0);
+        clearTimeout(this.nextResolutionTimer);
     }
     /**
      * If the target is an IP address, just provide that address as a result.
@@ -7470,9 +8269,12 @@ class DnsResolver {
             setImmediate(() => {
                 this.listener.onSuccessfulResolution(this.ipResult, null, null, null, {});
             });
+            this.backoff.stop();
+            this.backoff.reset();
             return;
         }
         if (this.dnsHostname === null) {
+            trace('Failed to parse DNS address ' + uri_parser_1.uriToString(this.target));
             setImmediate(() => {
                 this.listener.onError({
                     code: constants_1.Status.UNAVAILABLE,
@@ -7480,8 +8282,13 @@ class DnsResolver {
                     metadata: new metadata_1.Metadata(),
                 });
             });
+            this.stopNextResolutionTimer();
         }
         else {
+            if (this.pendingLookupPromise !== null) {
+                return;
+            }
+            trace('Looking up DNS hostname ' + this.dnsHostname);
             /* We clear out latestLookupResult here to ensure that it contains the
              * latest result since the last time we started resolving. That way, the
              * TXT resolution handler can use it, but only if it finishes second. We
@@ -7497,6 +8304,8 @@ class DnsResolver {
             this.pendingLookupPromise = dnsLookupPromise(hostname, { all: true });
             this.pendingLookupPromise.then((addressList) => {
                 this.pendingLookupPromise = null;
+                this.backoff.reset();
+                this.backoff.stop();
                 const ip4Addresses = addressList.filter((addr) => addr.family === 4);
                 const ip6Addresses = addressList.filter((addr) => addr.family === 6);
                 this.latestLookupResult = mergeArrays(ip6Addresses, ip4Addresses).map((addr) => ({ host: addr.address, port: +this.port }));
@@ -7524,6 +8333,7 @@ class DnsResolver {
                     ': ' +
                     err.message);
                 this.pendingLookupPromise = null;
+                this.stopNextResolutionTimer();
                 this.listener.onError(this.defaultResolutionError);
             });
             /* If there already is a still-pending TXT resolution, we can just use
@@ -7564,16 +8374,47 @@ class DnsResolver {
             }
         }
     }
-    updateResolution() {
-        trace('Resolution update requested for target ' + uri_parser_1.uriToString(this.target));
+    startNextResolutionTimer() {
+        var _a, _b;
+        clearTimeout(this.nextResolutionTimer);
+        this.nextResolutionTimer = (_b = (_a = setTimeout(() => {
+            this.stopNextResolutionTimer();
+            if (this.continueResolving) {
+                this.startResolutionWithBackoff();
+            }
+        }, this.minTimeBetweenResolutionsMs)).unref) === null || _b === void 0 ? void 0 : _b.call(_a);
+        this.isNextResolutionTimerRunning = true;
+    }
+    stopNextResolutionTimer() {
+        clearTimeout(this.nextResolutionTimer);
+        this.isNextResolutionTimerRunning = false;
+    }
+    startResolutionWithBackoff() {
         if (this.pendingLookupPromise === null) {
+            this.continueResolving = false;
             this.startResolution();
+            this.backoff.runOnce();
+            this.startNextResolutionTimer();
+        }
+    }
+    updateResolution() {
+        /* If there is a pending lookup, just let it finish. Otherwise, if the
+         * nextResolutionTimer or backoff timer is running, set the
+         * continueResolving flag to resolve when whichever of those timers
+         * fires. Otherwise, start resolving immediately. */
+        if (this.pendingLookupPromise === null) {
+            if (this.isNextResolutionTimerRunning || this.backoff.isRunning()) {
+                this.continueResolving = true;
+            }
+            else {
+                this.startResolutionWithBackoff();
+            }
         }
     }
     destroy() {
-        /* Do nothing. There is not a practical way to cancel in-flight DNS
-         * requests, and after this function is called we can expect that
-         * updateResolution will not be called again. */
+        this.continueResolving = false;
+        this.backoff.stop();
+        this.stopNextResolutionTimer();
     }
     /**
      * Get the default authority for the given target. For IP targets, that is
@@ -8063,6 +8904,7 @@ class ResolvingLoadBalancer {
         if (this.currentState === connectivity_state_1.ConnectivityState.IDLE) {
             this.updateState(connectivity_state_1.ConnectivityState.CONNECTING, new picker_1.QueuePicker(this));
         }
+        this.backoffTimeout.runOnce();
     }
     updateState(connectivityState, picker) {
         trace(uri_parser_1.uriToString(this.target) +
@@ -8082,19 +8924,17 @@ class ResolvingLoadBalancer {
             this.updateState(connectivity_state_1.ConnectivityState.TRANSIENT_FAILURE, new picker_1.UnavailablePicker(error));
             this.onFailedResolution(error);
         }
-        this.backoffTimeout.runOnce();
     }
     exitIdle() {
-        this.childLoadBalancer.exitIdle();
-        if (this.currentState === connectivity_state_1.ConnectivityState.IDLE) {
+        if (this.currentState === connectivity_state_1.ConnectivityState.IDLE || this.currentState === connectivity_state_1.ConnectivityState.TRANSIENT_FAILURE) {
             if (this.backoffTimeout.isRunning()) {
                 this.continueResolving = true;
             }
             else {
                 this.updateResolution();
             }
-            this.updateState(connectivity_state_1.ConnectivityState.CONNECTING, new picker_1.QueuePicker(this));
         }
+        this.childLoadBalancer.exitIdle();
     }
     updateAddressList(addressList, lbConfig) {
         throw new Error('updateAddressList not supported on ResolvingLoadBalancer');
@@ -8143,6 +8983,7 @@ exports.Http2ServerCallStream = exports.ServerDuplexStreamImpl = exports.ServerW
 const events_1 = __nccwpck_require__(2361);
 const http2 = __nccwpck_require__(5158);
 const stream_1 = __nccwpck_require__(2781);
+const zlib = __nccwpck_require__(9796);
 const constants_1 = __nccwpck_require__(634);
 const metadata_1 = __nccwpck_require__(3665);
 const stream_decoder_1 = __nccwpck_require__(6575);
@@ -8168,7 +9009,7 @@ const deadlineUnitsToMs = {
 const defaultResponseHeaders = {
     // TODO(cjihrig): Remove these encoding headers from the default response
     // once compression is integrated.
-    [GRPC_ACCEPT_ENCODING_HEADER]: 'identity',
+    [GRPC_ACCEPT_ENCODING_HEADER]: 'identity,deflate,gzip',
     [GRPC_ENCODING_HEADER]: 'identity',
     [http2.constants.HTTP2_HEADER_STATUS]: http2.constants.HTTP_STATUS_OK,
     [http2.constants.HTTP2_HEADER_CONTENT_TYPE]: 'application/grpc+proto',
@@ -8197,14 +9038,14 @@ class ServerUnaryCallImpl extends events_1.EventEmitter {
 }
 exports.ServerUnaryCallImpl = ServerUnaryCallImpl;
 class ServerReadableStreamImpl extends stream_1.Readable {
-    constructor(call, metadata, deserialize) {
+    constructor(call, metadata, deserialize, encoding) {
         super({ objectMode: true });
         this.call = call;
         this.metadata = metadata;
         this.deserialize = deserialize;
         this.cancelled = false;
         this.call.setupSurfaceCall(this);
-        this.call.setupReadable(this);
+        this.call.setupReadable(this, encoding);
     }
     _read(size) {
         if (!this.call.consumeUnpushedMessages(this)) {
@@ -8276,12 +9117,12 @@ class ServerWritableStreamImpl extends stream_1.Writable {
         if (metadata) {
             this.trailingMetadata = metadata;
         }
-        super.end();
+        return super.end();
     }
 }
 exports.ServerWritableStreamImpl = ServerWritableStreamImpl;
 class ServerDuplexStreamImpl extends stream_1.Duplex {
-    constructor(call, metadata, serialize, deserialize) {
+    constructor(call, metadata, serialize, deserialize, encoding) {
         super({ objectMode: true });
         this.call = call;
         this.metadata = metadata;
@@ -8290,7 +9131,7 @@ class ServerDuplexStreamImpl extends stream_1.Duplex {
         this.cancelled = false;
         this.trailingMetadata = new metadata_1.Metadata();
         this.call.setupSurfaceCall(this);
-        this.call.setupReadable(this);
+        this.call.setupReadable(this, encoding);
         this.on('error', (err) => {
             this.call.sendError(err);
             this.end();
@@ -8310,7 +9151,7 @@ class ServerDuplexStreamImpl extends stream_1.Duplex {
         if (metadata) {
             this.trailingMetadata = metadata;
         }
-        super.end();
+        return super.end();
     }
 }
 exports.ServerDuplexStreamImpl = ServerDuplexStreamImpl;
@@ -8320,7 +9161,6 @@ ServerDuplexStreamImpl.prototype._write =
     ServerWritableStreamImpl.prototype._write;
 ServerDuplexStreamImpl.prototype._final =
     ServerWritableStreamImpl.prototype._final;
-ServerDuplexStreamImpl.prototype.end = ServerWritableStreamImpl.prototype.end;
 // Internal class that wraps the HTTP2 request.
 class Http2ServerCallStream extends events_1.EventEmitter {
     constructor(stream, handler, options) {
@@ -8376,6 +9216,52 @@ class Http2ServerCallStream extends events_1.EventEmitter {
         }
         return this.cancelled;
     }
+    getDecompressedMessage(message, encoding) {
+        switch (encoding) {
+            case 'deflate': {
+                return new Promise((resolve, reject) => {
+                    zlib.inflate(message.slice(5), (err, output) => {
+                        if (err) {
+                            this.sendError({
+                                code: constants_1.Status.INTERNAL,
+                                details: `Received "grpc-encoding" header "${encoding}" but ${encoding} decompression failed`,
+                            });
+                            resolve();
+                        }
+                        else {
+                            resolve(output);
+                        }
+                    });
+                });
+            }
+            case 'gzip': {
+                return new Promise((resolve, reject) => {
+                    zlib.unzip(message.slice(5), (err, output) => {
+                        if (err) {
+                            this.sendError({
+                                code: constants_1.Status.INTERNAL,
+                                details: `Received "grpc-encoding" header "${encoding}" but ${encoding} decompression failed`,
+                            });
+                            resolve();
+                        }
+                        else {
+                            resolve(output);
+                        }
+                    });
+                });
+            }
+            case 'identity': {
+                return Promise.resolve(message.slice(5));
+            }
+            default: {
+                this.sendError({
+                    code: constants_1.Status.UNIMPLEMENTED,
+                    details: `Received message compressed with unsupported encoding "${encoding}"`,
+                });
+                return Promise.resolve();
+            }
+        }
+    }
     sendMetadata(customMetadata) {
         if (this.checkCancelled()) {
             return;
@@ -8399,7 +9285,7 @@ class Http2ServerCallStream extends events_1.EventEmitter {
                 const err = new Error('Invalid deadline');
                 err.code = constants_1.Status.OUT_OF_RANGE;
                 this.sendError(err);
-                return;
+                return metadata;
             }
             const timeout = (+match[1] * deadlineUnitsToMs[match[2]]) | 0;
             const now = new Date();
@@ -8411,11 +9297,10 @@ class Http2ServerCallStream extends events_1.EventEmitter {
         metadata.remove(http2.constants.HTTP2_HEADER_ACCEPT_ENCODING);
         metadata.remove(http2.constants.HTTP2_HEADER_TE);
         metadata.remove(http2.constants.HTTP2_HEADER_CONTENT_TYPE);
-        metadata.remove('grpc-encoding');
         metadata.remove('grpc-accept-encoding');
         return metadata;
     }
-    receiveUnaryMessage() {
+    receiveUnaryMessage(encoding) {
         return new Promise((resolve, reject) => {
             const stream = this.stream;
             const chunks = [];
@@ -8436,7 +9321,17 @@ class Http2ServerCallStream extends events_1.EventEmitter {
                         resolve();
                     }
                     this.emit('receiveMessage');
-                    resolve(this.deserializeMessage(requestBytes));
+                    const compressed = requestBytes.readUInt8(0) === 1;
+                    const compressedMessageEncoding = compressed ? encoding : 'identity';
+                    const decompressedMessage = await this.getDecompressedMessage(requestBytes, compressedMessageEncoding);
+                    // Encountered an error with decompression; it'll already have been propogated back
+                    // Just return early
+                    if (!decompressedMessage) {
+                        resolve();
+                    }
+                    else {
+                        resolve(this.deserializeMessage(decompressedMessage));
+                    }
                 }
                 catch (err) {
                     err.code = constants_1.Status.INTERNAL;
@@ -8457,9 +9352,7 @@ class Http2ServerCallStream extends events_1.EventEmitter {
         return output;
     }
     deserializeMessage(bytes) {
-        // TODO(cjihrig): Call compression aware deserializeMessage().
-        const receivedMessage = bytes.slice(5);
-        return this.handler.deserialize(receivedMessage);
+        return this.handler.deserialize(bytes);
     }
     async sendUnaryMessage(err, value, metadata, flags) {
         if (this.checkCancelled()) {
@@ -8554,10 +9447,21 @@ class Http2ServerCallStream extends events_1.EventEmitter {
             call.emit('cancelled', reason);
         });
     }
-    setupReadable(readable) {
+    setupReadable(readable, encoding) {
         const decoder = new stream_decoder_1.StreamDecoder();
+        let readsDone = false;
+        let pendingMessageProcessing = false;
+        let pushedEnd = false;
+        const maybePushEnd = () => {
+            if (!pushedEnd && readsDone && !pendingMessageProcessing) {
+                pushedEnd = true;
+                this.pushOrBufferMessage(readable, null);
+            }
+        };
         this.stream.on('data', async (data) => {
             const messages = decoder.write(data);
+            pendingMessageProcessing = true;
+            this.stream.pause();
             for (const message of messages) {
                 if (this.maxReceiveMessageSize !== -1 &&
                     message.length > this.maxReceiveMessageSize) {
@@ -8568,11 +9472,22 @@ class Http2ServerCallStream extends events_1.EventEmitter {
                     return;
                 }
                 this.emit('receiveMessage');
-                this.pushOrBufferMessage(readable, message);
+                const compressed = message.readUInt8(0) === 1;
+                const compressedMessageEncoding = compressed ? encoding : 'identity';
+                const decompressedMessage = await this.getDecompressedMessage(message, compressedMessageEncoding);
+                // Encountered an error with decompression; it'll already have been propogated back
+                // Just return early
+                if (!decompressedMessage)
+                    return;
+                this.pushOrBufferMessage(readable, decompressedMessage);
             }
+            pendingMessageProcessing = false;
+            this.stream.resume();
+            maybePushEnd();
         });
         this.stream.once('end', () => {
-            this.pushOrBufferMessage(readable, null);
+            readsDone = true;
+            maybePushEnd();
         });
     }
     consumeUnpushedMessages(readable) {
@@ -8597,6 +9512,7 @@ class Http2ServerCallStream extends events_1.EventEmitter {
     }
     async pushMessage(readable, messageBytes) {
         if (messageBytes === null) {
+            trace('Received end of stream');
             if (this.canPush) {
                 readable.push(null);
             }
@@ -8605,6 +9521,7 @@ class Http2ServerCallStream extends events_1.EventEmitter {
             }
             return;
         }
+        trace('Received message of length ' + messageBytes.length);
         this.isPushPending = true;
         try {
             const deserialized = await this.deserializeMessage(messageBytes);
@@ -8835,18 +9752,11 @@ class Server {
         if (this.options['grpc.enable_channelz'] === 0) {
             this.channelzEnabled = false;
         }
+        this.channelzRef = channelz_1.registerChannelzServer(() => this.getChannelzInfo(), this.channelzEnabled);
         if (this.channelzEnabled) {
-            this.channelzRef = channelz_1.registerChannelzServer(() => this.getChannelzInfo());
             this.channelzTrace.addTrace('CT_INFO', 'Server created');
-            this.trace('Server constructed');
         }
-        else {
-            // Dummy channelz ref that will never be used
-            this.channelzRef = {
-                kind: 'server',
-                id: -1
-            };
-        }
+        this.trace('Server constructed');
     }
     getChannelzInfo() {
         return {
@@ -9006,6 +9916,13 @@ class Server {
             if (creds._isSecure()) {
                 const secureServerOptions = Object.assign(serverOptions, creds._getSettings());
                 http2Server = http2.createSecureServer(secureServerOptions);
+                http2Server.on('secureConnection', (socket) => {
+                    /* These errors need to be handled by the user of Http2SecureServer,
+                     * according to https://github.com/nodejs/node/issues/35824 */
+                    socket.on('error', (e) => {
+                        this.trace('An incoming TLS connection closed with error: ' + e.message);
+                    });
+                });
             }
             else {
                 http2Server = http2.createServer(serverOptions);
@@ -9051,7 +9968,8 @@ class Server {
                                 port: boundAddress.port
                             };
                         }
-                        const channelzRef = channelz_1.registerChannelzSocket(subchannel_address_1.subchannelAddressToString(boundSubchannelAddress), () => {
+                        let channelzRef;
+                        channelzRef = channelz_1.registerChannelzSocket(subchannel_address_1.subchannelAddressToString(boundSubchannelAddress), () => {
                             return {
                                 localAddress: boundSubchannelAddress,
                                 remoteAddress: null,
@@ -9070,8 +9988,10 @@ class Server {
                                 localFlowControlWindow: null,
                                 remoteFlowControlWindow: null
                             };
-                        });
-                        this.listenerChildrenTracker.refChild(channelzRef);
+                        }, this.channelzEnabled);
+                        if (this.channelzEnabled) {
+                            this.listenerChildrenTracker.refChild(channelzRef);
+                        }
                         this.http2ServerList.push({ server: http2Server, channelzRef: channelzRef });
                         this.trace('Successfully bound ' + subchannel_address_1.subchannelAddressToString(boundSubchannelAddress));
                         resolve('port' in boundSubchannelAddress ? boundSubchannelAddress.port : portNum);
@@ -9112,7 +10032,8 @@ class Server {
                         host: boundAddress.address,
                         port: boundAddress.port
                     };
-                    const channelzRef = channelz_1.registerChannelzSocket(subchannel_address_1.subchannelAddressToString(boundSubchannelAddress), () => {
+                    let channelzRef;
+                    channelzRef = channelz_1.registerChannelzSocket(subchannel_address_1.subchannelAddressToString(boundSubchannelAddress), () => {
                         return {
                             localAddress: boundSubchannelAddress,
                             remoteAddress: null,
@@ -9131,8 +10052,10 @@ class Server {
                             localFlowControlWindow: null,
                             remoteFlowControlWindow: null
                         };
-                    });
-                    this.listenerChildrenTracker.refChild(channelzRef);
+                    }, this.channelzEnabled);
+                    if (this.channelzEnabled) {
+                        this.listenerChildrenTracker.refChild(channelzRef);
+                    }
                     this.http2ServerList.push({ server: http2Server, channelzRef: channelzRef });
                     this.trace('Successfully bound ' + subchannel_address_1.subchannelAddressToString(boundSubchannelAddress));
                     resolve(bindSpecificPort(addressList.slice(1), boundAddress.port, 1));
@@ -9191,8 +10114,10 @@ class Server {
         for (const { server: http2Server, channelzRef: ref } of this.http2ServerList) {
             if (http2Server.listening) {
                 http2Server.close(() => {
-                    this.listenerChildrenTracker.unrefChild(ref);
-                    channelz_1.unregisterChannelzRef(ref);
+                    if (this.channelzEnabled) {
+                        this.listenerChildrenTracker.unrefChild(ref);
+                        channelz_1.unregisterChannelzRef(ref);
+                    }
                 });
             }
         }
@@ -9206,7 +10131,9 @@ class Server {
             session.destroy(http2.constants.NGHTTP2_CANCEL);
         });
         this.sessions.clear();
-        channelz_1.unregisterChannelzRef(this.channelzRef);
+        if (this.channelzEnabled) {
+            channelz_1.unregisterChannelzRef(this.channelzRef);
+        }
     }
     register(name, handler, serialize, deserialize, type) {
         if (this.handlers.has(name)) {
@@ -9239,7 +10166,9 @@ class Server {
     }
     tryShutdown(callback) {
         const wrappedCallback = (error) => {
-            channelz_1.unregisterChannelzRef(this.channelzRef);
+            if (this.channelzEnabled) {
+                channelz_1.unregisterChannelzRef(this.channelzRef);
+            }
             callback(error);
         };
         let pendingChecks = 0;
@@ -9255,8 +10184,10 @@ class Server {
             if (http2Server.listening) {
                 pendingChecks++;
                 http2Server.close(() => {
-                    this.listenerChildrenTracker.unrefChild(ref);
-                    channelz_1.unregisterChannelzRef(ref);
+                    if (this.channelzEnabled) {
+                        this.listenerChildrenTracker.unrefChild(ref);
+                        channelz_1.unregisterChannelzRef(ref);
+                    }
                     maybeCallback();
                 });
             }
@@ -9287,9 +10218,12 @@ class Server {
             return;
         }
         http2Server.on('stream', (stream, headers) => {
+            var _a;
             const channelzSessionInfo = this.sessions.get(stream.session);
-            this.callTracker.addCallStarted();
-            channelzSessionInfo === null || channelzSessionInfo === void 0 ? void 0 : channelzSessionInfo.streamTracker.addCallStarted();
+            if (this.channelzEnabled) {
+                this.callTracker.addCallStarted();
+                channelzSessionInfo === null || channelzSessionInfo === void 0 ? void 0 : channelzSessionInfo.streamTracker.addCallStarted();
+            }
             const contentType = headers[http2.constants.HTTP2_HEADER_CONTENT_TYPE];
             if (typeof contentType !== 'string' ||
                 !contentType.startsWith('application/grpc')) {
@@ -9297,7 +10231,9 @@ class Server {
                     [http2.constants.HTTP2_HEADER_STATUS]: http2.constants.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE,
                 }, { endStream: true });
                 this.callTracker.addCallFailed();
-                channelzSessionInfo === null || channelzSessionInfo === void 0 ? void 0 : channelzSessionInfo.streamTracker.addCallFailed();
+                if (this.channelzEnabled) {
+                    channelzSessionInfo === null || channelzSessionInfo === void 0 ? void 0 : channelzSessionInfo.streamTracker.addCallFailed();
+                }
                 return;
             }
             let call = null;
@@ -9334,7 +10270,7 @@ class Server {
                         this.callTracker.addCallFailed();
                     }
                 });
-                if (channelzSessionInfo) {
+                if (this.channelzEnabled && channelzSessionInfo) {
                     call.once('streamEnd', (success) => {
                         if (success) {
                             channelzSessionInfo.streamTracker.addCallSucceeded();
@@ -9353,18 +10289,20 @@ class Server {
                     });
                 }
                 const metadata = call.receiveMetadata(headers);
+                const encoding = (_a = metadata.get('grpc-encoding')[0]) !== null && _a !== void 0 ? _a : 'identity';
+                metadata.remove('grpc-encoding');
                 switch (handler.type) {
                     case 'unary':
-                        handleUnary(call, handler, metadata);
+                        handleUnary(call, handler, metadata, encoding);
                         break;
                     case 'clientStream':
-                        handleClientStreaming(call, handler, metadata);
+                        handleClientStreaming(call, handler, metadata, encoding);
                         break;
                     case 'serverStream':
-                        handleServerStreaming(call, handler, metadata);
+                        handleServerStreaming(call, handler, metadata, encoding);
                         break;
                     case 'bidi':
-                        handleBidiStreaming(call, handler, metadata);
+                        handleBidiStreaming(call, handler, metadata, encoding);
                         break;
                     default:
                         throw new Error(`Unknown handler type: ${handler.type}`);
@@ -9373,8 +10311,10 @@ class Server {
             catch (err) {
                 if (!call) {
                     call = new server_call_1.Http2ServerCallStream(stream, null, this.options);
-                    this.callTracker.addCallFailed();
-                    channelzSessionInfo === null || channelzSessionInfo === void 0 ? void 0 : channelzSessionInfo.streamTracker.addCallFailed();
+                    if (this.channelzEnabled) {
+                        this.callTracker.addCallFailed();
+                        channelzSessionInfo === null || channelzSessionInfo === void 0 ? void 0 : channelzSessionInfo.streamTracker.addCallFailed();
+                    }
                 }
                 if (err.code === undefined) {
                     err.code = constants_1.Status.INTERNAL;
@@ -9388,7 +10328,8 @@ class Server {
                 session.destroy();
                 return;
             }
-            const channelzRef = channelz_1.registerChannelzSocket((_a = session.socket.remoteAddress) !== null && _a !== void 0 ? _a : 'unknown', this.getChannelzSessionInfoGetter(session));
+            let channelzRef;
+            channelzRef = channelz_1.registerChannelzSocket((_a = session.socket.remoteAddress) !== null && _a !== void 0 ? _a : 'unknown', this.getChannelzSessionInfoGetter(session), this.channelzEnabled);
             const channelzSessionInfo = {
                 ref: channelzRef,
                 streamTracker: new channelz_1.ChannelzCallTracker(),
@@ -9415,8 +10356,8 @@ class Server {
     }
 }
 exports.Server = Server;
-async function handleUnary(call, handler, metadata) {
-    const request = await call.receiveUnaryMessage();
+async function handleUnary(call, handler, metadata, encoding) {
+    const request = await call.receiveUnaryMessage(encoding);
     if (request === undefined || call.cancelled) {
         return;
     }
@@ -9425,8 +10366,8 @@ async function handleUnary(call, handler, metadata) {
         call.sendUnaryMessage(err, value, trailer, flags);
     });
 }
-function handleClientStreaming(call, handler, metadata) {
-    const stream = new server_call_1.ServerReadableStreamImpl(call, metadata, handler.deserialize);
+function handleClientStreaming(call, handler, metadata, encoding) {
+    const stream = new server_call_1.ServerReadableStreamImpl(call, metadata, handler.deserialize, encoding);
     function respond(err, value, trailer, flags) {
         stream.destroy();
         call.sendUnaryMessage(err, value, trailer, flags);
@@ -9437,16 +10378,16 @@ function handleClientStreaming(call, handler, metadata) {
     stream.on('error', respond);
     handler.func(stream, respond);
 }
-async function handleServerStreaming(call, handler, metadata) {
-    const request = await call.receiveUnaryMessage();
+async function handleServerStreaming(call, handler, metadata, encoding) {
+    const request = await call.receiveUnaryMessage(encoding);
     if (request === undefined || call.cancelled) {
         return;
     }
     const stream = new server_call_1.ServerWritableStreamImpl(call, metadata, handler.serialize, request);
     handler.func(stream);
 }
-function handleBidiStreaming(call, handler, metadata) {
-    const stream = new server_call_1.ServerDuplexStreamImpl(call, metadata, handler.serialize, handler.deserialize);
+function handleBidiStreaming(call, handler, metadata, encoding) {
+    const stream = new server_call_1.ServerDuplexStreamImpl(call, metadata, handler.serialize, handler.deserialize, encoding);
     if (call.cancelled) {
         return;
     }
@@ -9992,6 +10933,66 @@ exports.stringToSubchannelAddress = stringToSubchannelAddress;
 
 /***/ }),
 
+/***/ 2258:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/*
+ * Copyright 2022 gRPC authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BaseSubchannelWrapper = void 0;
+class BaseSubchannelWrapper {
+    constructor(child) {
+        this.child = child;
+    }
+    getConnectivityState() {
+        return this.child.getConnectivityState();
+    }
+    addConnectivityStateListener(listener) {
+        this.child.addConnectivityStateListener(listener);
+    }
+    removeConnectivityStateListener(listener) {
+        this.child.removeConnectivityStateListener(listener);
+    }
+    startConnecting() {
+        this.child.startConnecting();
+    }
+    getAddress() {
+        return this.child.getAddress();
+    }
+    ref() {
+        this.child.ref();
+    }
+    unref() {
+        this.child.unref();
+    }
+    getChannelzRef() {
+        return this.child.getChannelzRef();
+    }
+    getRealSubchannel() {
+        return this.child.getRealSubchannel();
+    }
+}
+exports.BaseSubchannelWrapper = BaseSubchannelWrapper;
+//# sourceMappingURL=subchannel-interface.js.map
+
+/***/ }),
+
 /***/ 9780:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -10029,11 +11030,8 @@ class SubchannelPool {
     /**
      * A pool of subchannels use for making connections. Subchannels with the
      * exact same parameters will be reused.
-     * @param global If true, this is the global subchannel pool. Otherwise, it
-     * is the pool for a single channel.
      */
-    constructor(global) {
-        this.global = global;
+    constructor() {
         this.pool = Object.create(null);
         /**
          * A timer of a task performing a periodic subchannel cleanup.
@@ -10074,7 +11072,7 @@ class SubchannelPool {
      */
     ensureCleanupTask() {
         var _a, _b;
-        if (this.global && this.cleanupTimer === null) {
+        if (this.cleanupTimer === null) {
             this.cleanupTimer = setInterval(() => {
                 this.unrefUnusedSubchannels();
             }, REF_CHECK_INTERVAL);
@@ -10115,14 +11113,12 @@ class SubchannelPool {
             channelCredentials,
             subchannel,
         });
-        if (this.global) {
-            subchannel.ref();
-        }
+        subchannel.ref();
         return subchannel;
     }
 }
 exports.SubchannelPool = SubchannelPool;
-const globalSubchannelPool = new SubchannelPool(true);
+const globalSubchannelPool = new SubchannelPool();
 /**
  * Get either the global subchannel pool, or a new subchannel pool.
  * @param global
@@ -10132,7 +11128,7 @@ function getSubchannelPool(global) {
         return globalSubchannelPool;
     }
     else {
-        return new SubchannelPool(false);
+        return new SubchannelPool();
     }
 }
 exports.getSubchannelPool = getSubchannelPool;
@@ -10177,6 +11173,7 @@ const subchannel_address_1 = __nccwpck_require__(9905);
 const channelz_1 = __nccwpck_require__(9975);
 const clientVersion = (__nccwpck_require__(6569)/* .version */ .i8);
 const TRACER_NAME = 'subchannel';
+const FLOW_CONTROL_TRACER_NAME = 'subchannel_flowctrl';
 const MIN_CONNECT_TIMEOUT_MS = 20000;
 const INITIAL_BACKOFF_MS = 1000;
 const BACKOFF_MULTIPLIER = 1.6;
@@ -10313,17 +11310,9 @@ class Subchannel {
             this.channelzEnabled = false;
         }
         this.channelzTrace = new channelz_1.ChannelzTrace();
+        this.channelzRef = channelz_1.registerChannelzSubchannel(this.subchannelAddressString, () => this.getChannelzInfo(), this.channelzEnabled);
         if (this.channelzEnabled) {
-            this.channelzRef = channelz_1.registerChannelzSubchannel(this.subchannelAddressString, () => this.getChannelzInfo());
             this.channelzTrace.addTrace('CT_INFO', 'Subchannel created');
-        }
-        else {
-            // Dummy channelz ref that will never be used
-            this.channelzRef = {
-                kind: 'subchannel',
-                id: -1,
-                name: ''
-            };
         }
         this.trace('Subchannel constructed with options ' + JSON.stringify(options, undefined, 2));
     }
@@ -10403,6 +11392,15 @@ class Subchannel {
     refTrace(text) {
         logging.trace(constants_1.LogVerbosity.DEBUG, 'subchannel_refcount', '(' + this.channelzRef.id + ') ' + this.subchannelAddressString + ' ' + text);
     }
+    flowControlTrace(text) {
+        logging.trace(constants_1.LogVerbosity.DEBUG, FLOW_CONTROL_TRACER_NAME, '(' + this.channelzRef.id + ') ' + this.subchannelAddressString + ' ' + text);
+    }
+    internalsTrace(text) {
+        logging.trace(constants_1.LogVerbosity.DEBUG, 'subchannel_internals', '(' + this.channelzRef.id + ') ' + this.subchannelAddressString + ' ' + text);
+    }
+    keepaliveTrace(text) {
+        logging.trace(constants_1.LogVerbosity.DEBUG, 'keepalive', '(' + this.channelzRef.id + ') ' + this.subchannelAddressString + ' ' + text);
+    }
     handleBackoffTimer() {
         if (this.continueConnecting) {
             this.transitionToState([connectivity_state_1.ConnectivityState.TRANSIENT_FAILURE], connectivity_state_1.ConnectivityState.CONNECTING);
@@ -10426,13 +11424,14 @@ class Subchannel {
         if (this.channelzEnabled) {
             this.keepalivesSent += 1;
         }
-        logging.trace(constants_1.LogVerbosity.DEBUG, 'keepalive', '(' + this.channelzRef.id + ') ' + this.subchannelAddressString + ' ' +
-            'Sending ping');
+        this.keepaliveTrace('Sending ping with timeout ' + this.keepaliveTimeoutMs + 'ms');
         this.keepaliveTimeoutId = setTimeout(() => {
-            this.transitionToState([connectivity_state_1.ConnectivityState.READY], connectivity_state_1.ConnectivityState.IDLE);
+            this.keepaliveTrace('Ping timeout passed without response');
+            this.handleDisconnect();
         }, this.keepaliveTimeoutMs);
         (_b = (_a = this.keepaliveTimeoutId).unref) === null || _b === void 0 ? void 0 : _b.call(_a);
         this.session.ping((err, duration, payload) => {
+            this.keepaliveTrace('Received ping response');
             clearTimeout(this.keepaliveTimeoutId);
         });
     }
@@ -10445,6 +11444,11 @@ class Subchannel {
         /* Don't send a ping immediately because whatever caused us to start
          * sending pings should also involve some network activity. */
     }
+    /**
+     * Stop keepalive pings when terminating a connection. This discards the
+     * outstanding ping timeout, so it should not be called if the same
+     * connection will still be used.
+     */
     stopKeepalivePings() {
         clearInterval(this.keepaliveIntervalId);
         clearTimeout(this.keepaliveTimeoutId);
@@ -10464,6 +11468,13 @@ class Subchannel {
         connectionOptions.maxSendHeaderBlockLength = Number.MAX_SAFE_INTEGER;
         if ('grpc-node.max_session_memory' in this.options) {
             connectionOptions.maxSessionMemory = this.options['grpc-node.max_session_memory'];
+        }
+        else {
+            /* By default, set a very large max session memory limit, to effectively
+             * disable enforcement of the limit. Some testing indicates that Node's
+             * behavior degrades badly when this limit is reached, so we solve that
+             * by disabling the check entirely. */
+            connectionOptions.maxSessionMemory = Number.MAX_SAFE_INTEGER;
         }
         let addressScheme = 'http://';
         if ('secureContext' in connectionOptions) {
@@ -10530,8 +11541,8 @@ class Subchannel {
          */
         const session = http2.connect(addressScheme + targetAuthority, connectionOptions);
         this.session = session;
+        this.channelzSocketRef = channelz_1.registerChannelzSocket(this.subchannelAddressString, () => this.getChannelzSocketInfo(), this.channelzEnabled);
         if (this.channelzEnabled) {
-            this.channelzSocketRef = channelz_1.registerChannelzSocket(this.subchannelAddressString, () => this.getChannelzSocketInfo());
             this.childrenTracker.refChild(this.channelzSocketRef);
         }
         session.unref();
@@ -10574,6 +11585,20 @@ class Subchannel {
             this.trace('connection closed with error ' +
                 error.message);
         });
+        if (logging.isTracerEnabled(TRACER_NAME)) {
+            session.on('remoteSettings', (settings) => {
+                this.trace('new settings received' +
+                    (this.session !== session ? ' on the old connection' : '') +
+                    ': ' +
+                    JSON.stringify(settings));
+            });
+            session.on('localSettings', (settings) => {
+                this.trace('local settings acknowledged by remote' +
+                    (this.session !== session ? ' on the old connection' : '') +
+                    ': ' +
+                    JSON.stringify(settings));
+            });
+        }
     }
     startConnectingInternal() {
         var _a, _b;
@@ -10614,6 +11639,12 @@ class Subchannel {
             this.transitionToState([connectivity_state_1.ConnectivityState.CONNECTING], connectivity_state_1.ConnectivityState.TRANSIENT_FAILURE);
         });
     }
+    handleDisconnect() {
+        this.transitionToState([connectivity_state_1.ConnectivityState.READY], connectivity_state_1.ConnectivityState.TRANSIENT_FAILURE);
+        for (const listener of this.disconnectListeners) {
+            listener();
+        }
+    }
     /**
      * Initiate a state transition from any element of oldStates to the new
      * state. If the current connectivityState is not in oldStates, do nothing.
@@ -10636,9 +11667,10 @@ class Subchannel {
         switch (newState) {
             case connectivity_state_1.ConnectivityState.READY:
                 this.stopBackoff();
-                this.session.socket.once('close', () => {
-                    for (const listener of this.disconnectListeners) {
-                        listener();
+                const session = this.session;
+                session.socket.once('close', () => {
+                    if (this.session === session) {
+                        this.handleDisconnect();
                     }
                 });
                 if (this.keepaliveWithoutCalls) {
@@ -10695,7 +11727,7 @@ class Subchannel {
             if (this.channelzEnabled) {
                 this.channelzTrace.addTrace('CT_INFO', 'Shutting down');
             }
-            this.transitionToState([connectivity_state_1.ConnectivityState.CONNECTING, connectivity_state_1.ConnectivityState.READY], connectivity_state_1.ConnectivityState.TRANSIENT_FAILURE);
+            this.transitionToState([connectivity_state_1.ConnectivityState.CONNECTING, connectivity_state_1.ConnectivityState.READY], connectivity_state_1.ConnectivityState.IDLE);
             if (this.channelzEnabled) {
                 channelz_1.unregisterChannelzRef(this.channelzRef);
             }
@@ -10729,7 +11761,7 @@ class Subchannel {
             }
             this.backoffTimeout.unref();
             if (!this.keepaliveWithoutCalls) {
-                this.stopKeepalivePings();
+                clearInterval(this.keepaliveIntervalId);
             }
             this.checkBothRefcounts();
         }
@@ -10791,12 +11823,22 @@ class Subchannel {
         for (const header of Object.keys(headers)) {
             headersString += '\t\t' + header + ': ' + headers[header] + '\n';
         }
-        logging.trace(constants_1.LogVerbosity.DEBUG, 'call_stream', 'Starting stream on subchannel ' +
+        logging.trace(constants_1.LogVerbosity.DEBUG, 'call_stream', 'Starting stream [' + callStream.getCallNumber() + '] on subchannel ' +
             '(' + this.channelzRef.id + ') ' +
             this.subchannelAddressString +
             ' with headers\n' +
             headersString);
+        this.flowControlTrace('local window size: ' +
+            this.session.state.localWindowSize +
+            ' remote window size: ' +
+            this.session.state.remoteWindowSize);
         const streamSession = this.session;
+        this.internalsTrace('session.closed=' +
+            streamSession.closed +
+            ' session.destroyed=' +
+            streamSession.destroyed +
+            ' session.socket.destroyed=' +
+            streamSession.socket.destroyed);
         let statsTracker;
         if (this.channelzEnabled) {
             this.callTracker.addCallStarted();
@@ -10900,6 +11942,9 @@ class Subchannel {
     }
     getChannelzRef() {
         return this.channelzRef;
+    }
+    getRealSubchannel() {
+        return this;
     }
 }
 exports.Subchannel = Subchannel;
@@ -11093,6 +12138,8 @@ const camelCase = __nccwpck_require__(7994);
 const Protobuf = __nccwpck_require__(8893);
 const descriptor = __nccwpck_require__(1629);
 const util_1 = __nccwpck_require__(3245);
+const Long = __nccwpck_require__(3482);
+exports.Long = Long;
 function isAnyExtension(obj) {
     return ('@type' in obj) && (typeof obj['@type'] === 'string');
 }
@@ -54711,6 +55758,1336 @@ module.exports = camelCase;
 
 /***/ }),
 
+/***/ 3482:
+/***/ ((module) => {
+
+module.exports = Long;
+
+/**
+ * wasm optimizations, to do native i64 multiplication and divide
+ */
+var wasm = null;
+
+try {
+  wasm = new WebAssembly.Instance(new WebAssembly.Module(new Uint8Array([
+    0, 97, 115, 109, 1, 0, 0, 0, 1, 13, 2, 96, 0, 1, 127, 96, 4, 127, 127, 127, 127, 1, 127, 3, 7, 6, 0, 1, 1, 1, 1, 1, 6, 6, 1, 127, 1, 65, 0, 11, 7, 50, 6, 3, 109, 117, 108, 0, 1, 5, 100, 105, 118, 95, 115, 0, 2, 5, 100, 105, 118, 95, 117, 0, 3, 5, 114, 101, 109, 95, 115, 0, 4, 5, 114, 101, 109, 95, 117, 0, 5, 8, 103, 101, 116, 95, 104, 105, 103, 104, 0, 0, 10, 191, 1, 6, 4, 0, 35, 0, 11, 36, 1, 1, 126, 32, 0, 173, 32, 1, 173, 66, 32, 134, 132, 32, 2, 173, 32, 3, 173, 66, 32, 134, 132, 126, 34, 4, 66, 32, 135, 167, 36, 0, 32, 4, 167, 11, 36, 1, 1, 126, 32, 0, 173, 32, 1, 173, 66, 32, 134, 132, 32, 2, 173, 32, 3, 173, 66, 32, 134, 132, 127, 34, 4, 66, 32, 135, 167, 36, 0, 32, 4, 167, 11, 36, 1, 1, 126, 32, 0, 173, 32, 1, 173, 66, 32, 134, 132, 32, 2, 173, 32, 3, 173, 66, 32, 134, 132, 128, 34, 4, 66, 32, 135, 167, 36, 0, 32, 4, 167, 11, 36, 1, 1, 126, 32, 0, 173, 32, 1, 173, 66, 32, 134, 132, 32, 2, 173, 32, 3, 173, 66, 32, 134, 132, 129, 34, 4, 66, 32, 135, 167, 36, 0, 32, 4, 167, 11, 36, 1, 1, 126, 32, 0, 173, 32, 1, 173, 66, 32, 134, 132, 32, 2, 173, 32, 3, 173, 66, 32, 134, 132, 130, 34, 4, 66, 32, 135, 167, 36, 0, 32, 4, 167, 11
+  ])), {}).exports;
+} catch (e) {
+  // no wasm support :(
+}
+
+/**
+ * Constructs a 64 bit two's-complement integer, given its low and high 32 bit values as *signed* integers.
+ *  See the from* functions below for more convenient ways of constructing Longs.
+ * @exports Long
+ * @class A Long class for representing a 64 bit two's-complement integer value.
+ * @param {number} low The low (signed) 32 bits of the long
+ * @param {number} high The high (signed) 32 bits of the long
+ * @param {boolean=} unsigned Whether unsigned or not, defaults to signed
+ * @constructor
+ */
+function Long(low, high, unsigned) {
+
+    /**
+     * The low 32 bits as a signed value.
+     * @type {number}
+     */
+    this.low = low | 0;
+
+    /**
+     * The high 32 bits as a signed value.
+     * @type {number}
+     */
+    this.high = high | 0;
+
+    /**
+     * Whether unsigned or not.
+     * @type {boolean}
+     */
+    this.unsigned = !!unsigned;
+}
+
+// The internal representation of a long is the two given signed, 32-bit values.
+// We use 32-bit pieces because these are the size of integers on which
+// Javascript performs bit-operations.  For operations like addition and
+// multiplication, we split each number into 16 bit pieces, which can easily be
+// multiplied within Javascript's floating-point representation without overflow
+// or change in sign.
+//
+// In the algorithms below, we frequently reduce the negative case to the
+// positive case by negating the input(s) and then post-processing the result.
+// Note that we must ALWAYS check specially whether those values are MIN_VALUE
+// (-2^63) because -MIN_VALUE == MIN_VALUE (since 2^63 cannot be represented as
+// a positive number, it overflows back into a negative).  Not handling this
+// case would often result in infinite recursion.
+//
+// Common constant values ZERO, ONE, NEG_ONE, etc. are defined below the from*
+// methods on which they depend.
+
+/**
+ * An indicator used to reliably determine if an object is a Long or not.
+ * @type {boolean}
+ * @const
+ * @private
+ */
+Long.prototype.__isLong__;
+
+Object.defineProperty(Long.prototype, "__isLong__", { value: true });
+
+/**
+ * @function
+ * @param {*} obj Object
+ * @returns {boolean}
+ * @inner
+ */
+function isLong(obj) {
+    return (obj && obj["__isLong__"]) === true;
+}
+
+/**
+ * Tests if the specified object is a Long.
+ * @function
+ * @param {*} obj Object
+ * @returns {boolean}
+ */
+Long.isLong = isLong;
+
+/**
+ * A cache of the Long representations of small integer values.
+ * @type {!Object}
+ * @inner
+ */
+var INT_CACHE = {};
+
+/**
+ * A cache of the Long representations of small unsigned integer values.
+ * @type {!Object}
+ * @inner
+ */
+var UINT_CACHE = {};
+
+/**
+ * @param {number} value
+ * @param {boolean=} unsigned
+ * @returns {!Long}
+ * @inner
+ */
+function fromInt(value, unsigned) {
+    var obj, cachedObj, cache;
+    if (unsigned) {
+        value >>>= 0;
+        if (cache = (0 <= value && value < 256)) {
+            cachedObj = UINT_CACHE[value];
+            if (cachedObj)
+                return cachedObj;
+        }
+        obj = fromBits(value, (value | 0) < 0 ? -1 : 0, true);
+        if (cache)
+            UINT_CACHE[value] = obj;
+        return obj;
+    } else {
+        value |= 0;
+        if (cache = (-128 <= value && value < 128)) {
+            cachedObj = INT_CACHE[value];
+            if (cachedObj)
+                return cachedObj;
+        }
+        obj = fromBits(value, value < 0 ? -1 : 0, false);
+        if (cache)
+            INT_CACHE[value] = obj;
+        return obj;
+    }
+}
+
+/**
+ * Returns a Long representing the given 32 bit integer value.
+ * @function
+ * @param {number} value The 32 bit integer in question
+ * @param {boolean=} unsigned Whether unsigned or not, defaults to signed
+ * @returns {!Long} The corresponding Long value
+ */
+Long.fromInt = fromInt;
+
+/**
+ * @param {number} value
+ * @param {boolean=} unsigned
+ * @returns {!Long}
+ * @inner
+ */
+function fromNumber(value, unsigned) {
+    if (isNaN(value))
+        return unsigned ? UZERO : ZERO;
+    if (unsigned) {
+        if (value < 0)
+            return UZERO;
+        if (value >= TWO_PWR_64_DBL)
+            return MAX_UNSIGNED_VALUE;
+    } else {
+        if (value <= -TWO_PWR_63_DBL)
+            return MIN_VALUE;
+        if (value + 1 >= TWO_PWR_63_DBL)
+            return MAX_VALUE;
+    }
+    if (value < 0)
+        return fromNumber(-value, unsigned).neg();
+    return fromBits((value % TWO_PWR_32_DBL) | 0, (value / TWO_PWR_32_DBL) | 0, unsigned);
+}
+
+/**
+ * Returns a Long representing the given value, provided that it is a finite number. Otherwise, zero is returned.
+ * @function
+ * @param {number} value The number in question
+ * @param {boolean=} unsigned Whether unsigned or not, defaults to signed
+ * @returns {!Long} The corresponding Long value
+ */
+Long.fromNumber = fromNumber;
+
+/**
+ * @param {number} lowBits
+ * @param {number} highBits
+ * @param {boolean=} unsigned
+ * @returns {!Long}
+ * @inner
+ */
+function fromBits(lowBits, highBits, unsigned) {
+    return new Long(lowBits, highBits, unsigned);
+}
+
+/**
+ * Returns a Long representing the 64 bit integer that comes by concatenating the given low and high bits. Each is
+ *  assumed to use 32 bits.
+ * @function
+ * @param {number} lowBits The low 32 bits
+ * @param {number} highBits The high 32 bits
+ * @param {boolean=} unsigned Whether unsigned or not, defaults to signed
+ * @returns {!Long} The corresponding Long value
+ */
+Long.fromBits = fromBits;
+
+/**
+ * @function
+ * @param {number} base
+ * @param {number} exponent
+ * @returns {number}
+ * @inner
+ */
+var pow_dbl = Math.pow; // Used 4 times (4*8 to 15+4)
+
+/**
+ * @param {string} str
+ * @param {(boolean|number)=} unsigned
+ * @param {number=} radix
+ * @returns {!Long}
+ * @inner
+ */
+function fromString(str, unsigned, radix) {
+    if (str.length === 0)
+        throw Error('empty string');
+    if (str === "NaN" || str === "Infinity" || str === "+Infinity" || str === "-Infinity")
+        return ZERO;
+    if (typeof unsigned === 'number') {
+        // For goog.math.long compatibility
+        radix = unsigned,
+        unsigned = false;
+    } else {
+        unsigned = !! unsigned;
+    }
+    radix = radix || 10;
+    if (radix < 2 || 36 < radix)
+        throw RangeError('radix');
+
+    var p;
+    if ((p = str.indexOf('-')) > 0)
+        throw Error('interior hyphen');
+    else if (p === 0) {
+        return fromString(str.substring(1), unsigned, radix).neg();
+    }
+
+    // Do several (8) digits each time through the loop, so as to
+    // minimize the calls to the very expensive emulated div.
+    var radixToPower = fromNumber(pow_dbl(radix, 8));
+
+    var result = ZERO;
+    for (var i = 0; i < str.length; i += 8) {
+        var size = Math.min(8, str.length - i),
+            value = parseInt(str.substring(i, i + size), radix);
+        if (size < 8) {
+            var power = fromNumber(pow_dbl(radix, size));
+            result = result.mul(power).add(fromNumber(value));
+        } else {
+            result = result.mul(radixToPower);
+            result = result.add(fromNumber(value));
+        }
+    }
+    result.unsigned = unsigned;
+    return result;
+}
+
+/**
+ * Returns a Long representation of the given string, written using the specified radix.
+ * @function
+ * @param {string} str The textual representation of the Long
+ * @param {(boolean|number)=} unsigned Whether unsigned or not, defaults to signed
+ * @param {number=} radix The radix in which the text is written (2-36), defaults to 10
+ * @returns {!Long} The corresponding Long value
+ */
+Long.fromString = fromString;
+
+/**
+ * @function
+ * @param {!Long|number|string|!{low: number, high: number, unsigned: boolean}} val
+ * @param {boolean=} unsigned
+ * @returns {!Long}
+ * @inner
+ */
+function fromValue(val, unsigned) {
+    if (typeof val === 'number')
+        return fromNumber(val, unsigned);
+    if (typeof val === 'string')
+        return fromString(val, unsigned);
+    // Throws for non-objects, converts non-instanceof Long:
+    return fromBits(val.low, val.high, typeof unsigned === 'boolean' ? unsigned : val.unsigned);
+}
+
+/**
+ * Converts the specified value to a Long using the appropriate from* function for its type.
+ * @function
+ * @param {!Long|number|string|!{low: number, high: number, unsigned: boolean}} val Value
+ * @param {boolean=} unsigned Whether unsigned or not, defaults to signed
+ * @returns {!Long}
+ */
+Long.fromValue = fromValue;
+
+// NOTE: the compiler should inline these constant values below and then remove these variables, so there should be
+// no runtime penalty for these.
+
+/**
+ * @type {number}
+ * @const
+ * @inner
+ */
+var TWO_PWR_16_DBL = 1 << 16;
+
+/**
+ * @type {number}
+ * @const
+ * @inner
+ */
+var TWO_PWR_24_DBL = 1 << 24;
+
+/**
+ * @type {number}
+ * @const
+ * @inner
+ */
+var TWO_PWR_32_DBL = TWO_PWR_16_DBL * TWO_PWR_16_DBL;
+
+/**
+ * @type {number}
+ * @const
+ * @inner
+ */
+var TWO_PWR_64_DBL = TWO_PWR_32_DBL * TWO_PWR_32_DBL;
+
+/**
+ * @type {number}
+ * @const
+ * @inner
+ */
+var TWO_PWR_63_DBL = TWO_PWR_64_DBL / 2;
+
+/**
+ * @type {!Long}
+ * @const
+ * @inner
+ */
+var TWO_PWR_24 = fromInt(TWO_PWR_24_DBL);
+
+/**
+ * @type {!Long}
+ * @inner
+ */
+var ZERO = fromInt(0);
+
+/**
+ * Signed zero.
+ * @type {!Long}
+ */
+Long.ZERO = ZERO;
+
+/**
+ * @type {!Long}
+ * @inner
+ */
+var UZERO = fromInt(0, true);
+
+/**
+ * Unsigned zero.
+ * @type {!Long}
+ */
+Long.UZERO = UZERO;
+
+/**
+ * @type {!Long}
+ * @inner
+ */
+var ONE = fromInt(1);
+
+/**
+ * Signed one.
+ * @type {!Long}
+ */
+Long.ONE = ONE;
+
+/**
+ * @type {!Long}
+ * @inner
+ */
+var UONE = fromInt(1, true);
+
+/**
+ * Unsigned one.
+ * @type {!Long}
+ */
+Long.UONE = UONE;
+
+/**
+ * @type {!Long}
+ * @inner
+ */
+var NEG_ONE = fromInt(-1);
+
+/**
+ * Signed negative one.
+ * @type {!Long}
+ */
+Long.NEG_ONE = NEG_ONE;
+
+/**
+ * @type {!Long}
+ * @inner
+ */
+var MAX_VALUE = fromBits(0xFFFFFFFF|0, 0x7FFFFFFF|0, false);
+
+/**
+ * Maximum signed value.
+ * @type {!Long}
+ */
+Long.MAX_VALUE = MAX_VALUE;
+
+/**
+ * @type {!Long}
+ * @inner
+ */
+var MAX_UNSIGNED_VALUE = fromBits(0xFFFFFFFF|0, 0xFFFFFFFF|0, true);
+
+/**
+ * Maximum unsigned value.
+ * @type {!Long}
+ */
+Long.MAX_UNSIGNED_VALUE = MAX_UNSIGNED_VALUE;
+
+/**
+ * @type {!Long}
+ * @inner
+ */
+var MIN_VALUE = fromBits(0, 0x80000000|0, false);
+
+/**
+ * Minimum signed value.
+ * @type {!Long}
+ */
+Long.MIN_VALUE = MIN_VALUE;
+
+/**
+ * @alias Long.prototype
+ * @inner
+ */
+var LongPrototype = Long.prototype;
+
+/**
+ * Converts the Long to a 32 bit integer, assuming it is a 32 bit integer.
+ * @returns {number}
+ */
+LongPrototype.toInt = function toInt() {
+    return this.unsigned ? this.low >>> 0 : this.low;
+};
+
+/**
+ * Converts the Long to a the nearest floating-point representation of this value (double, 53 bit mantissa).
+ * @returns {number}
+ */
+LongPrototype.toNumber = function toNumber() {
+    if (this.unsigned)
+        return ((this.high >>> 0) * TWO_PWR_32_DBL) + (this.low >>> 0);
+    return this.high * TWO_PWR_32_DBL + (this.low >>> 0);
+};
+
+/**
+ * Converts the Long to a string written in the specified radix.
+ * @param {number=} radix Radix (2-36), defaults to 10
+ * @returns {string}
+ * @override
+ * @throws {RangeError} If `radix` is out of range
+ */
+LongPrototype.toString = function toString(radix) {
+    radix = radix || 10;
+    if (radix < 2 || 36 < radix)
+        throw RangeError('radix');
+    if (this.isZero())
+        return '0';
+    if (this.isNegative()) { // Unsigned Longs are never negative
+        if (this.eq(MIN_VALUE)) {
+            // We need to change the Long value before it can be negated, so we remove
+            // the bottom-most digit in this base and then recurse to do the rest.
+            var radixLong = fromNumber(radix),
+                div = this.div(radixLong),
+                rem1 = div.mul(radixLong).sub(this);
+            return div.toString(radix) + rem1.toInt().toString(radix);
+        } else
+            return '-' + this.neg().toString(radix);
+    }
+
+    // Do several (6) digits each time through the loop, so as to
+    // minimize the calls to the very expensive emulated div.
+    var radixToPower = fromNumber(pow_dbl(radix, 6), this.unsigned),
+        rem = this;
+    var result = '';
+    while (true) {
+        var remDiv = rem.div(radixToPower),
+            intval = rem.sub(remDiv.mul(radixToPower)).toInt() >>> 0,
+            digits = intval.toString(radix);
+        rem = remDiv;
+        if (rem.isZero())
+            return digits + result;
+        else {
+            while (digits.length < 6)
+                digits = '0' + digits;
+            result = '' + digits + result;
+        }
+    }
+};
+
+/**
+ * Gets the high 32 bits as a signed integer.
+ * @returns {number} Signed high bits
+ */
+LongPrototype.getHighBits = function getHighBits() {
+    return this.high;
+};
+
+/**
+ * Gets the high 32 bits as an unsigned integer.
+ * @returns {number} Unsigned high bits
+ */
+LongPrototype.getHighBitsUnsigned = function getHighBitsUnsigned() {
+    return this.high >>> 0;
+};
+
+/**
+ * Gets the low 32 bits as a signed integer.
+ * @returns {number} Signed low bits
+ */
+LongPrototype.getLowBits = function getLowBits() {
+    return this.low;
+};
+
+/**
+ * Gets the low 32 bits as an unsigned integer.
+ * @returns {number} Unsigned low bits
+ */
+LongPrototype.getLowBitsUnsigned = function getLowBitsUnsigned() {
+    return this.low >>> 0;
+};
+
+/**
+ * Gets the number of bits needed to represent the absolute value of this Long.
+ * @returns {number}
+ */
+LongPrototype.getNumBitsAbs = function getNumBitsAbs() {
+    if (this.isNegative()) // Unsigned Longs are never negative
+        return this.eq(MIN_VALUE) ? 64 : this.neg().getNumBitsAbs();
+    var val = this.high != 0 ? this.high : this.low;
+    for (var bit = 31; bit > 0; bit--)
+        if ((val & (1 << bit)) != 0)
+            break;
+    return this.high != 0 ? bit + 33 : bit + 1;
+};
+
+/**
+ * Tests if this Long's value equals zero.
+ * @returns {boolean}
+ */
+LongPrototype.isZero = function isZero() {
+    return this.high === 0 && this.low === 0;
+};
+
+/**
+ * Tests if this Long's value equals zero. This is an alias of {@link Long#isZero}.
+ * @returns {boolean}
+ */
+LongPrototype.eqz = LongPrototype.isZero;
+
+/**
+ * Tests if this Long's value is negative.
+ * @returns {boolean}
+ */
+LongPrototype.isNegative = function isNegative() {
+    return !this.unsigned && this.high < 0;
+};
+
+/**
+ * Tests if this Long's value is positive.
+ * @returns {boolean}
+ */
+LongPrototype.isPositive = function isPositive() {
+    return this.unsigned || this.high >= 0;
+};
+
+/**
+ * Tests if this Long's value is odd.
+ * @returns {boolean}
+ */
+LongPrototype.isOdd = function isOdd() {
+    return (this.low & 1) === 1;
+};
+
+/**
+ * Tests if this Long's value is even.
+ * @returns {boolean}
+ */
+LongPrototype.isEven = function isEven() {
+    return (this.low & 1) === 0;
+};
+
+/**
+ * Tests if this Long's value equals the specified's.
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.equals = function equals(other) {
+    if (!isLong(other))
+        other = fromValue(other);
+    if (this.unsigned !== other.unsigned && (this.high >>> 31) === 1 && (other.high >>> 31) === 1)
+        return false;
+    return this.high === other.high && this.low === other.low;
+};
+
+/**
+ * Tests if this Long's value equals the specified's. This is an alias of {@link Long#equals}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.eq = LongPrototype.equals;
+
+/**
+ * Tests if this Long's value differs from the specified's.
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.notEquals = function notEquals(other) {
+    return !this.eq(/* validates */ other);
+};
+
+/**
+ * Tests if this Long's value differs from the specified's. This is an alias of {@link Long#notEquals}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.neq = LongPrototype.notEquals;
+
+/**
+ * Tests if this Long's value differs from the specified's. This is an alias of {@link Long#notEquals}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.ne = LongPrototype.notEquals;
+
+/**
+ * Tests if this Long's value is less than the specified's.
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.lessThan = function lessThan(other) {
+    return this.comp(/* validates */ other) < 0;
+};
+
+/**
+ * Tests if this Long's value is less than the specified's. This is an alias of {@link Long#lessThan}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.lt = LongPrototype.lessThan;
+
+/**
+ * Tests if this Long's value is less than or equal the specified's.
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.lessThanOrEqual = function lessThanOrEqual(other) {
+    return this.comp(/* validates */ other) <= 0;
+};
+
+/**
+ * Tests if this Long's value is less than or equal the specified's. This is an alias of {@link Long#lessThanOrEqual}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.lte = LongPrototype.lessThanOrEqual;
+
+/**
+ * Tests if this Long's value is less than or equal the specified's. This is an alias of {@link Long#lessThanOrEqual}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.le = LongPrototype.lessThanOrEqual;
+
+/**
+ * Tests if this Long's value is greater than the specified's.
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.greaterThan = function greaterThan(other) {
+    return this.comp(/* validates */ other) > 0;
+};
+
+/**
+ * Tests if this Long's value is greater than the specified's. This is an alias of {@link Long#greaterThan}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.gt = LongPrototype.greaterThan;
+
+/**
+ * Tests if this Long's value is greater than or equal the specified's.
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.greaterThanOrEqual = function greaterThanOrEqual(other) {
+    return this.comp(/* validates */ other) >= 0;
+};
+
+/**
+ * Tests if this Long's value is greater than or equal the specified's. This is an alias of {@link Long#greaterThanOrEqual}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.gte = LongPrototype.greaterThanOrEqual;
+
+/**
+ * Tests if this Long's value is greater than or equal the specified's. This is an alias of {@link Long#greaterThanOrEqual}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+ */
+LongPrototype.ge = LongPrototype.greaterThanOrEqual;
+
+/**
+ * Compares this Long's value with the specified's.
+ * @param {!Long|number|string} other Other value
+ * @returns {number} 0 if they are the same, 1 if the this is greater and -1
+ *  if the given one is greater
+ */
+LongPrototype.compare = function compare(other) {
+    if (!isLong(other))
+        other = fromValue(other);
+    if (this.eq(other))
+        return 0;
+    var thisNeg = this.isNegative(),
+        otherNeg = other.isNegative();
+    if (thisNeg && !otherNeg)
+        return -1;
+    if (!thisNeg && otherNeg)
+        return 1;
+    // At this point the sign bits are the same
+    if (!this.unsigned)
+        return this.sub(other).isNegative() ? -1 : 1;
+    // Both are positive if at least one is unsigned
+    return (other.high >>> 0) > (this.high >>> 0) || (other.high === this.high && (other.low >>> 0) > (this.low >>> 0)) ? -1 : 1;
+};
+
+/**
+ * Compares this Long's value with the specified's. This is an alias of {@link Long#compare}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {number} 0 if they are the same, 1 if the this is greater and -1
+ *  if the given one is greater
+ */
+LongPrototype.comp = LongPrototype.compare;
+
+/**
+ * Negates this Long's value.
+ * @returns {!Long} Negated Long
+ */
+LongPrototype.negate = function negate() {
+    if (!this.unsigned && this.eq(MIN_VALUE))
+        return MIN_VALUE;
+    return this.not().add(ONE);
+};
+
+/**
+ * Negates this Long's value. This is an alias of {@link Long#negate}.
+ * @function
+ * @returns {!Long} Negated Long
+ */
+LongPrototype.neg = LongPrototype.negate;
+
+/**
+ * Returns the sum of this and the specified Long.
+ * @param {!Long|number|string} addend Addend
+ * @returns {!Long} Sum
+ */
+LongPrototype.add = function add(addend) {
+    if (!isLong(addend))
+        addend = fromValue(addend);
+
+    // Divide each number into 4 chunks of 16 bits, and then sum the chunks.
+
+    var a48 = this.high >>> 16;
+    var a32 = this.high & 0xFFFF;
+    var a16 = this.low >>> 16;
+    var a00 = this.low & 0xFFFF;
+
+    var b48 = addend.high >>> 16;
+    var b32 = addend.high & 0xFFFF;
+    var b16 = addend.low >>> 16;
+    var b00 = addend.low & 0xFFFF;
+
+    var c48 = 0, c32 = 0, c16 = 0, c00 = 0;
+    c00 += a00 + b00;
+    c16 += c00 >>> 16;
+    c00 &= 0xFFFF;
+    c16 += a16 + b16;
+    c32 += c16 >>> 16;
+    c16 &= 0xFFFF;
+    c32 += a32 + b32;
+    c48 += c32 >>> 16;
+    c32 &= 0xFFFF;
+    c48 += a48 + b48;
+    c48 &= 0xFFFF;
+    return fromBits((c16 << 16) | c00, (c48 << 16) | c32, this.unsigned);
+};
+
+/**
+ * Returns the difference of this and the specified Long.
+ * @param {!Long|number|string} subtrahend Subtrahend
+ * @returns {!Long} Difference
+ */
+LongPrototype.subtract = function subtract(subtrahend) {
+    if (!isLong(subtrahend))
+        subtrahend = fromValue(subtrahend);
+    return this.add(subtrahend.neg());
+};
+
+/**
+ * Returns the difference of this and the specified Long. This is an alias of {@link Long#subtract}.
+ * @function
+ * @param {!Long|number|string} subtrahend Subtrahend
+ * @returns {!Long} Difference
+ */
+LongPrototype.sub = LongPrototype.subtract;
+
+/**
+ * Returns the product of this and the specified Long.
+ * @param {!Long|number|string} multiplier Multiplier
+ * @returns {!Long} Product
+ */
+LongPrototype.multiply = function multiply(multiplier) {
+    if (this.isZero())
+        return ZERO;
+    if (!isLong(multiplier))
+        multiplier = fromValue(multiplier);
+
+    // use wasm support if present
+    if (wasm) {
+        var low = wasm.mul(this.low,
+                           this.high,
+                           multiplier.low,
+                           multiplier.high);
+        return fromBits(low, wasm.get_high(), this.unsigned);
+    }
+
+    if (multiplier.isZero())
+        return ZERO;
+    if (this.eq(MIN_VALUE))
+        return multiplier.isOdd() ? MIN_VALUE : ZERO;
+    if (multiplier.eq(MIN_VALUE))
+        return this.isOdd() ? MIN_VALUE : ZERO;
+
+    if (this.isNegative()) {
+        if (multiplier.isNegative())
+            return this.neg().mul(multiplier.neg());
+        else
+            return this.neg().mul(multiplier).neg();
+    } else if (multiplier.isNegative())
+        return this.mul(multiplier.neg()).neg();
+
+    // If both longs are small, use float multiplication
+    if (this.lt(TWO_PWR_24) && multiplier.lt(TWO_PWR_24))
+        return fromNumber(this.toNumber() * multiplier.toNumber(), this.unsigned);
+
+    // Divide each long into 4 chunks of 16 bits, and then add up 4x4 products.
+    // We can skip products that would overflow.
+
+    var a48 = this.high >>> 16;
+    var a32 = this.high & 0xFFFF;
+    var a16 = this.low >>> 16;
+    var a00 = this.low & 0xFFFF;
+
+    var b48 = multiplier.high >>> 16;
+    var b32 = multiplier.high & 0xFFFF;
+    var b16 = multiplier.low >>> 16;
+    var b00 = multiplier.low & 0xFFFF;
+
+    var c48 = 0, c32 = 0, c16 = 0, c00 = 0;
+    c00 += a00 * b00;
+    c16 += c00 >>> 16;
+    c00 &= 0xFFFF;
+    c16 += a16 * b00;
+    c32 += c16 >>> 16;
+    c16 &= 0xFFFF;
+    c16 += a00 * b16;
+    c32 += c16 >>> 16;
+    c16 &= 0xFFFF;
+    c32 += a32 * b00;
+    c48 += c32 >>> 16;
+    c32 &= 0xFFFF;
+    c32 += a16 * b16;
+    c48 += c32 >>> 16;
+    c32 &= 0xFFFF;
+    c32 += a00 * b32;
+    c48 += c32 >>> 16;
+    c32 &= 0xFFFF;
+    c48 += a48 * b00 + a32 * b16 + a16 * b32 + a00 * b48;
+    c48 &= 0xFFFF;
+    return fromBits((c16 << 16) | c00, (c48 << 16) | c32, this.unsigned);
+};
+
+/**
+ * Returns the product of this and the specified Long. This is an alias of {@link Long#multiply}.
+ * @function
+ * @param {!Long|number|string} multiplier Multiplier
+ * @returns {!Long} Product
+ */
+LongPrototype.mul = LongPrototype.multiply;
+
+/**
+ * Returns this Long divided by the specified. The result is signed if this Long is signed or
+ *  unsigned if this Long is unsigned.
+ * @param {!Long|number|string} divisor Divisor
+ * @returns {!Long} Quotient
+ */
+LongPrototype.divide = function divide(divisor) {
+    if (!isLong(divisor))
+        divisor = fromValue(divisor);
+    if (divisor.isZero())
+        throw Error('division by zero');
+
+    // use wasm support if present
+    if (wasm) {
+        // guard against signed division overflow: the largest
+        // negative number / -1 would be 1 larger than the largest
+        // positive number, due to two's complement.
+        if (!this.unsigned &&
+            this.high === -0x80000000 &&
+            divisor.low === -1 && divisor.high === -1) {
+            // be consistent with non-wasm code path
+            return this;
+        }
+        var low = (this.unsigned ? wasm.div_u : wasm.div_s)(
+            this.low,
+            this.high,
+            divisor.low,
+            divisor.high
+        );
+        return fromBits(low, wasm.get_high(), this.unsigned);
+    }
+
+    if (this.isZero())
+        return this.unsigned ? UZERO : ZERO;
+    var approx, rem, res;
+    if (!this.unsigned) {
+        // This section is only relevant for signed longs and is derived from the
+        // closure library as a whole.
+        if (this.eq(MIN_VALUE)) {
+            if (divisor.eq(ONE) || divisor.eq(NEG_ONE))
+                return MIN_VALUE;  // recall that -MIN_VALUE == MIN_VALUE
+            else if (divisor.eq(MIN_VALUE))
+                return ONE;
+            else {
+                // At this point, we have |other| >= 2, so |this/other| < |MIN_VALUE|.
+                var halfThis = this.shr(1);
+                approx = halfThis.div(divisor).shl(1);
+                if (approx.eq(ZERO)) {
+                    return divisor.isNegative() ? ONE : NEG_ONE;
+                } else {
+                    rem = this.sub(divisor.mul(approx));
+                    res = approx.add(rem.div(divisor));
+                    return res;
+                }
+            }
+        } else if (divisor.eq(MIN_VALUE))
+            return this.unsigned ? UZERO : ZERO;
+        if (this.isNegative()) {
+            if (divisor.isNegative())
+                return this.neg().div(divisor.neg());
+            return this.neg().div(divisor).neg();
+        } else if (divisor.isNegative())
+            return this.div(divisor.neg()).neg();
+        res = ZERO;
+    } else {
+        // The algorithm below has not been made for unsigned longs. It's therefore
+        // required to take special care of the MSB prior to running it.
+        if (!divisor.unsigned)
+            divisor = divisor.toUnsigned();
+        if (divisor.gt(this))
+            return UZERO;
+        if (divisor.gt(this.shru(1))) // 15 >>> 1 = 7 ; with divisor = 8 ; true
+            return UONE;
+        res = UZERO;
+    }
+
+    // Repeat the following until the remainder is less than other:  find a
+    // floating-point that approximates remainder / other *from below*, add this
+    // into the result, and subtract it from the remainder.  It is critical that
+    // the approximate value is less than or equal to the real value so that the
+    // remainder never becomes negative.
+    rem = this;
+    while (rem.gte(divisor)) {
+        // Approximate the result of division. This may be a little greater or
+        // smaller than the actual value.
+        approx = Math.max(1, Math.floor(rem.toNumber() / divisor.toNumber()));
+
+        // We will tweak the approximate result by changing it in the 48-th digit or
+        // the smallest non-fractional digit, whichever is larger.
+        var log2 = Math.ceil(Math.log(approx) / Math.LN2),
+            delta = (log2 <= 48) ? 1 : pow_dbl(2, log2 - 48),
+
+        // Decrease the approximation until it is smaller than the remainder.  Note
+        // that if it is too large, the product overflows and is negative.
+            approxRes = fromNumber(approx),
+            approxRem = approxRes.mul(divisor);
+        while (approxRem.isNegative() || approxRem.gt(rem)) {
+            approx -= delta;
+            approxRes = fromNumber(approx, this.unsigned);
+            approxRem = approxRes.mul(divisor);
+        }
+
+        // We know the answer can't be zero... and actually, zero would cause
+        // infinite recursion since we would make no progress.
+        if (approxRes.isZero())
+            approxRes = ONE;
+
+        res = res.add(approxRes);
+        rem = rem.sub(approxRem);
+    }
+    return res;
+};
+
+/**
+ * Returns this Long divided by the specified. This is an alias of {@link Long#divide}.
+ * @function
+ * @param {!Long|number|string} divisor Divisor
+ * @returns {!Long} Quotient
+ */
+LongPrototype.div = LongPrototype.divide;
+
+/**
+ * Returns this Long modulo the specified.
+ * @param {!Long|number|string} divisor Divisor
+ * @returns {!Long} Remainder
+ */
+LongPrototype.modulo = function modulo(divisor) {
+    if (!isLong(divisor))
+        divisor = fromValue(divisor);
+
+    // use wasm support if present
+    if (wasm) {
+        var low = (this.unsigned ? wasm.rem_u : wasm.rem_s)(
+            this.low,
+            this.high,
+            divisor.low,
+            divisor.high
+        );
+        return fromBits(low, wasm.get_high(), this.unsigned);
+    }
+
+    return this.sub(this.div(divisor).mul(divisor));
+};
+
+/**
+ * Returns this Long modulo the specified. This is an alias of {@link Long#modulo}.
+ * @function
+ * @param {!Long|number|string} divisor Divisor
+ * @returns {!Long} Remainder
+ */
+LongPrototype.mod = LongPrototype.modulo;
+
+/**
+ * Returns this Long modulo the specified. This is an alias of {@link Long#modulo}.
+ * @function
+ * @param {!Long|number|string} divisor Divisor
+ * @returns {!Long} Remainder
+ */
+LongPrototype.rem = LongPrototype.modulo;
+
+/**
+ * Returns the bitwise NOT of this Long.
+ * @returns {!Long}
+ */
+LongPrototype.not = function not() {
+    return fromBits(~this.low, ~this.high, this.unsigned);
+};
+
+/**
+ * Returns the bitwise AND of this Long and the specified.
+ * @param {!Long|number|string} other Other Long
+ * @returns {!Long}
+ */
+LongPrototype.and = function and(other) {
+    if (!isLong(other))
+        other = fromValue(other);
+    return fromBits(this.low & other.low, this.high & other.high, this.unsigned);
+};
+
+/**
+ * Returns the bitwise OR of this Long and the specified.
+ * @param {!Long|number|string} other Other Long
+ * @returns {!Long}
+ */
+LongPrototype.or = function or(other) {
+    if (!isLong(other))
+        other = fromValue(other);
+    return fromBits(this.low | other.low, this.high | other.high, this.unsigned);
+};
+
+/**
+ * Returns the bitwise XOR of this Long and the given one.
+ * @param {!Long|number|string} other Other Long
+ * @returns {!Long}
+ */
+LongPrototype.xor = function xor(other) {
+    if (!isLong(other))
+        other = fromValue(other);
+    return fromBits(this.low ^ other.low, this.high ^ other.high, this.unsigned);
+};
+
+/**
+ * Returns this Long with bits shifted to the left by the given amount.
+ * @param {number|!Long} numBits Number of bits
+ * @returns {!Long} Shifted Long
+ */
+LongPrototype.shiftLeft = function shiftLeft(numBits) {
+    if (isLong(numBits))
+        numBits = numBits.toInt();
+    if ((numBits &= 63) === 0)
+        return this;
+    else if (numBits < 32)
+        return fromBits(this.low << numBits, (this.high << numBits) | (this.low >>> (32 - numBits)), this.unsigned);
+    else
+        return fromBits(0, this.low << (numBits - 32), this.unsigned);
+};
+
+/**
+ * Returns this Long with bits shifted to the left by the given amount. This is an alias of {@link Long#shiftLeft}.
+ * @function
+ * @param {number|!Long} numBits Number of bits
+ * @returns {!Long} Shifted Long
+ */
+LongPrototype.shl = LongPrototype.shiftLeft;
+
+/**
+ * Returns this Long with bits arithmetically shifted to the right by the given amount.
+ * @param {number|!Long} numBits Number of bits
+ * @returns {!Long} Shifted Long
+ */
+LongPrototype.shiftRight = function shiftRight(numBits) {
+    if (isLong(numBits))
+        numBits = numBits.toInt();
+    if ((numBits &= 63) === 0)
+        return this;
+    else if (numBits < 32)
+        return fromBits((this.low >>> numBits) | (this.high << (32 - numBits)), this.high >> numBits, this.unsigned);
+    else
+        return fromBits(this.high >> (numBits - 32), this.high >= 0 ? 0 : -1, this.unsigned);
+};
+
+/**
+ * Returns this Long with bits arithmetically shifted to the right by the given amount. This is an alias of {@link Long#shiftRight}.
+ * @function
+ * @param {number|!Long} numBits Number of bits
+ * @returns {!Long} Shifted Long
+ */
+LongPrototype.shr = LongPrototype.shiftRight;
+
+/**
+ * Returns this Long with bits logically shifted to the right by the given amount.
+ * @param {number|!Long} numBits Number of bits
+ * @returns {!Long} Shifted Long
+ */
+LongPrototype.shiftRightUnsigned = function shiftRightUnsigned(numBits) {
+    if (isLong(numBits))
+        numBits = numBits.toInt();
+    numBits &= 63;
+    if (numBits === 0)
+        return this;
+    else {
+        var high = this.high;
+        if (numBits < 32) {
+            var low = this.low;
+            return fromBits((low >>> numBits) | (high << (32 - numBits)), high >>> numBits, this.unsigned);
+        } else if (numBits === 32)
+            return fromBits(high, 0, this.unsigned);
+        else
+            return fromBits(high >>> (numBits - 32), 0, this.unsigned);
+    }
+};
+
+/**
+ * Returns this Long with bits logically shifted to the right by the given amount. This is an alias of {@link Long#shiftRightUnsigned}.
+ * @function
+ * @param {number|!Long} numBits Number of bits
+ * @returns {!Long} Shifted Long
+ */
+LongPrototype.shru = LongPrototype.shiftRightUnsigned;
+
+/**
+ * Returns this Long with bits logically shifted to the right by the given amount. This is an alias of {@link Long#shiftRightUnsigned}.
+ * @function
+ * @param {number|!Long} numBits Number of bits
+ * @returns {!Long} Shifted Long
+ */
+LongPrototype.shr_u = LongPrototype.shiftRightUnsigned;
+
+/**
+ * Converts this Long to signed.
+ * @returns {!Long} Signed long
+ */
+LongPrototype.toSigned = function toSigned() {
+    if (!this.unsigned)
+        return this;
+    return fromBits(this.low, this.high, false);
+};
+
+/**
+ * Converts this Long to unsigned.
+ * @returns {!Long} Unsigned long
+ */
+LongPrototype.toUnsigned = function toUnsigned() {
+    if (this.unsigned)
+        return this;
+    return fromBits(this.low, this.high, true);
+};
+
+/**
+ * Converts this Long to its byte representation.
+ * @param {boolean=} le Whether little or big endian, defaults to big endian
+ * @returns {!Array.<number>} Byte representation
+ */
+LongPrototype.toBytes = function toBytes(le) {
+    return le ? this.toBytesLE() : this.toBytesBE();
+};
+
+/**
+ * Converts this Long to its little endian byte representation.
+ * @returns {!Array.<number>} Little endian byte representation
+ */
+LongPrototype.toBytesLE = function toBytesLE() {
+    var hi = this.high,
+        lo = this.low;
+    return [
+        lo        & 0xff,
+        lo >>>  8 & 0xff,
+        lo >>> 16 & 0xff,
+        lo >>> 24       ,
+        hi        & 0xff,
+        hi >>>  8 & 0xff,
+        hi >>> 16 & 0xff,
+        hi >>> 24
+    ];
+};
+
+/**
+ * Converts this Long to its big endian byte representation.
+ * @returns {!Array.<number>} Big endian byte representation
+ */
+LongPrototype.toBytesBE = function toBytesBE() {
+    var hi = this.high,
+        lo = this.low;
+    return [
+        hi >>> 24       ,
+        hi >>> 16 & 0xff,
+        hi >>>  8 & 0xff,
+        hi        & 0xff,
+        lo >>> 24       ,
+        lo >>> 16 & 0xff,
+        lo >>>  8 & 0xff,
+        lo        & 0xff
+    ];
+};
+
+/**
+ * Creates a Long from its byte representation.
+ * @param {!Array.<number>} bytes Byte representation
+ * @param {boolean=} unsigned Whether unsigned or not, defaults to signed
+ * @param {boolean=} le Whether little or big endian, defaults to big endian
+ * @returns {Long} The corresponding Long value
+ */
+Long.fromBytes = function fromBytes(bytes, unsigned, le) {
+    return le ? Long.fromBytesLE(bytes, unsigned) : Long.fromBytesBE(bytes, unsigned);
+};
+
+/**
+ * Creates a Long from its little endian byte representation.
+ * @param {!Array.<number>} bytes Little endian byte representation
+ * @param {boolean=} unsigned Whether unsigned or not, defaults to signed
+ * @returns {Long} The corresponding Long value
+ */
+Long.fromBytesLE = function fromBytesLE(bytes, unsigned) {
+    return new Long(
+        bytes[0]       |
+        bytes[1] <<  8 |
+        bytes[2] << 16 |
+        bytes[3] << 24,
+        bytes[4]       |
+        bytes[5] <<  8 |
+        bytes[6] << 16 |
+        bytes[7] << 24,
+        unsigned
+    );
+};
+
+/**
+ * Creates a Long from its big endian byte representation.
+ * @param {!Array.<number>} bytes Big endian byte representation
+ * @param {boolean=} unsigned Whether unsigned or not, defaults to signed
+ * @returns {Long} The corresponding Long value
+ */
+Long.fromBytesBE = function fromBytesBE(bytes, unsigned) {
+    return new Long(
+        bytes[4] << 24 |
+        bytes[5] << 16 |
+        bytes[6] <<  8 |
+        bytes[7],
+        bytes[0] << 24 |
+        bytes[1] << 16 |
+        bytes[2] <<  8 |
+        bytes[3],
+        unsigned
+    );
+};
+
+
+/***/ }),
+
 /***/ 9662:
 /***/ ((module) => {
 
@@ -66533,7 +68910,7 @@ class GrpcClient extends events_1.EventEmitter {
              * pings its peer to see if the transport is still alive.
              * Int valued, milliseconds.
              */
-            'grpc.keepalive_time_ms': 45000,
+            'grpc.keepalive_time_ms': 90000,
             /**
              * After waiting for a duration of this time,
              * if the keepalive ping sender does
@@ -66541,13 +68918,13 @@ class GrpcClient extends events_1.EventEmitter {
              * transport. Int valued, milliseconds.
              */
             'grpc.keepalive_timeout_ms': 120000,
-            'grpc.http2.min_time_between_pings_ms': 60000,
+            'grpc.http2.min_time_between_pings_ms': 90000,
             /**
              * Minimum allowed time between a server receiving
              * successive ping frames without sending any data
              * frame. Int valued, milliseconds
              */
-            'grpc.http2.min_ping_interval_without_data_ms': 60000,
+            'grpc.http2.min_ping_interval_without_data_ms': 90000,
             /**
              * This channel argument if set to 1
              * (0 : false; 1 : true), allows keepalive pings
@@ -67704,7 +70081,12 @@ You should call only one job action method in the worker handler. This is a bug 
         const cancelWorkflow = (job) => () => this.zbClient
             .cancelProcessInstance(job.processInstanceKey)
             .then(() => ZB.JOB_ACTION_ACKNOWLEDGEMENT);
-        const failJob = (job) => (errorMessage, retries) => this.failJob({ job, errorMessage, retries });
+        const failJob = (job) => (errorMessageOrFailureConfig, retries) => {
+            var _a;
+            const errorMessage = (typeof errorMessageOrFailureConfig === "string") ? errorMessageOrFailureConfig : errorMessageOrFailureConfig.errorMessage;
+            const retryBackOff = (typeof errorMessageOrFailureConfig === "string") ? 0 : (_a = errorMessageOrFailureConfig.retryBackOff) !== null && _a !== void 0 ? _a : 0;
+            return this.failJob({ job, errorMessage, retries, retryBackOff });
+        };
         const succeedJob = (job) => (completedVariables) => this.completeJob(job.key, completedVariables !== null && completedVariables !== void 0 ? completedVariables : {});
         const errorJob = (job) => (errorCode, errorMessage = '') => this.errorJob({
             errorCode,
@@ -67730,12 +70112,13 @@ You should call only one job action method in the worker handler. This is a bug 
             success: errorMsgOnPriorMessageCall('complete.success', succeed),
         };
     }
-    failJob({ job, errorMessage, retries, }) {
+    failJob({ job, errorMessage, retries, retryBackOff }) {
         return this.zbClient
             .failJob({
             errorMessage,
             jobKey: job.key,
             retries: retries !== null && retries !== void 0 ? retries : job.retries - 1,
+            retryBackOff: retryBackOff !== null && retryBackOff !== void 0 ? retryBackOff : 0
         })
             .then(() => ZB.JOB_ACTION_ACKNOWLEDGEMENT)
             .finally(() => {
@@ -68134,11 +70517,10 @@ exports.stringifyVariables = stringifyVariables;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.normaliseAPI1 = exports.transformAPI0ReqToAPI1 = exports.makeAPI1ResAPI0Compatible = void 0;
-// @TODO: fix spelling
 const ZeroToOneMapping = [
-    ['workflows', 'processs'],
+    ['workflows', 'processes'],
     ['workflow', 'process'],
-    ['Workflows', 'Processs'],
+    ['Workflows', 'Processes'],
     ['Workflow', 'Process']
 ];
 const OneToZeroMapping = [
@@ -68148,8 +70530,8 @@ const OneToZeroMapping = [
     ['Process', 'Workflow'],
 ];
 const NormaliseOneMapping = [
-    ['processs', 'processes'],
-    ['Processs', 'processes']
+    ['processes', 'processes'],
+    ['Processes', 'processes']
 ];
 const IgnoreDuringTransform = ['bpmnProcessId'];
 function makeAPI1ResAPI0Compatible(api1Res) {
@@ -68332,6 +70714,7 @@ const ZBJsonLogger_1 = __nccwpck_require__(6228);
 const ZBWorkerSignature_1 = __nccwpck_require__(2744);
 const ZBBatchWorker_1 = __nccwpck_require__(2196);
 const ZBWorker_1 = __nccwpck_require__(5400);
+const fs_1 = __nccwpck_require__(7147);
 const idColors = [
     chalk_1.default.yellow,
     chalk_1.default.green,
@@ -68684,10 +71067,58 @@ class ZBClient extends TypedEmitter_1.TypedEmitter {
     async deployWorkflow(workflow) {
         return this.deployProcess(workflow).then(res => lib_1.makeAPI1ResAPI0Compatible(res));
     }
+    async deployResource(resource) {
+        const isProcess = (maybeProcess) => !!maybeProcess.process;
+        const isProcessFilename = (maybeProcessFilename) => !!maybeProcessFilename.processFilename;
+        const isDecision = (maybeDecision) => !!maybeDecision.decision;
+        if (isProcessFilename(resource)) {
+            const filename = resource.processFilename;
+            const process = fs_1.readFileSync(filename);
+            return this.executeOperation('deployResource', () => this.grpc.deployResourceSync({
+                resources: [
+                    {
+                        name: filename,
+                        content: process,
+                    },
+                ],
+            }));
+        }
+        else if (isProcess(resource)) {
+            return this.executeOperation('deployResource', () => this.grpc.deployResourceSync({
+                resources: [
+                    {
+                        name: resource.name,
+                        content: resource.process,
+                    },
+                ],
+            }));
+        }
+        else if (isDecision(resource)) {
+            return this.executeOperation('deployResource', () => this.grpc.deployResourceSync({
+                resources: [
+                    {
+                        name: resource.name,
+                        content: resource.decision,
+                    },
+                ],
+            }));
+        }
+        else {
+            const filename = resource.decisionFilename;
+            const decision = fs_1.readFileSync(filename);
+            return this.executeOperation('deployResource', () => this.grpc.deployResourceSync({
+                resources: [
+                    {
+                        name: filename,
+                        content: decision,
+                    },
+                ],
+            }));
+        }
+    }
     async deployProcess(process) {
-        // @TODO: fix plural
         const deploy = (processes) => this.executeOperation('deployWorkflow', () => this.grpc.deployProcessSync({
-            processs: processes,
+            processes,
         }));
         const error = (e) => Promise.reject(`Deployment failed. The following files were not found: ${e.join(', ')}.`);
         return pipeable_1.pipe(pure_1.bufferOrFiles(process), fp_ts_1.either.fold(deploy, files => pipeable_1.pipe(pure_1.mapThese(files, impure_1.readDefinitionFromFile), fp_ts_1.either.fold(error, deploy))));
@@ -68931,6 +71362,7 @@ class ZBWorker extends ZBWorkerBase_1.ZBWorkerBase {
                         errorMessage: `Unhandled exception in task handler ${e}`,
                         jobKey: job.key,
                         retries,
+                        retryBackOff: 0
                     });
                 }
                 catch (e) {
@@ -69094,7 +71526,7 @@ module.exports = require("zlib");
 /***/ ((module) => {
 
 "use strict";
-module.exports = {"i8":"1.4.5"};
+module.exports = {"i8":"1.6.7"};
 
 /***/ }),
 
@@ -69102,7 +71534,7 @@ module.exports = {"i8":"1.4.5"};
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"got","version":"9.6.0","description":"Simplified HTTP requests","license":"MIT","repository":"sindresorhus/got","main":"source","engines":{"node":">=8.6"},"scripts":{"test":"xo && nyc ava","release":"np"},"files":["source"],"keywords":["http","https","get","got","url","uri","request","util","utility","simple","curl","wget","fetch","net","network","electron"],"dependencies":{"@sindresorhus/is":"^0.14.0","@szmarczak/http-timer":"^1.1.2","cacheable-request":"^6.0.0","decompress-response":"^3.3.0","duplexer3":"^0.1.4","get-stream":"^4.1.0","lowercase-keys":"^1.0.1","mimic-response":"^1.0.1","p-cancelable":"^1.0.0","to-readable-stream":"^1.0.0","url-parse-lax":"^3.0.0"},"devDependencies":{"ava":"^1.1.0","coveralls":"^3.0.0","delay":"^4.1.0","form-data":"^2.3.3","get-port":"^4.0.0","np":"^3.1.0","nyc":"^13.1.0","p-event":"^2.1.0","pem":"^1.13.2","proxyquire":"^2.0.1","sinon":"^7.2.2","slow-stream":"0.0.4","tempfile":"^2.0.0","tempy":"^0.2.1","tough-cookie":"^3.0.0","xo":"^0.24.0"},"ava":{"concurrency":4},"browser":{"decompress-response":false,"electron":false}}');
+module.exports = JSON.parse('{"_args":[["got@9.6.0","/Users/sitapati/workspace/Camunda/camunda-cloud-github-action"]],"_from":"got@9.6.0","_id":"got@9.6.0","_inBundle":false,"_integrity":"sha512-R7eWptXuGYxwijs0eV+v3o6+XH1IqVK8dJOEecQfTmkncw9AV4dcw/Dhxi8MdlqPthxxpZyizMzyg8RTmEsG+Q==","_location":"/got","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"got@9.6.0","name":"got","escapedName":"got","rawSpec":"9.6.0","saveSpec":null,"fetchSpec":"9.6.0"},"_requiredBy":["/zeebe-node"],"_resolved":"https://registry.npmjs.org/got/-/got-9.6.0.tgz","_spec":"9.6.0","_where":"/Users/sitapati/workspace/Camunda/camunda-cloud-github-action","ava":{"concurrency":4},"browser":{"decompress-response":false,"electron":false},"bugs":{"url":"https://github.com/sindresorhus/got/issues"},"dependencies":{"@sindresorhus/is":"^0.14.0","@szmarczak/http-timer":"^1.1.2","cacheable-request":"^6.0.0","decompress-response":"^3.3.0","duplexer3":"^0.1.4","get-stream":"^4.1.0","lowercase-keys":"^1.0.1","mimic-response":"^1.0.1","p-cancelable":"^1.0.0","to-readable-stream":"^1.0.0","url-parse-lax":"^3.0.0"},"description":"Simplified HTTP requests","devDependencies":{"ava":"^1.1.0","coveralls":"^3.0.0","delay":"^4.1.0","form-data":"^2.3.3","get-port":"^4.0.0","np":"^3.1.0","nyc":"^13.1.0","p-event":"^2.1.0","pem":"^1.13.2","proxyquire":"^2.0.1","sinon":"^7.2.2","slow-stream":"0.0.4","tempfile":"^2.0.0","tempy":"^0.2.1","tough-cookie":"^3.0.0","xo":"^0.24.0"},"engines":{"node":">=8.6"},"files":["source"],"homepage":"https://github.com/sindresorhus/got#readme","keywords":["http","https","get","got","url","uri","request","util","utility","simple","curl","wget","fetch","net","network","electron"],"license":"MIT","main":"source","name":"got","repository":{"type":"git","url":"git+https://github.com/sindresorhus/got.git"},"scripts":{"release":"np","test":"xo && nyc ava"},"version":"9.6.0"}');
 
 /***/ }),
 
@@ -69142,7 +71574,7 @@ module.exports = JSON.parse('{"nested":{"google":{"nested":{"protobuf":{"nested"
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"zeebe-node","version":"2.4.0","description":"The Node.js client library for the Zeebe Workflow Automation Engine.","keywords":["zeebe","zeebe.io","microservices","orchestration","bpmn","conductor","Camunda","Netflix","cloud","automation","process","workflow","Uber","Cadence"],"homepage":"https://github.com/camunda-community-hub/zeebe-client-node-js","bugs":{"url":"https://github.com/camunda-community-hub/zeebe-client-node-js/issues"},"repository":{"type":"git","url":"https://github.com/camunda-community-hub/zeebe-client-node-js"},"main":"dist/index.js","bin":{"zeebe-node":"bin/zeebe-node"},"scripts":{"cm":"cz","debug":"NODE_DEBUG=http2 GRPC_TRACE=channel,call_stream GRPC_VERBOSITY=DEBUG ../node/out/Debug/node --inspect-brk node_modules/.bin/jest Worker-Failure","build":"tsc --build src/tsconfig.json","watch":"tsc --build src/tsconfig.json -w","prepare":"husky install","test":"jest --detectOpenHandles --testPathIgnorePatterns integration local-integration disconnection","test:integration":"jest --runInBand --testPathIgnorePatterns disconnection --detectOpenHandles --verbose true","test:local":"jest --runInBand --verbose true --detectOpenHandles local-integration","test:disconnect":"jest --runInBand --verbose true --detectOpenHandles disconnection","test&docs":"npm test && npm run docs","dev":"tsc-watch --onSuccess \\"npm run test&docs\\" -p tsconfig.json --outDir dist"},"lint-staged":{"*.{md,markdown}":["prettier --write","remark","git add"],"*.{json,css,html,yaml,yml}":["prettier --write","git add"],"*.{ts,tsx,js,jsx}":["prettier --write","tslint -c tslint.json --fix","git add"]},"dependencies":{"@grpc/grpc-js":"^1.4.4","@grpc/proto-loader":"^0.6.4","chalk":"^2.4.2","console-stamp":"^3.0.2","dayjs":"^1.8.15","debug":"^4.2.0","fast-xml-parser":"^3.12.12","fp-ts":"^2.5.1","got":"^9.6.0","long":"^4.0.0","promise-retry":"^1.1.1","stack-trace":"0.0.10","typed-duration":"^1.0.12","uuid":"^3.3.2"},"devDependencies":{"@sitapati/testcontainers":"^2.8.1","@types/debug":"0.0.31","@types/got":"^9.6.9","@types/jest":"^25.2.3","@types/node":"^10.17.17","@types/promise-retry":"^1.1.3","@types/stack-trace":"0.0.29","@types/uuid":"^3.4.4","commitizen":"^4.2.4","cz-conventional-changelog":"^3.3.0","delay":"^4.3.0","husky":"^7.0.0","jest":"^27.2.3","jest-environment-node-debug":"^2.0.0","lint-staged":"^11.0.0","prettier":"^1.19.1","remark":"^13.0.0","remark-cli":"^9.0.0","remark-lint":"^8.0.0","remark-preset-lint-recommended":"^5.0.0","ts-jest":"^27.0.5","tsc-watch":"^4.4.0","tslint":"^6.1.3","tslint-config-prettier":"^1.18.0","typedoc":"^0.21.2","typescript":"^4.2.0"},"author":{"name":"Josh Wulf","email":"josh.wulf@camunda.com"},"contributors":[{"name":"Timothy Colbert"},{"name":"Jarred Filmer"},{"name":"Colin Raddatz"},{"name":"Olivier Albertini"},{"name":"Patrick Dehn"}],"engines":{"node":">=16.6.1"},"license":"Apache-2.0","config":{"commitizen":{"path":"./node_modules/cz-conventional-changelog"}}}');
+module.exports = JSON.parse('{"name":"zeebe-node","version":"8.0.1","description":"The Node.js client library for the Zeebe Workflow Automation Engine.","keywords":["zeebe","zeebe.io","microservices","orchestration","bpmn","conductor","Camunda","Netflix","cloud","automation","process","workflow","Uber","Cadence"],"homepage":"https://github.com/camunda-community-hub/zeebe-client-node-js","bugs":{"url":"https://github.com/camunda-community-hub/zeebe-client-node-js/issues"},"repository":{"type":"git","url":"https://github.com/camunda-community-hub/zeebe-client-node-js"},"main":"dist/index.js","bin":{"zeebe-node":"bin/zeebe-node"},"scripts":{"cm":"cz","debug":"NODE_DEBUG=http2 GRPC_TRACE=channel,call_stream GRPC_VERBOSITY=DEBUG ../node/out/Debug/node --inspect-brk node_modules/.bin/jest Worker-Failure","build":"tsc --build src/tsconfig.json","watch":"tsc --build src/tsconfig.json -w","prepare":"husky install","test":"jest --detectOpenHandles --testPathIgnorePatterns integration local-integration disconnection","test:integration":"jest --runInBand --testPathIgnorePatterns disconnection --detectOpenHandles --verbose true","test:local":"jest --runInBand --verbose true --detectOpenHandles local-integration","test:disconnect":"jest --runInBand --verbose true --detectOpenHandles disconnection","test&docs":"npm test && npm run docs","dev":"tsc-watch --onSuccess \\"npm run test&docs\\" -p tsconfig.json --outDir dist"},"lint-staged":{"*.{md,markdown}":["prettier --write","remark","git add"],"*.{json,css,html,yaml,yml}":["prettier --write","git add"],"*.{ts,tsx,js,jsx}":["prettier --write","tslint -c tslint.json --fix","git add"]},"dependencies":{"@grpc/grpc-js":"^1.6.7","@grpc/proto-loader":"^0.6.12","chalk":"^2.4.2","console-stamp":"^3.0.2","dayjs":"^1.8.15","debug":"^4.2.0","fast-xml-parser":"^3.12.12","fp-ts":"^2.5.1","got":"^9.6.0","long":"^4.0.0","promise-retry":"^1.1.1","stack-trace":"0.0.10","typed-duration":"^1.0.12","uuid":"^3.3.2"},"devDependencies":{"@sitapati/testcontainers":"^2.8.1","@types/debug":"0.0.31","@types/got":"^9.6.9","@types/jest":"^25.2.3","@types/node":"^10.17.17","@types/promise-retry":"^1.1.3","@types/stack-trace":"0.0.29","@types/uuid":"^3.4.4","commitizen":"^4.2.4","cz-conventional-changelog":"^3.3.0","delay":"^4.3.0","husky":"^7.0.0","jest":"^27.2.3","jest-environment-node-debug":"^2.0.0","lint-staged":"^11.0.0","prettier":"^1.19.1","remark":"^13.0.0","remark-cli":"^9.0.0","remark-lint":"^8.0.0","remark-preset-lint-recommended":"^5.0.0","ts-jest":"^27.0.5","tsc-watch":"^4.4.0","tslint":"^6.1.3","tslint-config-prettier":"^1.18.0","typedoc":"^0.21.2","typescript":"^4.2.0"},"author":{"name":"Josh Wulf","email":"josh.wulf@camunda.com"},"contributors":[{"name":"Timothy Colbert"},{"name":"Jarred Filmer"},{"name":"Colin Raddatz"},{"name":"Olivier Albertini"},{"name":"Patrick Dehn"}],"engines":{"node":">=16.6.1"},"license":"Apache-2.0","config":{"commitizen":{"path":"./node_modules/cz-conventional-changelog"}}}');
 
 /***/ })
 

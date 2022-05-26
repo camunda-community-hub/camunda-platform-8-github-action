@@ -11,7 +11,7 @@ const PublishMessageRequired = t.type({
 
 const PublishMessageOptional = t.partial({
   correlationKey: t.string,
-  variables: t.object,
+  variables: t.UnknownRecord,
   timeToLive: t.number
 })
 
@@ -21,43 +21,43 @@ export const PublishMessage = t.intersection([
   GlobalOptional
 ])
 
-export const CreateWorkflowInstanceRequired = t.type({
+export const CreateProcessInstanceRequired = t.type({
   bpmnProcessId: t.string,
   clusterId: t.string
 })
 
-export const CreateWorkflowInstanceOptional = t.partial({
-  variables: t.object
+export const CreateProcessInstanceOptional = t.partial({
+  variables: t.UnknownRecord
 })
 
-export const CreateWorkflowInstance = t.intersection([
-  CreateWorkflowInstanceRequired,
-  CreateWorkflowInstanceOptional,
+export const CreateProcessInstance = t.intersection([
+  CreateProcessInstanceRequired,
+  CreateProcessInstanceOptional,
   GlobalOptional
 ])
 
-export const CreateWorkflowInstanceWithResultRequired = t.type({
+export const CreateProcessInstanceWithResultRequired = t.type({
   bpmnProcessId: t.string,
   requestTimeoutSeconds: t.number
 })
 
-export const CreateWorkflowInstanceWithResult = t.intersection([
-  CreateWorkflowInstanceWithResultRequired,
-  CreateWorkflowInstanceOptional,
+export const CreateProcessInstanceWithResult = t.intersection([
+  CreateProcessInstanceWithResultRequired,
+  CreateProcessInstanceOptional,
   GlobalOptional
 ])
 
-export const DeployWorkflowFile = t.type({
+export const DeployProcessFile = t.type({
   bpmnFilename: t.string
 })
 
-export const DeployWorkflowDir = t.type({
+export const DeployProcessDir = t.type({
   bpmnDirectory: t.string
 })
 
-export const DeployWorkflow = t.intersection([
+export const DeployProcess = t.intersection([
   GlobalOptional,
-  t.union([DeployWorkflowFile, DeployWorkflowDir])
+  t.union([DeployProcessFile, DeployProcessDir])
 ])
 
 export const StartWorkersRequired = t.type({
@@ -72,8 +72,8 @@ export const StartWorkers = t.intersection([
 
 export const ConfigValidator = {
   PublishMessage,
-  CreateWorkflowInstance,
-  CreateWorkflowInstanceWithResult,
-  DeployWorkflow,
+  CreateProcessInstance,
+  CreateProcessInstanceWithResult,
+  DeployProcess,
   StartWorkers
 }

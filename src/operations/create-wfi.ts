@@ -1,25 +1,25 @@
-import {CreateWorkflowInstance} from '../operation-config-validation'
+import {CreateProcessInstance} from '../operation-config-validation'
 import * as t from 'io-ts'
 import * as TE from 'fp-ts/lib/TaskEither'
 import {OperationOutcome} from '../run'
 import {getZBC} from './zbc'
 import {getActionLogger} from '../log/logger'
 
-export function createWorkflowInstance(
-  config: t.TypeOf<typeof CreateWorkflowInstance>
+export function createProcessInstance(
+  config: t.TypeOf<typeof CreateProcessInstance>
 ): OperationOutcome {
   return TE.tryCatch(
     async () => {
       const zbc = getZBC(config)
 
-      const res = await zbc.createWorkflowInstance(
+      const res = await zbc.createProcessInstance(
         config.bpmnProcessId,
         config.variables
       )
-      const log = getActionLogger('CreateWorkflowInstance', config.quiet)
-      log.info(`View this workflow instance in Operate:`)
+      const log = getActionLogger('CreateProcessInstance', config.quiet)
+      log.info(`View this process instance in Operate:`)
       log.info(
-        `https://${config.clusterId}.operate.camunda.io/#/instances/${res.workflowInstanceKey}`
+        `https://${config.clusterId}.operate.camunda.io/#/instances/${res.processInstanceKey}`
       )
       await zbc.close()
       return {

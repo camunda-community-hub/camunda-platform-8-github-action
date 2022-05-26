@@ -6,7 +6,7 @@ import * as T from 'fp-ts/lib/Task'
 import {run, OperationFailure, OperationSuccess} from './run'
 import {getConfigurationFromEnvironment} from './parameters/getEnvironment'
 
-const failure = (outcome: OperationFailure) => {
+const failure = (outcome: OperationFailure): typeof T.never => {
   const messages =
     typeof outcome.message === 'string' ? [outcome.message] : outcome.message
   for (const message of messages) {
@@ -17,7 +17,7 @@ const failure = (outcome: OperationFailure) => {
   return T.never
 }
 
-const success = (outcome: OperationSuccess) => {
+const success = (outcome: OperationSuccess): typeof T.never => {
   const infos = typeof outcome.info === 'string' ? [outcome.info] : outcome.info
   for (const info of infos) {
     core.info(info)
@@ -30,12 +30,12 @@ const g = getConfigurationFromEnvironment
 const h = run
 
 function program<E, Config, A, R>(
-  g: () => E.Either<E, Config>,
-  h: (c: Config) => TE.TaskEither<E, A>,
-  failure: (e: E) => T.Task<R>,
-  success: (a: A) => T.Task<R>
+  g_: () => E.Either<E, Config>,
+  h_: (c: Config) => TE.TaskEither<E, A>,
+  failure_: (e: E) => T.Task<R>,
+  success_: (a: A) => T.Task<R>
 ): T.Task<R> {
-  return pipe(g(), TE.fromEither, TE.chain(h), TE.fold(failure, success))
+  return pipe(g_(), TE.fromEither, TE.chain(h_), TE.fold(failure_, success_))
 }
 
 program(g, h, failure, success)()

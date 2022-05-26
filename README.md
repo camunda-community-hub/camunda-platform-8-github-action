@@ -1,4 +1,4 @@
-# Integrate GitHub Actions with Zeebe on Camunda Cloud
+# Integrate GitHub Actions with Camunda 8 SaaS
 
 ![Community Extension](https://img.shields.io/badge/Community%20Extension-An%20open%20source%20community%20maintained%20project-FF4700)
 
@@ -6,11 +6,11 @@
 
 ![Compatible with: Camunda Platform 8](https://img.shields.io/badge/Compatible%20with-Camunda%20Platform%208-0072Ce)
 
-This GitHub Action allows you to integrate GitHub Actions into workflows orchestrated by [Zeebe](https://zeebe.io) on [Camunda Cloud](https://camunda.io).
+This GitHub Action allows you to integrate GitHub Actions into workflows orchestrated by [Zeebe](https://zeebe.io) on [Camunda Platform 8 SaaS](https://camunda.io).
 
-You can deploy a workflow definition to Camunda Cloud, create a Camunda Cloud workflow instance from a GitHub Action, start and run an entire workflow on Camunda Cloud and act on the outcome in a GitHub Action, or publish a message from a GitHub Action to a workflow instance running in Camunda Cloud.
+You can deploy a process definition to Camunda 8 SaaS, create a process instance from a GitHub Action, start and run an entire process on Camunda 8 SaaS and act on the outcome in a GitHub Action, or publish a message from a GitHub Action to a process instance running in Camunda 8 SaaS.
 
-See this article: "[Complex multi-repo builds with GitHub Actions and Camunda Cloud](https://zeebe.io/blog/2020/02/camunda-cloud-github-actions/)" for some ideas on orchestrating multi-repo build workflows using Camunda Cloud.
+See this article: "[Complex multi-repo builds with GitHub Actions and Camunda Cloud](https://zeebe.io/blog/2020/02/camunda-cloud-github-actions/)" for some ideas on orchestrating multi-repo build workflows using Camunda SaaS.
 
 ## Node version compatibility
 
@@ -20,29 +20,29 @@ This GitHub Action uses a version of the Zeebe Node client that requires Node ve
 
 | Operation | Required Parameters | Optional Parameters |
 | --- | --- | --- |
-| `deployWorkflow` | **One of**: `bpmnFilename` _or_ `bpmnDir` | `verbose`, `quiet` |
-| `createWorkflowInstance` | `bpmnProcessId` |  `variables`, `verbose`, `quiet` |
-|`createWorkflowInstanceWithResult` | `bpmnProcessId`, `requestTimeoutSeconds` | `variables`, `verbose`, `quiet` |
+| `deployProcess` | **One of**: `bpmnFilename` _or_ `bpmnDir` | `verbose`, `quiet` |
+| `createProcessInstance` | `bpmnProcessId` |  `variables`, `verbose`, `quiet` |
+|`createProcessInstanceWithResult` | `bpmnProcessId`, `requestTimeoutSeconds` | `variables`, `verbose`, `quiet` |
 | `publishMessage` | `messageName` | `timetoLive`, `variables`, `correlationKey`, `verbose`, `quiet` |
 | `startWorkers` | `workerHandlerFile`, `workerLifetimeMins` | `githubToken`, `verbose`, `quiet` |
 
-## Configure Camunda Cloud credentials
+## Configure Camunda SaaS credentials
 
-In a repository where you have a GitHub workflow that uses this action, you need to configure your Camunda Cloud client credentials.
+In a repository where you have a GitHub workflow that uses this action, you need to configure your Camunda SaaS client credentials.
 
-* In the [Camunda Cloud console](https://console.cloud.camunda.io/), click the button to copy your client connection info.
+* In the [Camunda SaaS console](https://console.cloud.camunda.io/), click the button to copy your client connection info.
 
 ![](img/client-creds.png)
 
-* Set a secret in your repo (Repo Settings > Secrets) `ZEEBE_CLIENT_CONFIG`, and paste in the entire block from Camunda Cloud.
+* Set a secret in your repo (Repo Settings > Secrets) `ZEEBE_CLIENT_CONFIG`, and paste in the entire block from Camunda SaaS.
 
 ![](img/secret.png)
 
 See the note at the end of this document if you get errors about missing required configuration keys.
 
-## Deploy a Workflow
+## Deploy a Process Definition
 
-Here is an example of deploying a workflow from GitHub. This will deploy the process in the file `bpmn/demo-get-time.bpmn` in the repo:
+Here is an example of deploying a process definition from GitHub. This will deploy the process in the file `bpmn/demo-get-time.bpmn` in the repo:
 
 ```
 name: Run Get Time Demo
@@ -56,11 +56,11 @@ jobs:
 
 steps:
   - uses: actions/checkout@v2
-  - name: Deploy Demo Workflow "Get Time"
+  - name: Deploy Demo Process "Get Time"
     uses: jwulf/zeebe-action@master
     with:
       clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
-      operation: deployWorkflow
+      operation: deployProcess
       bpmnFilename: bpmn/demo-get-time.bpmn
 ```
 
@@ -69,7 +69,7 @@ steps:
 Here is a workflow that redeploys changed models in the `bpmn` directory of your repo on a push to the master branch:
 
 ```
-name: Deploy Workflows
+name: Deploy Processes
 
 on:
   push:
@@ -79,22 +79,22 @@ on:
       - 'bpmn/*'
 
 jobs:
-  deploy-workflows:
+  deploy-processes:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-      - name: Deploy Updated Workflows
+      - name: Deploy Updated Processes
         uses: jwulf/zeebe-action@master
         with:
           clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
-          operation: deployWorkflow
+          operation: deployProcess
           bpmnDirectory: bpmn
 ```
 
-## Start a Workflow
+## Start a Process Instance
 
-Here is an example of starting a workflow from within a GitHub Action:
+Here is an example of starting a process instance from within a GitHub Workflow:
 
 ```
 name: Report Outcome
@@ -112,18 +112,18 @@ jobs:
         with:
           node-version: 16.x
       - run: echo github.event.action: ${{ github.event.action }}
-      - name: Create Zeebe Workflow
-        uses: jwulf/zeebe-action@master
+      - name: Create Process
+        uses: jwulf/camunda-action@master
         with:
           clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
-          operation: createWorkflowInstance
+          operation: createProcessInstance
           bpmnProcessId: throw-test
           variables: '{"event": "${{ github.event.action }}" }'
 ```
 
-## Awaiting the outcome of a Workflow
+## Awaiting the outcome of a Process Instance
 
-You can create a workflow instance and retrieve the outcome of the workflow for use in further steps:
+You can create a process instance and retrieve the outcome of the process instance for use in further steps:
 
 ```
 name: Run Get Time Demo
@@ -137,38 +137,38 @@ jobs:
 
 steps:
   - uses: actions/checkout@v2
-  - name: Deploy Demo Workflow "Get Time"
+  - name: Deploy Demo Process "Get Time"
     uses: jwulf/zeebe-action@master
     with:
       clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
-      operation: deployWorkflow
+      operation: deployProcess
       bpmnFilename: bpmn/demo-get-time.bpmn
-  - name: Execute Demo Workflow "Get Time"
+  - name: Execute Demo Process "Get Time"
     uses: jwulf/zeebe-action@master
     id: get-time
     with:
-      operation: createWorkflowInstanceWithResult
+      operation: createProcessInstanceWithResult
       bpmnProcessId: demo-get-time
       requestTimeout: 30 # seconds
-  - name: Print Workflow Outcome
+  - name: Print Process Outcome
     run: echo The outcome is ${{ toJSON(steps.get-time.outputs.result }}
   - name: Print time
     run: echo The time is ${{ steps.get-time.outputs.result.body.time }}
 ```
 
-When awaiting a workflow outcome, if no `request_timeout` is provided, it defaults to the Gateway timeout of the cluster (15 seconds). For workflows that take longer than this to complete, you should specify a `request_timeout`.
+When awaiting a process outcome, if no `request_timeout` is provided, it defaults to the Gateway timeout of the cluster (15 seconds). For processes that take longer than this to complete, you should specify a `request_timeout`.
 
 Note that once the connection configuration is provided, it is available to any further Zeebe Action operations in the GitHub workflow.
 
 ## Publish a message
 
-Here is an example of publishing a message back to Camunda Cloud, to be correlated with a running workflow. In this example, the action has been started with a `repository_dispatch` event from the CAMUNDA-HTTP worker. The `client_payload` on the event contains the correlationKey value for the message:
+Here is an example of publishing a message back to Camunda SaaS, to be correlated with a running process instance. In this example, the action has been started with a `repository_dispatch` event from the CAMUNDA-HTTP worker. The `client_payload` on the event contains the correlationKey value for the message:
 
 ```
 triggerDependentFlow:
   runs-on: ubuntu-latest
   steps:
-    - name: Tell Camunda Cloud What's up!
+    - name: Tell Camunda SaaS What's up!
       uses: jwulf/zeebe-action@master
       with:
         clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
@@ -177,7 +177,7 @@ triggerDependentFlow:
         correlationKey: ${{ github.event.client_payload.buildid }}
 ```
 
-Variables can be provided in a `publishMessage` operation. They should be stringified JSON, just like the `createWorkflowInstance` operation.
+Variables can be provided in a `publishMessage` operation. They should be stringified JSON, just like the `createProcessInstance` operation.
 
 ## Create Workers 
 
@@ -215,7 +215,7 @@ jobs:
 
 The `workers.js` file should look like this: 
 
-```
+```javascript
 module.exports = {
   let stockLevel = 100
   tasks: {
@@ -270,14 +270,14 @@ jobs:
       - name: Get current time
         uses: gerred/actions/current-time@master
         id: current-time
-      - name: Create Zeebe Workflow
+      - name: Create Zeebe Process Instance
         uses: jwulf/zeebe-action@master
         with:
           zeebeAddress: ${{ secrets.ZEEBE_ADDRESS }}
           zeebeClientId: ${{ secrets.ZEEBE_CLIENT_ID }}
           zeebeAuthorizationServerUrl: ${{ secrets.ZEEBE_AUTHORIZATION_SERVER_URL }}
           zeebeClientSecret: ${{ secrets.ZEEBE_CLIENT_SECRET }}
-          operation: createWorkflowInstance
+          operation: createProcessInstance
           bpmnProcessId: magikcraft-github-build
           variables: '{"buildid": "${{ github.sha }}-${{ steps.current-time.outputs.time }}"}'
 ```

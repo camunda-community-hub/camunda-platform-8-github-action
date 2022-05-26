@@ -1,16 +1,16 @@
-import {CreateWorkflowInstanceWithResult} from '../operation-config-validation'
+import {CreateProcessInstanceWithResult} from '../operation-config-validation'
 import * as t from 'io-ts'
 import * as TE from 'fp-ts/lib/TaskEither'
 import {OperationOutcome} from '../run'
 import {getZBC} from './zbc'
 
-export function createWorkflowInstanceWithResult(
-  config: t.TypeOf<typeof CreateWorkflowInstanceWithResult>
+export function createProcessInstanceWithResult(
+  config: t.TypeOf<typeof CreateProcessInstanceWithResult>
 ): OperationOutcome {
   return TE.tryCatch(
     async () => {
       const zbc = getZBC(config)
-      const res = await zbc.createWorkflowInstanceWithResult({
+      const res = await zbc.createProcessInstanceWithResult({
         bpmnProcessId: config.bpmnProcessId,
         variables: config.variables,
         requestTimeout: config.requestTimeoutSeconds * 1000
