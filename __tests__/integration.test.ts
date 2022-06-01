@@ -26,7 +26,7 @@ test('Deploy Workflow using Filename', done => {
   pipe(
     run(({
       bpmnFilename: '__tests__/demo-get-time.bpmn',
-      operation: 'deployWorkflow',
+      operation: 'deployProcess',
       quiet
     } as unknown) as Config),
     TE.mapLeft(failure => {
@@ -34,7 +34,7 @@ test('Deploy Workflow using Filename', done => {
     }),
     TE.map(success => {
       expect(called).toBe(false)
-      expect(JSON.parse(success.info[0]).workflows.length).toBe(1)
+      expect(JSON.parse(success.info[0]).processes.length).toBe(1)
       done()
     })
   )()
@@ -45,7 +45,7 @@ test('Deploy Workflow using directory', done => {
   pipe(
     run(({
       bpmnDirectory: '__tests__',
-      operation: 'deployWorkflow',
+      operation: 'deployProcess',
       quiet
     } as unknown) as Config),
     TE.mapLeft(failure => {
@@ -53,18 +53,18 @@ test('Deploy Workflow using directory', done => {
     }),
     TE.map(success => {
       expect(called).toBe(false)
-      expect(JSON.parse(success.info[0]).workflows.length).toBe(1)
+      expect(JSON.parse(success.info[0]).processes.length).toBe(1)
       done()
     })
   )()
 })
 
-test('Create Workflow Instance', done => {
+test('Create Process Instance', done => {
   let called = false
   pipe(
     run(({
       bpmnProcessId: 'demo-get-time-int-test',
-      operation: 'createWorkflowInstance',
+      operation: 'createProcessInstance',
       clusterId,
       quiet
     } as unknown) as Config),
@@ -87,12 +87,12 @@ test('Create Workflow Instance', done => {
   )()
 })
 
-test('Create Workflow Instance with variables', done => {
+test('Create Process Instance with variables', done => {
   let called = false
   pipe(
     run(({
       bpmnProcessId: 'demo-get-time-int-test',
-      operation: 'createWorkflowInstance',
+      operation: 'createProcessInstance',
       variables: {name: 'Noddy'}, // these get parsed from a string in hydration
       quiet,
       clusterId
@@ -117,12 +117,12 @@ test('Create Workflow Instance with variables', done => {
 })
 
 // Disabled, because the CAMUNDA_HTTP Worker is no longer available
-xtest('Create Workflow Instance and Await with variables', done => {
+xtest('Create Process Instance and Await with variables', done => {
   let called = false
   pipe(
     run(({
       bpmnProcessId: 'demo-get-time-int-test',
-      operation: 'createWorkflowInstanceWithResult',
+      operation: 'createProcessInstanceWithResult',
       variables: {name: 'Noddy'}, // these get parsed from a string in hydration
       requestTimeoutSeconds: 10,
       quiet

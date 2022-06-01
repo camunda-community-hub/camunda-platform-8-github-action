@@ -1,7 +1,4 @@
-import {
-  DeployWorkflow,
-  DeployWorkflowFile
-} from '../operation-config-validation'
+import {DeployProcess, DeployProcessFile} from '../operation-config-validation'
 import * as t from 'io-ts'
 import * as TE from 'fp-ts/lib/TaskEither'
 
@@ -9,16 +6,16 @@ import {readdirSync} from 'fs'
 import {OperationOutcome} from '../run'
 import {getZBC} from './zbc'
 
-type DeployFile = t.TypeOf<typeof DeployWorkflowFile>
+type DeployFile = t.TypeOf<typeof DeployProcessFile>
 
 function isDeployFile(
-  config: t.TypeOf<typeof DeployWorkflow>
+  config: t.TypeOf<typeof DeployProcess>
 ): config is DeployFile {
   return !!(config as DeployFile).bpmnFilename
 }
 
-export function deployWorkflow(
-  config: t.TypeOf<typeof DeployWorkflow>
+export function deployProcess(
+  config: t.TypeOf<typeof DeployProcess>
 ): OperationOutcome {
   return TE.tryCatch(
     async () => {
@@ -28,7 +25,7 @@ export function deployWorkflow(
         : readdirSync(config.bpmnDirectory)
             .filter(f => f.endsWith('.bpmn'))
             .map(f => `${config.bpmnDirectory}/${f}`)
-      const res = await zbc.deployWorkflow(toDeploy)
+      const res = await zbc.deployProcess(toDeploy)
       await zbc.close()
       return {
         info: [JSON.stringify(res, null, 2)],

@@ -1,9 +1,7 @@
 import {ZBClient, ZBWorkerTaskHandler} from 'zeebe-node'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {getActionLogger, Logger} from './log/logger'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import github from '@actions/github'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as core from '@actions/core'
 
 export async function bootstrapWorkers(
@@ -16,6 +14,7 @@ export async function bootstrapWorkers(
     const __module: {
       exports?: {tasks?: {[key: string]: ZBWorkerTaskHandler}}
     } = {}
+    // We do this to get the githubToken and log in scope in the eval below.
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const githubToken = core.getInput('githubToken')
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

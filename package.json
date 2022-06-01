@@ -1,8 +1,8 @@
 {
-  "name": "zeebe-action",
-  "version": "1.0.0",
+  "name": "camunda-cloud-action",
+  "version": "8.0.0",
   "private": true,
-  "description": "Interact with Camunda Cloud in a GitHub Action",
+  "description": "Interact with Camunda SaaS in a GitHub Action",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -16,14 +16,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jwulf/zeebe-action.git"
+    "url": "git+https://github.com/camunda-community-hub/camunda-cloud-github-action.git"
   },
   "keywords": [
     "actions",
     "node",
     "setup"
   ],
-  "author": "Josh Wulf <josh@magikcraft.io>",
+  "author": "Josh Wulf <josh.wulf@camunda.com>",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.6",
@@ -33,7 +33,7 @@
     "dayjs": "^1.8.20",
     "fp-ts": "^2.11.5",
     "io-ts": "^2.1.1",
-    "zeebe-node": "^2.4.0"
+    "zeebe-node": "^8.0.1"
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
