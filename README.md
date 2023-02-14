@@ -57,7 +57,7 @@ jobs:
 steps:
   - uses: actions/checkout@v2
   - name: Deploy Demo Process "Get Time"
-    uses: jwulf/zeebe-action@master
+    uses: camunda-community-hub/camunda-platform-8-github-action@master
     with:
       clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
       operation: deployProcess
@@ -85,7 +85,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Deploy Updated Processes
-        uses: jwulf/zeebe-action@master
+        uses: camunda-community-hub/camunda-platform-8-github-action@master
         with:
           clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
           operation: deployProcess
@@ -113,7 +113,7 @@ jobs:
           node-version: 16.x
       - run: echo github.event.action: ${{ github.event.action }}
       - name: Create Process
-        uses: jwulf/camunda-action@master
+        uses: camunda-community-hub/camunda-platform-8-github-action@master
         with:
           clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
           operation: createProcessInstance
@@ -138,13 +138,13 @@ jobs:
 steps:
   - uses: actions/checkout@v2
   - name: Deploy Demo Process "Get Time"
-    uses: jwulf/zeebe-action@master
+    uses: camunda-community-hub/camunda-platform-8-github-action@master
     with:
       clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
       operation: deployProcess
       bpmnFilename: bpmn/demo-get-time.bpmn
   - name: Execute Demo Process "Get Time"
-    uses: jwulf/zeebe-action@master
+    uses: camunda-community-hub/camunda-platform-8-github-action@master
     id: get-time
     with:
       operation: createProcessInstanceWithResult
@@ -169,7 +169,7 @@ triggerDependentFlow:
   runs-on: ubuntu-latest
   steps:
     - name: Tell Camunda SaaS What's up!
-      uses: jwulf/zeebe-action@master
+      uses: camunda-community-hub/camunda-platform-8-github-action@master
       with:
         clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
         operation: publishMessage
@@ -203,7 +203,7 @@ jobs:
         with:
           node-version: 12.x
       - name: Start Zeebe Workers
-        uses: jwulf/zeebe-action@master
+        uses: camunda-community-hub/camunda-platform-8-github-action@master
         with:
           clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
           # If you want to access the GitHub API in your worker:
@@ -271,7 +271,7 @@ jobs:
         uses: gerred/actions/current-time@master
         id: current-time
       - name: Create Zeebe Process Instance
-        uses: jwulf/zeebe-action@master
+        uses: camunda-community-hub/camunda-platform-8-github-action@master
         with:
           zeebeAddress: ${{ secrets.ZEEBE_ADDRESS }}
           zeebeClientId: ${{ secrets.ZEEBE_CLIENT_ID }}
