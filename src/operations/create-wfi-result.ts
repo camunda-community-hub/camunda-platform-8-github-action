@@ -12,7 +12,8 @@ export function createProcessInstanceWithResult(
       const zbc = getZBC(config)
       const res = await zbc.createProcessInstanceWithResult({
         bpmnProcessId: config.bpmnProcessId,
-        variables: config.variables,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        variables: config.variables as any,
         requestTimeout: config.requestTimeoutSeconds * 1000
       })
       const result = JSON.stringify(res, null, 2)

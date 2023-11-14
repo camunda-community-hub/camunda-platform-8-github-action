@@ -1,6 +1,6 @@
 {
   "name": "camunda-cloud-action",
-  "version": "8.0.0",
+  "version": "8.3.0",
   "private": true,
   "description": "Interact with Camunda SaaS in a GitHub Action",
   "main": "lib/main.js",

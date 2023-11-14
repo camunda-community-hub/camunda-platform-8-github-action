@@ -12,10 +12,11 @@ export function createProcessInstance(
     async () => {
       const zbc = getZBC(config)
 
-      const res = await zbc.createProcessInstance(
-        config.bpmnProcessId,
-        config.variables
-      )
+      const res = await zbc.createProcessInstance({
+        bpmnProcessId: config.bpmnProcessId,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        variables: (config.variables as any) ?? {}
+      })
       const log = getActionLogger('CreateProcessInstance', config.quiet)
       log.info(`View this process instance in Operate:`)
       log.info(

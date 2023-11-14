@@ -35,9 +35,9 @@ export async function bootstrapWorkers(
     }
     const tasks = __module.exports?.tasks
     if (tasks) {
-      for (const tasktype of Object.keys(tasks)) {
-        logger.info(`Starting worker for task type ${tasktype}...`)
-        zbc.createWorker(null, tasktype, tasks[tasktype])
+      for (const taskType of Object.keys(tasks)) {
+        logger.info(`Starting worker for task type ${taskType}...`)
+        zbc.createWorker({taskType, taskHandler: tasks[taskType]})
       }
 
       setTimeout(async () => {
