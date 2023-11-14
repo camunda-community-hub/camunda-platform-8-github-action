@@ -33,7 +33,7 @@
     "dayjs": "^1.8.20",
     "fp-ts": "^2.11.5",
     "io-ts": "^2.1.1",
-    "zeebe-node": "^8.0.1"
+    "zeebe-node": "^8.3.1"
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
