@@ -158,7 +158,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ConfigValidator = exports.StartWorkers = exports.StartWorkersRequired = exports.DeployProcess = exports.DeployProcessDir = exports.DeployProcessFile = exports.CreateProcessInstanceWithResult = exports.CreateProcessInstanceWithResultRequired = exports.CreateProcessInstance = exports.CreateProcessInstanceOptional = exports.CreateProcessInstanceRequired = exports.PublishMessage = void 0;
+exports.ConfigValidator = exports.StartWorkers = exports.StartWorkersRequired = exports.DeployResource = exports.DeployResourceDir = exports.DeployResourceFile = exports.DeployProcess = exports.DeployProcessDir = exports.DeployProcessFile = exports.CreateProcessInstanceWithResult = exports.CreateProcessInstanceWithResultRequired = exports.CreateProcessInstance = exports.CreateProcessInstanceOptional = exports.CreateProcessInstanceRequired = exports.PublishMessage = void 0;
 const t = __importStar(__nccwpck_require__(5428));
 const GlobalOptional = t.partial({
     quiet: t.boolean,
@@ -208,6 +208,16 @@ exports.DeployProcess = t.intersection([
     GlobalOptional,
     t.union([exports.DeployProcessFile, exports.DeployProcessDir])
 ]);
+exports.DeployResourceFile = t.type({
+    resourceFilename: t.string
+});
+exports.DeployResourceDir = t.type({
+    resourceDirectory: t.string
+});
+exports.DeployResource = t.intersection([
+    GlobalOptional,
+    t.union([exports.DeployResourceFile, exports.DeployResourceDir])
+]);
 exports.StartWorkersRequired = t.type({
     workerHandlerFile: t.string,
     workerLifetimeMins: t.number
@@ -221,6 +231,7 @@ exports.ConfigValidator = {
     CreateProcessInstance: exports.CreateProcessInstance,
     CreateProcessInstanceWithResult: exports.CreateProcessInstanceWithResult,
     DeployProcess: exports.DeployProcess,
+    DeployResource: exports.DeployResource,
     StartWorkers: exports.StartWorkers
 };
 
@@ -411,19 +422,97 @@ exports.deployProcess = deployProcess;
 
 /***/ }),
 
+/***/ 6164:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.deployResource = void 0;
+const TE = __importStar(__nccwpck_require__(437));
+const fs_1 = __nccwpck_require__(7147);
+const zbc_1 = __nccwpck_require__(6130);
+function isDeployFile(config) {
+    return !!config.resourceFilename;
+}
+function deployResource(config) {
+    return TE.tryCatch(() => __awaiter(this, void 0, void 0, function* () {
+        const zbc = (0, zbc_1.getZBC)(config);
+        const toDeploy = isDeployFile(config)
+            ? [`./${config.resourceFilename}`]
+            : (0, fs_1.readdirSync)(config.resourceDirectory)
+                .filter(f => f.endsWith('.bpmn') || f.endsWith('.dmn') || f.endsWith('.form'))
+                .map(f => `${config.resourceDirectory}/${f}`);
+        let res = [];
+        for (const deployable of toDeploy) {
+            if (deployable.endsWith('.bpmn')) {
+                res = [...res, yield zbc.deployProcess(deployable)];
+            }
+            if (deployable.endsWith('.dmn')) {
+                res = [
+                    ...res,
+                    yield zbc.deployResource({ decisionFilename: deployable })
+                ];
+            }
+            if (deployable.endsWith('.form')) {
+                res = [...res, yield zbc.deployResource({ formFilename: deployable })];
+            }
+        }
+        yield zbc.close();
+        return {
+            info: [JSON.stringify(res, null, 2)],
+            output: JSON.stringify(res)
+        };
+    }), (failure) => ({ message: failure.message }));
+}
+exports.deployResource = deployResource;
+
+
+/***/ }),
+
 /***/ 7928:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.startWorkers = exports.publishMessage = exports.deployProcess = exports.createProcessInstanceWithResult = exports.createProcessInstance = void 0;
+exports.startWorkers = exports.publishMessage = exports.deployResource = exports.deployProcess = exports.createProcessInstanceWithResult = exports.createProcessInstance = void 0;
 var create_wfi_1 = __nccwpck_require__(3821);
 Object.defineProperty(exports, "createProcessInstance", ({ enumerable: true, get: function () { return create_wfi_1.createProcessInstance; } }));
 var create_wfi_result_1 = __nccwpck_require__(9455);
 Object.defineProperty(exports, "createProcessInstanceWithResult", ({ enumerable: true, get: function () { return create_wfi_result_1.createProcessInstanceWithResult; } }));
 var deploy_process_1 = __nccwpck_require__(9262);
 Object.defineProperty(exports, "deployProcess", ({ enumerable: true, get: function () { return deploy_process_1.deployProcess; } }));
+var deploy_resource_1 = __nccwpck_require__(6164);
+Object.defineProperty(exports, "deployResource", ({ enumerable: true, get: function () { return deploy_resource_1.deployResource; } }));
 var publish_message_1 = __nccwpck_require__(5343);
 Object.defineProperty(exports, "publishMessage", ({ enumerable: true, get: function () { return publish_message_1.publishMessage; } }));
 var start_workers_1 = __nccwpck_require__(7146);
@@ -753,6 +842,8 @@ function getConfigurationFromEnvironment() {
     const workerHandlerFile = getOrElse('workerHandlerFile');
     const bpmnFilename = getOrElse('bpmnFilename');
     const bpmnDirectory = getOrElse('bpmnDirectory');
+    const resourceFilename = getOrElse('resourceFilename');
+    const resourceDirectory = getOrElse('resourceDirectory');
     const workerLifetimeMins = parseInt(getOrElse('workerLifetimeMins') || '2', 10);
     const clusterId = process.env.ZEEBE_ADDRESS || ((_a = ''.split('.')) === null || _a === void 0 ? void 0 : _a[0]);
     const config = {
@@ -768,6 +859,8 @@ function getConfigurationFromEnvironment() {
         workerHandlerFile,
         bpmnFilename,
         bpmnDirectory,
+        resourceFilename,
+        resourceDirectory,
         workerLifetimeMins,
         operation
     };
@@ -836,6 +929,7 @@ exports.OperationNames = [
     'createProcessInstance',
     'createProcessInstanceWithResult',
     'deployProcess',
+    'deployResource',
     'publishMessage',
     'startWorkers'
 ];
@@ -863,6 +957,9 @@ function run(config) {
         }
         case 'deployProcess': {
             return (0, function_1.pipe)(lift(operation_config_validation_1.ConfigValidator.DeployProcess.decode(config)), TE.chain(Operations.deployProcess));
+        }
+        case 'deployResource': {
+            return (0, function_1.pipe)(lift(operation_config_validation_1.ConfigValidator.DeployResource.decode(config)), TE.chain(Operations.deployResource));
         }
         case 'createProcessInstance': {
             return (0, function_1.pipe)(lift(operation_config_validation_1.ConfigValidator.CreateProcessInstance.decode(config)), TE.chain(Operations.createProcessInstance));

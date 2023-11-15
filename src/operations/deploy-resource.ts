@@ -1,10 +1,18 @@
-import {DeployResource, DeployResourceFile} from '../operation-config-validation'
+import {
+  DeployResource,
+  DeployResourceFile
+} from '../operation-config-validation'
 import * as t from 'io-ts'
 import * as TE from 'fp-ts/lib/TaskEither'
 
 import {readdirSync} from 'fs'
 import {OperationOutcome} from '../run'
 import {getZBC} from './zbc'
+import {
+  DeployProcessResponse,
+  DeployResourceResponse,
+  Deployment
+} from 'zeebe-node'
 
 type DeployFile = t.TypeOf<typeof DeployResourceFile>
 
@@ -23,18 +31,25 @@ export function deployResource(
       const toDeploy = isDeployFile(config)
         ? [`./${config.resourceFilename}`]
         : readdirSync(config.resourceDirectory)
-            .filter(f => f.endsWith('.bpmn') || f.endsWith('.dmn') || f.endsWith('.form'))
+            .filter(
+              f =>
+                f.endsWith('.bpmn') || f.endsWith('.dmn') || f.endsWith('.form')
+            )
             .map(f => `${config.resourceDirectory}/${f}`)
-      let res: any[] = []
+      let res: (DeployResourceResponse<Deployment> | DeployProcessResponse)[] =
+        []
       for (const deployable of toDeploy) {
         if (deployable.endsWith('.bpmn')) {
           res = [...res, await zbc.deployProcess(deployable)]
         }
         if (deployable.endsWith('.dmn')) {
-            res = [...res, await zbc.deployResource({ decisionFilename: deployable })]
+          res = [
+            ...res,
+            await zbc.deployResource({decisionFilename: deployable})
+          ]
         }
         if (deployable.endsWith('.form')) {
-            res = [...res, await zbc.deployResource({ formFilename: deployable })]
+          res = [...res, await zbc.deployResource({formFilename: deployable})]
         }
       }
       await zbc.close()
