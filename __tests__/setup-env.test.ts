@@ -1,4 +1,4 @@
-import {parseClientConfig} from '../src/parameters/getCamundaCloudCredentials'
+import {parseClientConfig} from '../src/parameters/get-camunda-cloud-credentials'
 
 test('correctly parses config', async () => {
   const clientConfig = `export ZEEBE_ADDRESS='2fbb7f8f-1f4c-4f6d-bb7c-3bec17819f0a.zeebe.camunda.io:443'

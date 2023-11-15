@@ -16,7 +16,7 @@ export function publishMessage(
         variables: config.variables,
         timeToLive: config.timeToLive || 0,
         correlationKey:
-          config.correlationKey || ((undefined as unknown) as string)
+          config.correlationKey || (undefined as unknown as string)
       }
       await zbc.publishMessage(messagePayload)
       result.push(`Published message to Zeebe.`)

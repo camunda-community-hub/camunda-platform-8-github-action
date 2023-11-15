@@ -2,7 +2,7 @@ import {run} from '../src/run'
 import {pipe} from 'fp-ts/function'
 import {Config} from '../src/parameters/getEnvironment'
 import * as TE from 'fp-ts/lib/TaskEither'
-import {parseClientConfig} from '../src/parameters/getCamundaCloudCredentials'
+import {parseClientConfig} from '../src/parameters/get-camunda-cloud-credentials'
 
 const clusterId = '231bb36a-1588-4f1e-b4f6-e09944d7efd6'
 jest.setTimeout(60000)
@@ -24,11 +24,11 @@ if (process.env.ZEEBE_CLIENT_CONFIG) {
 test('Deploy Workflow using Filename', done => {
   let called = false
   pipe(
-    run(({
+    run({
       bpmnFilename: '__tests__/demo-get-time.bpmn',
       operation: 'deployProcess',
       quiet
-    } as unknown) as Config),
+    } as unknown as Config),
     TE.mapLeft(failure => {
       called = true
     }),
@@ -43,11 +43,11 @@ test('Deploy Workflow using Filename', done => {
 test('Deploy Workflow using directory', done => {
   let called = false
   pipe(
-    run(({
+    run({
       bpmnDirectory: '__tests__',
       operation: 'deployProcess',
       quiet
-    } as unknown) as Config),
+    } as unknown as Config),
     TE.mapLeft(failure => {
       called = true
     }),
@@ -62,12 +62,12 @@ test('Deploy Workflow using directory', done => {
 test('Create Process Instance', done => {
   let called = false
   pipe(
-    run(({
+    run({
       bpmnProcessId: 'demo-get-time-int-test',
       operation: 'createProcessInstance',
       clusterId,
       quiet
-    } as unknown) as Config),
+    } as unknown as Config),
     TE.mapLeft(failure => {
       called = true
       console.log(failure)
@@ -90,13 +90,13 @@ test('Create Process Instance', done => {
 test('Create Process Instance with variables', done => {
   let called = false
   pipe(
-    run(({
+    run({
       bpmnProcessId: 'demo-get-time-int-test',
       operation: 'createProcessInstance',
       variables: {name: 'Noddy'}, // these get parsed from a string in hydration
       quiet,
       clusterId
-    } as unknown) as Config),
+    } as unknown as Config),
     TE.mapLeft(failure => {
       console.log(failure)
       called = true
@@ -120,13 +120,13 @@ test('Create Process Instance with variables', done => {
 xtest('Create Process Instance and Await with variables', done => {
   let called = false
   pipe(
-    run(({
+    run({
       bpmnProcessId: 'demo-get-time-int-test',
       operation: 'createProcessInstanceWithResult',
       variables: {name: 'Noddy'}, // these get parsed from a string in hydration
       requestTimeoutSeconds: 10,
       quiet
-    } as unknown) as Config),
+    } as unknown as Config),
     TE.mapLeft(failure => {
       console.log(failure)
       called = true
@@ -150,11 +150,11 @@ xtest('Create Process Instance and Await with variables', done => {
 test('Publish Message', done => {
   let called = false
   pipe(
-    run(({
+    run({
       messageName: 'demo-get-time-int-test',
       operation: 'publishMessage',
       quiet
-    } as unknown) as Config),
+    } as unknown as Config),
     TE.mapLeft(failure => {
       console.log(failure)
       called = true
@@ -169,11 +169,11 @@ test('Publish Message', done => {
 test('Publish Message', done => {
   let called = false
   pipe(
-    run(({
+    run({
       messageName: 'demo-get-time-int-test',
       operation: 'publishMessage',
       quiet
-    } as unknown) as Config),
+    } as unknown as Config),
     TE.mapLeft(failure => {
       console.log(failure)
       called = true
@@ -189,12 +189,12 @@ test('Publish Message', done => {
 test('Start Worker', done => {
   let called = false
   pipe(
-    run(({
+    run({
       workerHandlerFile: '__tests__/worker.js',
       workerLifetimeMins: 0.2,
       operation: 'startWorkers',
       quiet
-    } as unknown) as Config),
+    } as unknown as Config),
     TE.mapLeft(failure => {
       console.log('dir', __dirname)
       console.log(failure)

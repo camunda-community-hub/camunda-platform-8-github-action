@@ -586,7 +586,7 @@ exports.getZBC = getZBC;
 
 /***/ }),
 
-/***/ 7376:
+/***/ 6650:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -723,7 +723,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseVariables = exports.getConfigurationFromEnvironment = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const E = __importStar(__nccwpck_require__(7534));
-const getCamundaCloudCredentials_1 = __nccwpck_require__(7376);
+const get_camunda_cloud_credentials_1 = __nccwpck_require__(6650);
 const getOrElse = (key) => {
     const value = core.getInput(key);
     return value === '' ? undefined : value;
@@ -733,7 +733,7 @@ function getConfigurationFromEnvironment() {
     const operation = core.getInput('operation', {
         required: true
     });
-    const camundaCreds = (0, getCamundaCloudCredentials_1.getCamundaCloudCredentials)();
+    const camundaCreds = (0, get_camunda_cloud_credentials_1.getCamundaCloudCredentials)();
     if (E.isLeft(camundaCreds)) {
         return camundaCreds;
     }
@@ -21158,7 +21158,7 @@ function setup(env) {
 			namespaces = split[i].replace(/\*/g, '.*?');
 
 			if (namespaces[0] === '-') {
-				createDebug.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
+				createDebug.skips.push(new RegExp('^' + namespaces.slice(1) + '$'));
 			} else {
 				createDebug.names.push(new RegExp('^' + namespaces + '$'));
 			}

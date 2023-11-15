@@ -46,20 +46,19 @@ export function run(
   // lifts a validation using a specified error handler
   // https://github.com/gcanti/fp-ts/issues/526
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const liftWith = <L>(handler: (errors: t.Errors) => L) => <A>(
-    fa: t.Validation<A>
-  ): TE.TaskEither<L, A> => TE.fromEither(mapLeft(handler)(fa))
+  const liftWith =
+    <L>(handler: (errors: t.Errors) => L) =>
+    <A>(fa: t.Validation<A>): TE.TaskEither<L, A> =>
+      TE.fromEither(mapLeft(handler)(fa))
 
-  const lift = liftWith(
-    (errors: t.Errors): OperationFailure => {
-      return {
-        message: [
-          `Missing required configuration keys for operation ${operationName}:`,
-          JSON.stringify(PathReporter.report(left(errors)))
-        ]
-      }
+  const lift = liftWith((errors: t.Errors): OperationFailure => {
+    return {
+      message: [
+        `Missing required configuration keys for operation ${operationName}:`,
+        JSON.stringify(PathReporter.report(left(errors)))
+      ]
     }
-  )
+  })
 
   switch (operationName) {
     case 'publishMessage': {

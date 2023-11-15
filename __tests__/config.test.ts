@@ -56,10 +56,10 @@ test('Parameter validation - bad operation name', done => {
   // it will blow up with no parameters at all
   let called = false
   pipe(
-    run(({
+    run({
       ...ZeebeConfig,
       operation: 'whatever'
-    } as unknown) as Config),
+    } as unknown as Config),
     TE.mapLeft(failure => {
       expect(failure?.message).toBeTruthy()
       expect(called).toBe(false)
@@ -77,10 +77,10 @@ test('Parameter validation - missing required parameters for operation', done =>
   // it will blow up with no parameters at all
   let called = false
   pipe(
-    run(({
+    run({
       ...ZeebeConfig,
       operation: 'publishMessage'
-    } as unknown) as Config),
+    } as unknown as Config),
     TE.mapLeft(failure => {
       expect(failure?.message).toBeTruthy()
       expect(called).toBe(false)

@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import {OperationName, OperationFailure} from '../run'
 import * as E from 'fp-ts/lib/Either'
-import {getCamundaCloudCredentials} from './getCamundaCloudCredentials'
+import {getCamundaCloudCredentials} from './get-camunda-cloud-credentials'
 
 export interface JSONDoc {
   [key: string]: string | number | boolean | JSONDoc | JSONDoc[]
@@ -96,9 +96,7 @@ export function getConfigurationFromEnvironment(): E.Either<
   return E.right(config)
 }
 
-export function parseVariables(
-  vars: string
-):
+export function parseVariables(vars: string):
   | {
       variableParsingError: false
       variables: Variables

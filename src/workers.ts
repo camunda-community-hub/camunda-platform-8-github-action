@@ -40,11 +40,14 @@ export async function bootstrapWorkers(
         zbc.createWorker({taskType, taskHandler: tasks[taskType]})
       }
 
-      setTimeout(async () => {
-        logger.info('Shutting down workers...')
-        await zbc.close()
-        resolve()
-      }, lifetime * 60 * 1000)
+      setTimeout(
+        async () => {
+          logger.info('Shutting down workers...')
+          await zbc.close()
+          resolve()
+        },
+        lifetime * 60 * 1000
+      )
     } else {
       await zbc.close()
       reject(new Error(`No export 'tasks' found in handler file`))
