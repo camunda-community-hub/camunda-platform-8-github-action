@@ -59,6 +59,47 @@ test('Deploy Workflow using directory', done => {
   )()
 })
 
+test('Deploy Decision using Filename', done => {
+  let called = false
+  pipe(
+    run({
+      resourceFilename: '__tests__/demo.dmn',
+      operation: 'deployResource',
+      quiet
+    } as unknown as Config),
+    TE.mapLeft(failure => {
+      called = true
+    }),
+    TE.map(success => {
+      expect(called).toBe(false)
+      // Will deploy a decision and a decisionRequirements
+      expect(JSON.parse(success.output)[0].deployments.length).toBe(2)
+      done()
+    })
+  )()
+})
+
+test('Deploy Decision, Process, and Form using directory', done => {
+  let called = false
+  pipe(
+    run({
+      resourceDirectory: '__tests__',
+      operation: 'deployResource',
+      quiet
+    } as unknown as Config),
+    TE.mapLeft(failure => {
+      called = true
+    }),
+    TE.map(success => {
+      expect(called).toBe(false)
+      console.log(success.info)
+      console.log(JSON.parse(success.output).length)
+      expect(JSON.parse(success.output).length).toBe(3)
+      done()
+    })
+  )()
+})
+
 test('Create Process Instance', done => {
   let called = false
   pipe(

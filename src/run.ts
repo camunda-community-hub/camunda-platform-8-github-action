@@ -21,12 +21,14 @@ export type OperationName =
   | 'createProcessInstance'
   | 'createProcessInstanceWithResult'
   | 'deployProcess'
+  | 'deployResource'
   | 'startWorkers'
 
 export const OperationNames: OperationName[] = [
   'createProcessInstance',
   'createProcessInstanceWithResult',
   'deployProcess',
+  'deployResource',
   'publishMessage',
   'startWorkers'
 ]
@@ -71,6 +73,12 @@ export function run(
       return pipe(
         lift(ConfigValidator.DeployProcess.decode(config)),
         TE.chain(Operations.deployProcess)
+      )
+    }
+    case 'deployResource': {
+      return pipe(
+        lift(ConfigValidator.DeployResource.decode(config)),
+        TE.chain(Operations.deployResource)
       )
     }
     case 'createProcessInstance': {

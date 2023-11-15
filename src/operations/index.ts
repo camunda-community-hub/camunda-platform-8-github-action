@@ -1,5 +1,6 @@
 export {createProcessInstance} from './create-wfi'
 export {createProcessInstanceWithResult} from './create-wfi-result'
 export {deployProcess} from './deploy-process'
+export {deployResource} from './deploy-resource'
 export {publishMessage} from './publish-message'
 export {startWorkers} from './start-workers'

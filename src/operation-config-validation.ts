@@ -60,6 +60,19 @@ export const DeployProcess = t.intersection([
   t.union([DeployProcessFile, DeployProcessDir])
 ])
 
+export const DeployResourceFile = t.type({
+  resourceFilename: t.string
+})
+
+export const DeployResourceDir = t.type({
+  resourceDirectory: t.string
+})
+
+export const DeployResource = t.intersection([
+  GlobalOptional,
+  t.union([DeployResourceFile, DeployResourceDir])
+])
+
 export const StartWorkersRequired = t.type({
   workerHandlerFile: t.string,
   workerLifetimeMins: t.number
@@ -75,5 +88,6 @@ export const ConfigValidator = {
   CreateProcessInstance,
   CreateProcessInstanceWithResult,
   DeployProcess,
+  DeployResource,
   StartWorkers
 }

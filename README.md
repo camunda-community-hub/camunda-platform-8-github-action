@@ -21,6 +21,7 @@ This GitHub Action uses a version of the Zeebe Node client that requires Node ve
 | Operation | Required Parameters | Optional Parameters |
 | --- | --- | --- |
 | `deployProcess` | **One of**: `bpmnFilename` _or_ `bpmnDir` | `verbose`, `quiet` |
+| `deployResource` | **One of**: `resourceFilename` _or_ `resourceDir` | `verbose`, `quiet` |
 | `createProcessInstance` | `bpmnProcessId` |  `variables`, `verbose`, `quiet` |
 |`createProcessInstanceWithResult` | `bpmnProcessId`, `requestTimeoutSeconds` | `variables`, `verbose`, `quiet` |
 | `publishMessage` | `messageName` | `timetoLive`, `variables`, `correlationKey`, `verbose`, `quiet` |
@@ -90,6 +91,58 @@ jobs:
           clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
           operation: deployProcess
           bpmnDirectory: bpmn
+```
+
+## Deploy a Decision Table or Form
+
+Here is an example of deploying a decision table from GitHub. This will deploy the decision in the file `resource/demo.dmn` in the repo:
+
+```
+name: Run Get Time Demo
+
+on: [repository_dispatch]
+
+jobs:
+  demo-get-time:
+    if: github.event.action == 'get_time'
+    runs-on: ubuntu-latest
+
+steps:
+  - uses: actions/checkout@v2
+  - name: Deploy Demo Decision Table
+    uses: camunda-community-hub/camunda-platform-8-github-action@master
+    with:
+      clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
+      operation: deployResource
+      resourceFilename: resource/demo.dmn
+```
+
+## Automate Deployment of BPMN Models, Decision Tables, and Forms on Push to master
+
+Here is a workflow that redeploys all changed resources in the `resources` directory of your repo on a push to the master branch:
+
+```
+name: Deploy Resources
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'resources/*'
+
+jobs:
+  deploy-resources:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy Updated Resources
+        uses: camunda-community-hub/camunda-platform-8-github-action@master
+        with:
+          clientConfig: ${{ secrets.ZEEBE_CLIENT_CONFIG }}
+          operation: deployResource
+          resourceDirectory: resources
 ```
 
 ## Start a Process Instance

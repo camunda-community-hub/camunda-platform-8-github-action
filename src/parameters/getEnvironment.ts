@@ -23,6 +23,8 @@ export interface Config {
   bpmnFilename?: string
   bpmnDirectory?: string
   workerLifetimeMins: number
+  resourceFilename?: string
+  resourceDirectory?: string
 }
 
 const getOrElse = (key: string): string | undefined => {
@@ -66,6 +68,8 @@ export function getConfigurationFromEnvironment(): E.Either<
   const workerHandlerFile = getOrElse('workerHandlerFile')
   const bpmnFilename = getOrElse('bpmnFilename')
   const bpmnDirectory = getOrElse('bpmnDirectory')
+  const resourceFilename = getOrElse('resourceFilename')
+  const resourceDirectory = getOrElse('resourceDirectory')
   const workerLifetimeMins = parseInt(
     getOrElse('workerLifetimeMins') || '2',
     10
@@ -85,6 +89,8 @@ export function getConfigurationFromEnvironment(): E.Either<
     workerHandlerFile,
     bpmnFilename,
     bpmnDirectory,
+    resourceFilename,
+    resourceDirectory,
     workerLifetimeMins,
     operation
   }
