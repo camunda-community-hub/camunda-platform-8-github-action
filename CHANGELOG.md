@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.3.0
+
+Use zeebe-node 8.3.1. This supports deploying DMN tables and forms via `deployResource`.
+
 ## 8.0.0 
 
 Use zeebe-node 8.0.2. This supports Camunda Platform 8 SaaS.
