@@ -29,7 +29,7 @@
     "@actions/core": "^1.9.1",
     "@actions/github": "^4.0.0",
     "@octokit/webhooks": "^7.0.0",
-    "@vercel/ncc": "^0.33.0",
+    "@vercel/ncc": "^0.38.0",
     "dayjs": "^1.8.20",
     "fp-ts": "^2.11.5",
     "io-ts": "^2.1.1",
